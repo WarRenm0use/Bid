@@ -43,10 +43,10 @@ var IndexView = Backbone.View.extend({
 });
 
 var SubastaMiniView = Backbone.View.extend({
-//    el: $("#subastas"),
+    el: $("#subastas"),
     template: $("#subastaMiniTmpl").template(),
-    tagName: "div",
-    className: "subastaMini",
+//    tagName: "div",
+//    className: "subastaMini",
     events: {
         "click #bid .bid-btn": "doBid"
     },
@@ -65,15 +65,13 @@ var SubastaMiniView = Backbone.View.extend({
     doBid: function() {
         console.log("SubastaMiniView.doBid");
 //        console.log(this.model);
-//        this.model.doBid();
+        this.model.doBid();
     }
 });
 
 var SubastaView = Backbone.View.extend({
     el: $("#subastas"),
     template: $("#subastaTmpl").template(),
-    tagName: "div",
-    className: "subasta",
     events: {
         "click #bid .bid-btn": "doBid"
     },
@@ -87,7 +85,7 @@ var SubastaView = Backbone.View.extend({
         var sg = this;
         sg.el.empty();
         console.log("SubastaMiniView.render: "+this.model.get("ID_SUBASTA"));
-        $.tmpl(sg.template, sg.model).appendTo(sg.el);
+        $.tmpl(sg.template, sg.model).appendTo(sg.el).hide().fadeIn();
 //        this.el = $.tmpl(this.template, this.model);
         return this;
     },
