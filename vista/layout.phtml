@@ -6,22 +6,24 @@
         <link rel="stylesheet" type="text/css" href="css/base.css" />
     </head>
     <script id="subastaMiniTmpl" type="text/x-jquery-tmpl">
+        <div class="subastaMini">
         <span id="tiempo">${attributes.RESTO_TIEMPO}</span>
         <span id="monto">$ ${attributes.MONTO_SUBASTA}</span>
         <span id="bidder">Neeph</span>
-        <span id="producto"><a href="#/subasta/${attributes.ID_SUBASTA}"><img src="producto/${attributes.IMG_PRODUCTO}" height="90"/></a></span>
+        <span id="producto"><a href="#!/subasta/${attributes.ID_SUBASTA}"><img src="producto/${attributes.IMG_PRODUCTO}" height="90"/></a></span>
         <span id="bid">
             <span id="costo-bid">${attributes.COSTO_BID_PESOS}</span>
             <span id="delay">${attributes.TIEMPO_RETRASO}"</span>
             <a class="bid-btn">BID</a>
         </span>
+        </div>
     </script>
     <script id="subastaTmpl" type="text/x-jquery-tmpl">
         <div class="subasta">
             <span id="tiempo">${attributes.RESTO_TIEMPO}</span>
             <span id="monto">$ ${attributes.MONTO_SUBASTA}</span>
             <span id="bidder">Neeph</span>
-            <span id="producto"><a href="#/subasta/${attributes.ID_SUBASTA}"><img src="producto/${attributes.IMG_PRODUCTO}" width="290"/></a></span>
+            <span id="producto"><img src="producto/${attributes.IMG_PRODUCTO}" width="290"/></span>
             <span id="bid">
                 <span id="costo-bid">${attributes.COSTO_BID_PESOS}</span>
                 <span id="delay">${attributes.TIEMPO_RETRASO}"</span>
@@ -101,8 +103,8 @@
         <script src="js/LAB.min.js" type="text/javascript"></script>
         <script type="text/javascript">
             $LAB
-            .script("js/jquery-1.5.1.min.js").wait()
-            .script("js/jquery.easing.1.3.js")
+            .script("js/jquery-1.5.min.js").wait()
+//            .script("js/jquery.easing.1.3.js")
             .script("js/jquery.tmpl.min.js")
             .script("js/underscore-min.js")
             .script("js/facebook.js")
