@@ -2,11 +2,34 @@ var cache = new CacheProvider;
 
 var Subasta = Backbone.Model.extend({
     refresh: function() {
-//        console.log("Subasta.refresh: "+this.get("ID_SUBASTA"));
+        var ws = this;
+        $.ajax({
+            url: '?get=subasta&id='+ws.get("ID_SUBASTA"),
+            dataType: 'json',
+            type: 'get',
+            success: function(data) {
+                ws.set({
+                    MONTO_SUBASTA: data.MONTO_SUBASTA,
+                    RESTO_TIEMPO: data.RESTO_TIEMPO
+                });
+            }
+        });
     },
     doBid: function() {
-//        console.log(this);
-        console.log("Subasta.doBid: "+this.get("ID_SUBASTA"));
+        var ws = this;
+        $.ajax({
+            url: '?do=bid',
+            type: 'post',
+            data: {
+                'ID_SUBASTA': ws.get("ID_SUBASTA")
+            },
+            success: function(data) {
+                console.log("Bid: "+data.responseText);
+            }
+        });
+    },
+    change: function() {
+        this.view.refresh();
     }
 });
 
@@ -34,8 +57,8 @@ var IndexView = Backbone.View.extend({
         var n = this.model.length;
         for(var i=0; i<n; i++) {
             var view = new SubastaMiniView({
-                model: this.model.models[i]
-            })
+                model: this.model.at(i)
+            });
             this.el.append(view.render().el);
         }
         return this;
@@ -43,29 +66,32 @@ var IndexView = Backbone.View.extend({
 });
 
 var SubastaMiniView = Backbone.View.extend({
-    el: $("#subastas"),
+//    el: $("#subastas"),
     template: $("#subastaMiniTmpl").template(),
-//    tagName: "div",
-//    className: "subastaMini",
+    tagName: "div",
+    className: "subastaMini",
     events: {
         "click #bid .bid-btn": "doBid"
     },
     initialize: function() {
 //        console.log("SubastaMiniView.initialize");
 //      _.bindAll(this, 'render', 'close');
-      this.model.bind('change', this.render);
+//      this.model.bind('change', this.render);
       this.model.view = this;
     },
     render: function() {
         console.log("SubastaMiniView.render: "+this.model.get("ID_SUBASTA"));
-//        $.tmpl(sg.template, sg.model).appendTo(sg.el);
-        this.el = $.tmpl(this.template, this.model);
+        $(this.el).html($.tmpl(this.template, this.model));
         return this;
     },
     doBid: function() {
-        console.log("SubastaMiniView.doBid");
+        console.log("SubastaMiniView.doBid: "+this.model.get("ID_SUBASTA"));
 //        console.log(this.model);
         this.model.doBid();
+    },
+    refresh: function() {
+        $(this.el).find("#tiempo").html(this.model.get("RESTO_TIEMPO"));
+        $(this.el).find("#monto").html("$ "+this.model.get("MONTO_SUBASTA"));
     }
 });
 
@@ -102,6 +128,7 @@ var CPrincipal = Backbone.Controller.extend({
     _subView:null,
     _subastas:null,
     _refresh:null,
+    _index:null,
 
     routes: {
         "!/": "index",
