@@ -9,24 +9,39 @@ class SubastaMP {
     function __construct() {
         $this->_bd = new Bd();
     }
+    
+    function resetAll() {
+        $now = date("U");
+        $sql = "UPDATE $this->_dbTable SET INICIO_SUBASTA = $now, ESTADO_SUBASTA = 1, RETRASO_SUBASTA = 0";
+//        echo $sql."<br>";
+        $res = $this->_bd->sql($sql);
+    }
 
-    function fetchAll() {
-        $sql = "SELECT *
-                FROM $this->_dbTable AS S 
-                    INNER JOIN PRODUCTO AS P 
-                ON 
-                    S.ID_PRODUCTO = P.ID_PRODUCTO ";
+    function fetchAll($ord = 1) {
+        $ord = $this->_bd->limpia($ord);
+        $ords = array("DESC", "ASC");
+        $now = date("U");
+        $sql = "SELECT *, ((S.DURACION_SUBASTA + S.RETRASO_SUBASTA) - ($now - S.INICIO_SUBASTA)) AS RESTO_TIEMPO_SEC
+                FROM $this->_dbTable AS S LEFT JOIN USUARIO AS U 
+                    ON S.ID_USUARIO = U.ID_USUARIO
+                INNER JOIN PRODUCTO AS P 
+                    ON 
+                    S.ID_PRODUCTO = P.ID_PRODUCTO 
+                    AND S.ESTADO_SUBASTA = 1
+                ORDER BY RESTO_TIEMPO_SEC ".$ords[$ord];
+//        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         $arr = array();
-        $now = date("U");
         while($row = mysql_fetch_object($res)) {
-            $row->RESTO_TIEMPO = ($row->DURACION_SUBASTA + $row->RETRASO_SUBASTA) - ($now - $row->INICIO_SUBASTA);
+//            $row->RESTO_TIEMPO = ($row->DURACION_SUBASTA + $row->RETRASO_SUBASTA) - ($now - $row->INICIO_SUBASTA);
             $row->NOW = $now;
-            if($row->RESTO_TIEMPO <0) {
-                $sql = "UPDATE ";
+            if($row->RESTO_TIEMPO_SEC <0) {
+                $sql = "UPDATE SUBASTA SET ESTADO_SUBASTA = 0, TERMINO_SUBASTA = $now WHERE ID_SUBASTA = $row->ID_SUBASTA";
+                $this->_bd->sql($sql);
+            } else {
+                $row->RESTO_TIEMPO = $this->getTiempo($row->RESTO_TIEMPO_SEC, ":");
+                $arr[] = $row;
             }
-            $row->RESTO_TIEMPO = $this->getTiempo($row->RESTO_TIEMPO, ":");
-            $arr[] = $row;
         }
         return $arr;
     }
@@ -62,14 +77,19 @@ class SubastaMP {
             $sAttr = implode(",", $attr);
         }
 
-        $sql = "SELECT $sAttr FROM $this->_dbTable AS S INNER JOIN PRODUCTO AS P ON S.$this->_id = $id AND S.ID_PRODUCTO = P.ID_PRODUCTO";
         $now = date("U");
+        $sql = "SELECT $sAttr, ((S.DURACION_SUBASTA + S.RETRASO_SUBASTA) - ($now - S.INICIO_SUBASTA)) AS RESTO_TIEMPO_SEC 
+                FROM $this->_dbTable AS S 
+                    INNER JOIN PRODUCTO AS P 
+                ON S.$this->_id = $id 
+                    AND S.ID_PRODUCTO = P.ID_PRODUCTO";
         $res = $this->_bd->sql($sql);
         if($res) {
             $row = mysql_fetch_object($res);
-            $row->RESTO_TIEMPO = ($row->DURACION_SUBASTA + $row->RETRASO_SUBASTA) - ($now - $row->INICIO_SUBASTA);
+//            $row->RESTO_TIEMPO_SEC = ($row->DURACION_SUBASTA + $row->RETRASO_SUBASTA) - ($now - $row->INICIO_SUBASTA);
             $row->NOW = $now;
-            $row->RESTO_TIEMPO = $this->getTiempo($row->RESTO_TIEMPO, ":");
+            $row->RESTO_TIEMPO = $this->getTiempo($row->RESTO_TIEMPO_SEC, ":");
+//            $row->RESTO_TIEMPO = $row->RESTO_TIEMPO_SEC;
             return $row;
         } else return false;
     }
@@ -83,17 +103,17 @@ class SubastaMP {
             if($k!=$this->_id) {
                 if($i) {
                     $vars .= ", ".$k;
-                    $data .= ", '".$data->$k."'";
+                    $vals .= ", '".$data->$k."'";
                 } else {
                     $vars = $k;
-                    $data = "'".$data->$k."'";
+                    $vals = "'".$data->$k."'";
                 }
             }
             $i++;
         }
         
         $sql = "INSERT INTO $this->_dbTable ($vars) VALUES
-                ($data)";
+                ($vals)";
         
         $this->_bd->sql($sql);
     }

@@ -51,17 +51,17 @@ class BidMP {
             if($k!=$this->_id) {
                 if($i) {
                     $vars .= ", ".$k;
-                    $data .= ", '".$data->$k."'";
+                    $vals .= ", '".$data->$k."'";
                 } else {
                     $vars = $k;
-                    $data = "'".$data->$k."'";
+                    $vals = "'".$data->$k."'";
                 }
             }
             $i++;
         }
         
         $sql = "INSERT INTO $this->_dbTable ($vars) VALUES
-                ($data)";
+                ($vals)";
         
         $this->_bd->sql($sql);
     }

@@ -62,41 +62,65 @@ class UsuarioMP {
     }
 
     function save($data) {
-        $now = time();
-        $usAux = $this->findByFb($data["id"], array("ID_USUARIO"));
-        if($usAux!= null && $usAux->ID_USUARIO) {
-            $sql = "UPDATE $this->_dbTable SET 
-                        NOM_USUARIO = '".$data["first_name"]."'
-                        APE_USUARIO = '".$data["last_name"]."'
-                        EMA_USUARIO = '".$data["email"]."'
-                        NICK_USUARIO = '".$data["username"]."' 
-                    WHERE ID_USUARIO = $usAux->ID_USUARIO";
-        } else {
-            $sql = "INSERT INTO $this->_dbTable (NOM_USUARIO, APE_USUARIO, EMA_USUARIO, NICK_USUARIO, FB_UID) VALUES 
-                    ('".$data["first_name"]."', '".$data["last_name"]."', '".$data["email"]."', '".$data["username"]."', ".$data["id"].")";
+        $now = date("Y-m-d H:i:s");
+        $usAux = $this->findByFb($data->FB_UID, array("ID_USUARIO"));
+        if($usAux!= null && $usAux->ID_USUARIO>0) { //UPDATE
+            $data->LAST_SIGN = $now;
+            $data->ID_USUARIO = $usAux->ID_USUARIO;
+            $this->update($data);
+        } else { //INSERT
+            $data->FECHA_SIGN = $now;
+            $data->LAST_SIGN = $now;
+            $data->ID_USUARIO = $this->insert($data);
         }
-        $this->_bd->sql($sql);
+        
+        return $data;
     }
-
-    function update($obj) {
-        $variables = get_object_vars($obj);
+    
+    function insert($data) {
+        $variables = get_object_vars($data);
         $keys = array_keys($variables);
         
         $i = 0;
-        $data = "";
         foreach($keys as $k) {
-            if($k != $this->_id) {
-                if($data != "") {
-                    $data .= ", ".$k." = '".$obj->$k."'";
+            if($k!=$this->_id) {
+                if($i) {
+                    $vars .= ", ".$k;
+                    $vals .= ", '".$data->$k."'";
                 } else {
-                    $data = $k." = '".$obj->$k."'";
+                    $vars = $k;
+                    $vals = "'".$data->$k."'";
                 }
             }
             $i++;
         }
-        $sql = "UPDATE $this->_dbTable SET 
-                $data
-                WHERE $this->_id = '$obj->ID_USUARIO'";
+        
+        $sql = "INSERT INTO $this->_dbTable ($vars) VALUES
+                ($vals)";
+        
+        $this->_bd->sql($sql);
+        return mysql_insert_id();
+    }
+
+    function update($data) {
+        $variables = get_object_vars($data);
+        $keys = array_keys($variables);
+        
+        $i = 0;
+        $val = "";
+        foreach($keys as $k) {
+            if($k != $this->_id) {
+                if($val != "") {
+                    $val .= ", ".$k." = '".$data->$k."'";
+                } else {
+                    $val = $k." = '".$data->$k."'";
+                }
+            }
+            $i++;
+        }
+        
+        $sql = "UPDATE $this->_dbTable SET $val WHERE $this->_id = $data->ID_USUARIO";
+        
         return $this->_bd->sql($sql);
     }
 

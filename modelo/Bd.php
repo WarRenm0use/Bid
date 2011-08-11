@@ -6,7 +6,7 @@ class Bd {
     var $server = "";
     var $bd = "";
     
-    function __construct($user="flawers_bid", $pass="bid2010", $server="localhost", $bd="flawers_bid") {
+    function __construct($user="bid", $pass="Q6xZEMLY6RZZJxGW", $server="localhost", $bd="bid") {
 //        $this->user = $user;
 //        $this->pass = $pass;
 //        $this->bd = $bd;
