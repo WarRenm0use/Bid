@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^svip/(.+) index.php?sec=svip&id=$1 [NC,L]
+RewriteRule ^bids index.php?sec=producto&op=categoria&hash=bidPack [NC,L]
+RewriteRule ^carro index.php?sec=carro [NC,L]
+RewriteRule ^carro/(.+) index.php?sec=carro&op=$1 [NC,L]
+RewriteRule ^(.+) index.php?sec=pagina&id=$1 [NC,L]

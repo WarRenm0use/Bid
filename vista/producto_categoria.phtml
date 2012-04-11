@@ -1,0 +1,32 @@
+<?
+$cat = $cp->getCSec()->cat;
+?>
+<script src="/js/producto.js" type="text/javascript"></script>
+<div id="inner">
+    <? if($cat->ERROR == 0) { ?>
+    <h1><?=$cat->NOM_CATEGORIA?></h1>
+    <div class="productos" id="productos">
+        <? 
+        $nProd = count($cat->PRODUCTOS);
+        for($i=0; $i<$nProd; $i++) {
+            $prod = $cat->PRODUCTOS[$i];
+        ?>
+        <div class="producto">
+            <form class="prodForm" action="/index.php?sec=carro&do=add">
+                <div class="foto">
+                    <img src="/producto/<?=$prod->URL_IMAGEN?>" class="tp" title="<?=$prod->NOM_PRODUCTO?>"/>
+                </div>
+                <div class="data">
+                    <div class="info"><span class="nombre"><?=$prod->NOM_PRODUCTO?></span>
+                    <span class="precio">$ <?=$prod->PRECIO_VENTA_H?></span></div>
+                    <input type="hidden" name="id_producto" value="<?=$prod->ID_PRODUCTO?>"/>
+                    <input name="cantidad" class="tp center number enterInput cantidad" title="Ingresa la cantidad que quieres comprar" value="1"/>
+                    <div class="clearfix"></div>
+                </div>
+                <input type="submit" class="btn btn-success pull-right" id="agregar" value="Agregar al carrito" />
+            </form>
+        </div>
+        <? } ?>
+    </div> 
+    <? } ?>
+</div>

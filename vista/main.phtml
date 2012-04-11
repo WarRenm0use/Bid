@@ -1,3 +1,43 @@
-<h1>Subastas</h1>
-<div class="subastas" id="subastas">
+<?
+$smain = $cp->getCSec()->smain;
+?>
+<script src="/js/main.js" type="text/javascript"></script>
+<div class="subastaVipMain">
+    <div class="imagen"><a href="/svip/<?=$smain->COD_SUBASTA?>"><img src="producto/<?=$smain->URL_IMAGEN?>" width="570"/></a></div>
+    <div id="descripcion">
+        <div id="texto">
+            <h1><a href="/svip/<?=$smain->COD_SUBASTA?>"><?=$smain->NOM_PRODUCTO?></a></h1>
+            <div class="share">
+                <div id="shareme" data-url="http://dev.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-text="<?=$smain->NOM_PRODUCTO?> :: Lo Kiero!.cl - Subastas VIP"></div>
+            </div>
+            <ul>
+                <li id="dia" class="dia">El d&iacute;a <span class="verde bold grande sombra"><?=$smain->FECHA_SUBASTA?></span> a las <span class="verde bold grande sombra"><?=$smain->HRS_SUBASTA?>:<?=$smain->MIN_SUBASTA?></span> hrs</li>
+                <li id="entrada" class="tp entrada" data-placement="left" rel='twipsy' title="Para ser parte de esta subasta debes pagar $<?=$smain->BID_ENTRADA?> Bids">Entrada: <span class="verde bold grande sombra">$<?=$smain->BID_ENTRADA?></span> Bids<img src="img/bid2.png" width="19" height="22"></li>
+                <? if($smain->RESTO_USUARIOS > 1) { ?>
+                    <li data-bind="dot: ru_titulo, html: ru_texto" id="usuarios" class="tp usuarios" data-placement="left" rel='twipsy'>Faltan <?=$smain->RESTO_USUARIOS?> usuarios</li>
+                <? } else if($smain->RESTO_USUARIOS > 0) { ?>
+                        <li data-bind="dot: ru_titulo, html: ru_texto" id="usuarios" class="tp usuarios" data-placement="left" rel='twipsy' title="Un usuario más y la subasta podra realizarse">Solo falta <?=$smain->RESTO_USUARIOS?> usuario!</li>
+                <? } else { ?>
+                        <li data-bind="dot: ru_titulo, html: ru_texto" id="usuarios" class="tp usuarios" data-placement="left" rel='twipsy' title="Se alcanzó el minimo de usuarios para que la subasta se realice">Minimo alcanzado ;)</li>
+                <? } ?>
+            </ul>
+        </div><!--fin texto -->
+        <? if($cp->isLoged) { ?>
+            <? if($smain->IN_SUBASTA == 1) { ?>
+                <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Ya eres parte de la subasta, solo debes esperar a que comience!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_disabled}">Ya esta Reservado!</a>
+                <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
+            <? } else { ?>
+                <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Reserva tu cupo para ser parte de la subasta!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_disabled}"><b>RESERVA</b> TU CUPO!</a>
+                <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva"  style="display:none;" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
+            <? } ?>
+        <? } else { ?>
+            <a class="btn btn-primary btn-gigante tp" href="<?=$cp->loginUrl?>" id="registro2" data-placement="left" title="Usa tu cuenta de Facebook para registrarte!">Registrate con tu <b>Facebook</b>!</a>
+            <div class="fb-facepile" data-width="340" data-max-rows="4"></div>
+        <? } ?>
+    </div>
+    <div class="clear"></div>
 </div>
+<div class="clear"></div>
+<script>
+    ko.applyBindings(new SVipViewModel(<?=$smain->ID_SVIP?>, '<?=$smain->COD_SUBASTA?>', <?=($smain->IN_SUBASTA==1)?'true':'false'?>, <?=$smain->RESTO_USUARIOS?>));
+</script>

@@ -1,0 +1,36 @@
+<?
+$pag = $cp->getCSec()->pagina;
+?>
+<script src="/js/contacto.js" type="text/javascript"></script>
+<div id="inner">
+    <h1>Contacto</h1>
+    <div id="cuerpo">
+        <p>Para nosotros es muy importante tu opini&oacute;n, por lo que si tienes alguna duda, reclamo o sugerencia, escr&iacute;benos!</p>
+        <form class="form-horizontal" action="/?sec=pagina&do=contacto" id="contacto">
+            <div class="control-group">
+                <label class="control-label" for="nom">Nombre: </label>
+                <div class="controls">
+                    <input type="text" name="nom" id="nom" value="<?=($cp->isLoged)?$cp->getSession()->get("NOM_USUARIO"):""?>" class="span4 required" <?=($cp->isLoged)?"readonly":""?>/>
+                    <input type="hidden" name="id_us" id="id_us" value="<?=($cp->isLoged)?$cp->getSession()->get("ID_USUARIO"):0?>">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="ema">Email: </label>
+                <div class="controls">
+                    <input type="text" name="ema" id="ema" value="<?=($cp->isLoged)?$cp->getSession()->get("EMA_USUARIO"):""?>" class="span4 required email" <?=($cp->isLoged)?"readonly":""?>/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="msg">Mensaje: </label>
+                <div class="controls">
+                    <textarea id="msg" name="msg" class="span4 required"></textarea>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input class="btn btn-primary" type="submit" value="Enviar" id="btn"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

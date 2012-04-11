@@ -1,0 +1,62 @@
+<?
+$smain = $cp->getCSec()->svip;
+?>
+<script src="/js/svip.js" type="text/javascript"></script>
+<div class="subastaVip row">
+    <div class="span6">
+        <div class="imagen">
+            <img src="/producto/<?=$smain->URL_IMAGEN?>" width="500"/>
+        </div>
+        <div class="fb-comments" data-href="http://dev.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-num-posts="5" data-width="500"></div>
+    </div>
+    <div id="descripcion" class="span6">
+        <div id="texto">
+            <h1><?=$smain->NOM_PRODUCTO?></h1>
+            <div class="share">
+                <div id="shareme" data-url="http://dev.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-text="<?=$smain->NOM_PRODUCTO?> :: Lo Kiero!.cl - Subastas VIP"></div>
+            </div>
+            <span id="tiempo" data-bind="text: tiempo_texto">
+                <? if($smain->RESTO_TIEMPO_SEC < 0) { ?>
+                    Terminada!
+                <? } else { ?>
+                    <?=$smain->RESTO_TIEMPO?>
+                <? } ?>
+            </span>
+            <span id="monto" data-bind="text: texto_monto_subasta">$ <?=$smain->MONTO_SUBASTA?></span>
+            <span id="bidder" data-bind="text: nick_usuario"><?=$smain->NICK_USUARIO?></span>
+        </div>
+        <? if($cp->isLoged && $smain->ESTADO_SUBASTA == 0) { ?>
+            <? if($smain->ALLOW == 1) { ?>
+                <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Ya eres parte de la subasta, solo debes esperar a que comience!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_reserva_disabled}">Ya esta Reservado!</a>
+                <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
+            <? } else { ?>
+                <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Reserva tu cupo para ser parte de la subasta!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_reserva_disabled}"><b>RESERVA</b> TU CUPO!</a>
+                <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva"  style="display:none;" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
+            <? } ?>
+        <? } else { ?>
+            <a class="btn btn-primary btn-gigante tp" href="<?=$cp->loginUrl?>" id="registro2" data-placement="left" title="Usa tu cuenta de Facebook para registrarte!">Registrate con tu <b>Facebook</b>!</a>
+            <div class="fb-facepile" data-width="340" data-max-rows="4"></div>
+        <? } ?>
+        <? if($smain->ALLOW == 1) { ?>
+        <div id="botones" style="<?=($smain->ESTADO_SUBASTA == 3 && $smain->ERROR == 0)?"":"display:none"?>">    
+            <div id="bid_place">
+                <a class="btn btn-large btn-success tp" id="bid" title="Haz clic para pujar en la subasta!" data-placement="right" data-bind="click: doBid, html: bid_texto">BID! (<span id="nBidSub"><?=$smain->BID_RESTO?></span>)</a>
+            </div>
+            <div id="rec_place">
+                <select class="small_field" name="nBidRec" id="nBidRec" <?=($smain->RECARGA_RESTO == 0)?"disabled":""?>>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                </select>
+                <a class="btn tp <?=($smain->RECARGA_RESTO == 0)?"disabled":""?>" id="recarga" title="Te quedan <?=$smain->REGARGA_RESTO?> recargas" data-placement="right" data-bind="click: recarga, html: recarga_texto">Recarga Bids (<?=$smain->RECARGA_RESTO?>)</a>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <? } ?>
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="clear"></div>
+<script>
+    ko.applyBindings(new SVipViewModel(<?=$smain->ID_SVIP?>, '<?=$smain->COD_SUBASTA?>', <?=(isset($smain->BID_RESTO))?$smain->BID_RESTO:0?>, <?=(isset($smain->RECARGA_RESTO))?$smain->RECARGA_RESTO:0?>, <?=$smain->ESTADO_SUBASTA?>, '<?=$smain->NICK_USUARIO?>', '<?=$smain->RESTO_TIEMPO?>', <?=$smain->RESTO_TIEMPO_SEC?>, <?=$smain->MONTO_SUBASTA?>, <?=($smain->ALLOW==1)?'true':'false'?>));
+</script>

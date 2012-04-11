@@ -33,9 +33,25 @@ class UsuarioMP {
         $res = $this->_bd->sql($sql);
         if($res) {
             $row = mysql_fetch_object($res);
-            $row->BID_RESTO = $row->BID_TOTAL - $row->BID_USADO;
+            $row->BID_DISPONIBLE = $row->BID_TOTAL + $data->BID_GANADO - $row->BID_USADO;
             return $row;
         } else return false;
+    }
+    
+    function existeNick($nick) {
+        $nick = $this->_bd->limpia($nick);
+
+        if($attr == null) {
+            $sAttr = "*";
+        } else {
+            $sAttr = implode(",", $attr);
+        }
+
+        $sql = "SELECT COUNT(ID_USUARIO) AS N FROM $this->_dbTable WHERE NICK_USUARIO = '$nick'";
+//        echo $sql."<br>";
+        $res = $this->_bd->sql($sql);
+        $row = mysql_fetch_object($res);
+        return !($row->N == 0);
     }
     
     function findByFb($id, $attr = null) {
@@ -63,18 +79,61 @@ class UsuarioMP {
 
     function save($data) {
         $now = date("Y-m-d H:i:s");
-        $usAux = $this->findByFb($data->FB_UID, array("ID_USUARIO"));
+        $usAux = $this->findByFb($data->FB_UID, array("ID_USUARIO", "BID_TOTAL", "BID_USADO", "BID_GANADO", "NICK_USUARIO", "EMA_USUARIO"));
         if($usAux!= null && $usAux->ID_USUARIO>0) { //UPDATE
             $data->LAST_SIGN = $now;
             $data->ID_USUARIO = $usAux->ID_USUARIO;
+            unset($data->NICK_USUARIO);
             $this->update($data);
+            $data->BID_TOTAL = $usAux->BID_TOTAL;
+            $data->BID_USADO = $usAux->BID_USADO;
+            $data->BID_DISPONIBLE = $data->BID_TOTAL + $data->BID_GANADO - $data->BID_USADO;
+            $data->IS_NEW = 0;
         } else { //INSERT
             $data->FECHA_SIGN = $now;
             $data->LAST_SIGN = $now;
+            $data->BID_TOTAL = 0;
+            $data->BID_USADO = 0;
             $data->ID_USUARIO = $this->insert($data);
+            $data->BID_DISPONIBLE = $data->BID_TOTAL + $data->BID_GANADO - $data->BID_USADO;
+            $data->IS_NEW = 1;
         }
-        
+        $data->NICK_USUARIO = $usAux->NICK_USUARIO;
         return $data;
+    }
+    
+    function restaBid($nBid, $idUs) {
+        $nBid = $this->_bd->limpia($nBid);
+        $idUs = $this->_bd->limpia($idUs);
+        
+        $sql = "UPDATE $this->_dbTable SET BID_USADO = BID_USADO + $nBid WHERE ID_USUARIO = $idUs";
+        $this->_bd->sql($sql);
+        return $this->find($idUs, array("BID_TOTAL", "BID_GANADO", "BID_USADO"))->BID_DISPONIBLE;
+    }
+    
+    function sumaBid($nBid, $idUs) {
+        $nBid = $this->_bd->limpia($nBid);
+        $idUs = $this->_bd->limpia($idUs);
+        
+        $sql = "UPDATE $this->_dbTable SET BID_TOTAL = BID_TOTAL + $nBid WHERE ID_USUARIO = $idUs";
+        return $this->_bd->sql($sql);
+    }
+    
+    function eliminaBid($nBid, $idUs) {
+        $nBid = $this->_bd->limpia($nBid);
+        $idUs = $this->_bd->limpia($idUs);
+        
+        $sql = "UPDATE $this->_dbTable SET BID_TOTAL = BID_TOTAL - $nBid WHERE ID_USUARIO = $idUs";
+        return $this->_bd->sql($sql);
+    }
+    
+    function devuelveBid($nBid, $idUs) {
+        $nBid = $this->_bd->limpia($nBid);
+        $idUs = $this->_bd->limpia($idUs);
+        
+        $sql = "UPDATE $this->_dbTable SET BID_USADO = BID_USADO - $nBid WHERE ID_USUARIO = $idUs";
+        $this->_bd->sql($sql);
+        return $this->find($idUs, array("BID_TOTAL", "BID_GANADO", "BID_USADO"))->BID_DISPONIBLE;
     }
     
     function insert($data) {
@@ -95,9 +154,8 @@ class UsuarioMP {
             $i++;
         }
         
-        $sql = "INSERT INTO $this->_dbTable ($vars) VALUES
-                ($vals)";
-        
+        $sql = "INSERT INTO $this->_dbTable ($vars) VALUES ($vals)";
+//        echo $sql."<br>";
         $this->_bd->sql($sql);
         return mysql_insert_id();
     }
@@ -120,7 +178,7 @@ class UsuarioMP {
         }
         
         $sql = "UPDATE $this->_dbTable SET $val WHERE $this->_id = $data->ID_USUARIO";
-        
+//        echo $sql."<br>";
         return $this->_bd->sql($sql);
     }
 

@@ -1,324 +1,432 @@
-var cache = new CacheProvider;
-
-var Subasta = Backbone.Model.extend({
-    refresh: function() {
-        var ws = this;
-        $.ajax({
-            url: '?get=subasta&id='+ws.get("ID_SUBASTA"),
-            dataType: 'json',
-            type: 'get',
-            success: function(data) {
-                ws.set({
-                    MONTO_SUBASTA: data.MONTO_SUBASTA,
-                    RESTO_TIEMPO: data.RESTO_TIEMPO,
-                    RESTO_TIEMPO_SEC: data.RESTO_TIEMPO_SEC
-                });
-            }
-        });
-    },
-    doBid: function() {
-        var ws = this;
-//        console.log(this.view);
-        console.log("Subasta.doBid: "+ws.get("ID_SUBASTA"));
-        $.ajax({
-            url: '?do=bid',
-            type: 'post',
-            data: {
-                'ID_SUBASTA': ws.get("ID_SUBASTA")
-            },
-            dataType: 'json',
-            success: function(data) {
-//                console.log(data);
-                cp.$nBid.html(data);
-            }
-        });
-    },
-    change: function() {
-        this.view.refresh();
-    }
-});
-
-var SubastaCollection = Backbone.Collection.extend({
-    model: Subasta,
-    comparator: function(item) {
-        return item.get('pid');
-    },
+var cache = new CacheProvider,
+    id_request = 0,
+    $registroBtn,
+    $invitarBtn,
+    $comprarBtn,
+    confirmacion,
+    subasta,
+    $notificacion,
+    $flechas,
+    $modal,
+    modal,
+    $askNick = true,
+    $title;
     
-    lala: function() {
-        var n = this.models.length;
-        for(var i=0; i<n; i++) {
-            if(this.models[i].get("ESTADO_SUBASTA") == 1)
-                this.models[i].refresh();
-        }
-    },
-    lele: function() {
-        var ws = this;
-        $.ajax({
-            url: '?get=subastas',
-            dataType: 'json',
-            data: {},
-            success: function(data) {
-                var n = ws.models.length;
-                var m = data.length;
-                var i;
-                var menor = (n<m)?n:m;
-                var mayor = (n<m)?m:n;
-                for(i=mayor-menor; i<menor; i++) {
-                    ws.models[i].set(data[i]);
-                }
-                if(m<n) {
-                    console.log("eliminar extra");
-                    console.log(ws.models);
-                    for(i = 0; i<mayor-menor; i++) {
-                        ws.at(i).view.remove();
-                        ws.remove(ws.models[i]);
-                    }
-                    console.log(ws.models);
-                } else if(m>n){
-                    console.log("agregar extra");
-                    for(i = n; i<m; i++) {
-                        ws.add(data[i]);
-                        
-                    }
-                }
-            }
-        });
-    }
-});
+var showNotificacion = function(msg) {
+    $notificacion.html("<p>"+msg+"</p>");
+    $notificacion.fadeIn();
+    setTimeout("$notificacion.fadeOut()", 3000);
+}
 
 var IndexView = Backbone.View.extend({
-    el: $('#subastas'),
+    el: $('#contenido'),
     indexTemplate: $("#indexTmpl").template(),
     initialize: function() {
-//      _.bindAll(this, 'remove');
-//      this.model.bind('remove', this.reRender);
     },
     render: function() {
-//        console.log(this.model);
         this.el.empty();
-        var n = this.model.length;
-        for(var i=0; i<n; i++) {
-            var view = new SubastaMiniView({
-                model: this.model.at(i)
-            });
-            var aux = view.render().el;
-//            console.log(aux);
-            this.el.append(aux);
-        }
-        return this;
-    },
-    reRender: function() {
-        console.log("IndexView.reRender");
-        console.log(this);
-        this.el.empty();
-        var n = this.model.length;
-        for(var i=0; i<n; i++) {
-            var view = new SubastaMiniView({
-                model: this.model.at(i)
-            });
-            var aux = view.render().el;
-//            console.log(aux);
-            this.el.append(aux);
-        }
+        var n = this.model.length,
+        clearDiv = $("<div class='clear'></div>");
+        var view = new SubastaVipMainView({
+            model: this.model
+        });
+        var aux = $(view.render().el).hide();
+        this.el.append(aux);
+        aux.hide().fadeIn();
+        this.el.append(clearDiv);
+        $flechas.fadeIn();
+        var url = "http://dev.lokiero.cl/#/subasta/"+this.model.get("COD_SUBASTA");
+        $('#shareme').sharrre({
+            share: {
+                googlePlus: true,
+                facebook: true,
+                twitter: true,
+                digg: false,
+                delicious: false,
+                stumbleupon: false,
+                linkedin: false
+            },
+            buttons: {
+                googlePlus: {size: 'medium', url: url},
+                facebook: {layout: 'button_count', url: url},
+                twitter: {count: 'horizontal',via:'lo_kiero', url: url}
+            },
+            enableHover: true,
+            enableCounter: false,
+            enableTracking: true
+        });
         return this;
     }
 });
 
-var SubastaMiniView = Backbone.View.extend({
-//    el: $("#subastas"),
-    $tiempo: null,
-    $monto: null,
-    template: $("#subastaMiniTmpl").template(),
-    tagName: "div",
-    className: "subastaMini",
-    events: {
-        "click #bid .bid-btn-mini": "doBid"
-    },
-    initialize: function() {
-//        console.log("SubastaMiniView.initialize");
-//      _.bindAll(this, 'render', 'close');
-//      this.model.bind('change', this.render);
-      this.model.view = this;
-      
-    },
-    render: function() {
-//        console.log("SubastaMiniView.render: "+this.model.get("ID_SUBASTA"));
-        $(this.el).html($.tmpl(this.template, this.model));
-        return this;
-    },
-    doBid: function() {
-//        console.log("SubastaMiniView.doBid: "+this.model.get("ID_SUBASTA"));
-//        console.log(this);
-        this.model.doBid();
-    },
-    refresh: function() {
-//        console.log(this.model.get("RESTO_TIEMPO_SEC"));
-        $(this.el).html($.tmpl(this.template, this.model));
-        this.$tiempo = $(this.el).find("#tiempo");
-//        this.$monto = $(this.el).find("#monto");
-        if(this.model.get("RESTO_TIEMPO_SEC") <= 10) {
-            this.$tiempo.addClass("rojo");
-        } else {
-            this.$tiempo.removeClass("rojo");
-        }
-//        this.$tiempo.html(this.model.get("RESTO_TIEMPO"));
-//        this.$monto.html("$ "+this.model.get("MONTO_SUBASTA"));
-    },
-    remove: function() {
-        console.log("SubastaMiniView.remove");
-        $(this.el).fadeTo(1, 0.5);
-    }
-});
-
-var SubastaView = Backbone.View.extend({
-    el: $("#subastas"),
-    template: $("#subastaTmpl").template(),
-    events: {
-        "click #bid .bid-btn": "doBid"
-    },
-    initialize: function() {
-//        console.log("SubastaMiniView.initialize");
-//      _.bindAll(this, 'render', 'close');
-//      this.model.bind('change', this.render);
-      this.model.view = this;
-    },
-    render: function() {
-        var sg = this;
-        sg.el.empty();
-//        console.log("SubastaView.render: "+this.model.get("ID_SUBASTA"));
-        $.tmpl(sg.template, sg.model).appendTo(sg.el).hide().fadeIn();
-//        this.el = $.tmpl(this.template, this.model);
-        return this;
-    },
-    doBid: function() {
-//        console.log("SubastaView.doBid");
-//        console.log(this);
-        this.model.doBid();
-    },
-    refresh: function() {
-        this.$tiempo = $(this.el).find("#tiempo");
-        this.$monto = $(this.el).find("#monto");
-        if(this.model.get("RESTO_TIEMPO_SEC") < 10) {
-            this.$tiempo.addClass("rojo");
-        } else {
-            this.$tiempo.removeClass("rojo");
-        }
-        this.$tiempo.html(this.model.get("RESTO_TIEMPO"));
-        this.$monto.html("$ "+this.model.get("MONTO_SUBASTA"));
-    }
-});
-
-var CPrincipal = Backbone.Controller.extend({
+var CPrincipal = Backbone.Router.extend({
     _data:null,
     _subModel:null,
     _subView:null,
     _subastas:null,
     _refresh:null,
     _index:null,
+    _invView:null,
+    _invModel:null,
+    _subVipView:null,
+    _subVipModel:null,
     $nBid:null,
+    _hash:null,
+    _catView: null,
+    _catModel: null,
+    _invitacion: null,
+    _invitaciones: null,
+    _segRefresh: 1,
 
     routes: {
-        "!/": "index",
-        "!/subasta/:id": "subasta"
+        "/": "index",
+        "/subasta/:cod": "subasta",
+        "/subastas": "subastas",
+        "/invitacion/:id": "invitacion",
+        "/tienda": "tienda",
+        "/tienda/:cat": "categoria",
+        "/quienes-somos": "nosotros",
+        "/terminos": "terminos",
+        "/faq": "faq",
+        "/contacto": "contacto",
+        "/invitaciones": "invitaciones",
+        "/facebook/:req": "facebook",
+        "/bids": "bids",
+        "/bids/": "bids",
+        "/carro": "carro",
+        "/carro/": "carro",
+        "/pago": "pago",
+        "/pago/": "pago"
     },
-
     initialize: function(options) {
 //        console.log("initialize");
+        if(window.location.hash == "") window.location = "#/";
         this.$nBid = $("#nBid");
+        $registroBtn = $("#registro");
+        $invitarBtn = $("#invitar");
+        $comprarBtn = $("#compraBid");
+        $carroBtn = $("#carroCompra");
+        $flechas = $("#flechas");
         return this;
+    },
+    facebook: function(req) {
+//        console.log("facebook: "+req);
+        clearInterval(this._refresh);
+        $askNick = false;
+        $("#contenedor").hide();
+        $("#pie").hide();
+        $("body").css({
+            "background-color": "white",
+            "background-image": "none"
+        });
+        var sec = "";
+        if(req.length > 0) sec = "&sec=invitacion";
+        
+        modal = $("<div class='modal hide fade in'><div class='modal-header'><h3>Lo Kiero.cl</h3></div><div class='modal-body'><p>Vamos a Lo Kiero!</p></div><div class='modal-footer'><p id='msg' style='float:left;'></p><a target='_top' href='http://dev.lokiero.cl/"+req+sec+"' class='btn primary'>Vamos!</a></div></div>");
+        $modal = modal.modal({
+            'show': true,
+            'backdrop': false
+        });
+    },
+    nosotros: function() {
+        clearInterval(this._refresh);
+        if(this._hash != "quienes-somos") {
+            var data = {},
+                ws = this;
+            data.TITULO = "Quienes Somos";
+            data.TEXTO = "lala lele";
+            ws._pagina = new Pagina(data);
+            ws._pagView = new PaginaView({
+                model: ws._pagina
+            });
+            ws._pagView.render();
+            ws._hash = "quienes-somos";
+            _gaq.push(['_trackPageview', '#/'+ws._hash]);
+            $title.html(data.TITULO+" :: Lo Kiero!.cl - Subastas VIP");
+        }
+    },
+    terminos: function() {
+        clearInterval(this._refresh);
+        if(this._hash != "terminos") {
+            var data = {},
+                ws = this;
+            data.TITULO = "Terminos y Condiciones de Uso";
+            data.TEXTO = "lala lele";
+            ws._pagina = new Pagina(data);
+            ws._pagView = new PaginaView({
+                model: ws._pagina
+            });
+            ws._pagView.render();
+            ws._hash = "terminos";
+            _gaq.push(['_trackPageview', '#/'+ws._hash]);
+            $title.html(data.TITULO+" :: Lo Kiero!.cl - Subastas VIP");
+        }
+    },
+    faq: function() {
+        clearInterval(this._refresh);
+        if(this._hash != "faq") {
+            var data = {},
+                ws = this;
+            data.TITULO = "Preguntas frecuentes";
+            data.TEXTO = "<p>lala</p> <p>lele</p>";
+            ws._pagina = new Pagina(data);
+            ws._pagView = new PaginaView({
+                model: ws._pagina
+            });
+            ws._pagView.render();
+            this._hash = "faq";
+            _gaq.push(['_trackPageview', '#/'+this._hash]);
+            $title.html(data.TITULO+" :: Lo Kiero!.cl - Subastas VIP");
+        }
+    },
+    fracaso: function() {
+        clearInterval(this._refresh);
+        if(this._hash != "fracaso") {
+            var data = {},
+                ws = this;
+            data.TITULO = "Algo salio mal :(";
+            data.TEXTO = "lala lele";
+//            ws._pagina = new Pagina(data);
+            ws._pagView = new FracasoView({
+//                model: ws._pagina
+            });
+            ws._pagView.render();
+            this._hash = "fracaso";
+        }
+    },
+    categoria: function(cat) {
+        clearInterval(this._refresh);
+//        console.log("categoria: "+cat);
+        var ws = this;
+        if(!ws._hash != "categoria") {
+            this._hash = "categoria";
+            $.ajax({
+                url: '?sec=producto&get=byCatHash&hash='+cat,
+                dataType: 'json',
+                data: {},
+                success: function(data) {
+//                    console.log(data);
+                    ws._categoria = new Categoria(data);
+                    ws._catView = new CategoriaView({
+                        model: ws._categoria
+                    });
+                    ws._catView.render();
+                }
+            });
+        }
+    },
+    
+    bids: function() {
+//        console.log("bids");
+        clearInterval(this._refresh);
+        var ws = this;
+        if(ws._hash != "bids") {
+            $.ajax({
+                url: '?sec=producto&get=byCatHash&hash=bidPack',
+                dataType: 'json',
+                data: {},
+                success: function(data) {
+//                    console.log(data);
+                    if(data.ERROR == 0) {
+                        ws._categoria = new Categoria(data);
+                        ws._catView = new bidPacksView({
+                            model: ws._categoria
+                        });
+                        ws._catView.render();
+                        ws._hash = "bids";
+                        $title.html("Compra Bids :: Lo Kiero!.cl - Subastas VIP");
+                        _gaq.push(['_trackPageview', '#/'+ws._hash]);
+                    } else {
+                        ws.navigate("/");
+                    }
+                }
+            });
+        }
+    },
+    
+    invitaciones: function() {
+//        console.log("invitaciones");
+        clearInterval(this._refresh);
+        var ws = this;
+        if(this._hash != "invitaciones") {
+            $.ajax({
+                url: '?sec=invitacion&get=all',
+                dataType: 'json',
+                data: {},
+                success: function(data) {
+                    if(data.LOGIN == 1) {
+                        ws._invitaciones = new InvitacionCollection(data.INVITACIONES);
+                        ws._invitacion = new Invitacion(data.MODELO);
+                        ws._invView = new InvitacionesView({
+                            collection: ws._invitaciones,
+                            model: ws._invitacion
+                        });
+                        ws._invView.render();
+                        ws._hash = "invitaciones";
+                        _gaq.push(['_trackPageview', '#/'+ws._hash]);
+                        $title.html("Invitaciones :: Lo Kiero!.cl - Subastas VIP");
+                    } else {
+                        window.location.href="#/";
+                    }
+                }
+            });
+        }
+    },
+    
+    carro: function() {
+//        console.log("carro");
+        clearInterval(this._refresh);
+        var ws = this;
+        if(this._hash != "carro") {
+            $.ajax({
+                url: '?sec=carro&get=all',
+                dataType: 'json',
+                data: {},
+                success: function(data) {
+//                    console.log(data);
+                    if(data.LOGIN == 1) {
+                        ws._carroProductos = new Productos(data.PRODUCTOS);
+                        ws._carro = new Carro(data.MODELO);
+                        ws._carroView = new CarroView({
+                            collection: ws._carroProductos,
+                            model: ws._carro
+                        });
+                        ws._carroView.render();
+                        ws._hash = "carro";
+                        _gaq.push(['_trackPageview', '#/'+ws._hash]);
+                        $title.html("Carro de compra :: Lo Kiero!.cl - Subastas VIP");
+                    } else {
+                        window.location.href="#/";
+                    }
+                }
+            });
+        }
+    },
+    
+    pago: function() {
+//        console.log("pago");
+        clearInterval(this._refresh);
+        var ws = this;
+        if(this._hash != "pago") {
+            $.ajax({
+                url: '?sec=carro&get=pago',
+                dataType: 'json',
+                data: {},
+                success: function(data) {
+//                    console.log(data);
+                    if(data.LOGIN == 1) {
+                        ws._carroProductos = new Productos(data.PRODUCTOS);
+                        ws._carro = new Carro(data.MODELO);
+                        ws._carroView = new CarroView({
+                            collection: ws._carroProductos,
+                            model: ws._carro
+                        });
+                        ws._carroView.render();
+                        ws._hash = "pago";
+                        _gaq.push(['_trackPageview', '#/'+ws._hash]);
+                        $title.html("Confirmar compra :: Lo Kiero!.cl - Subastas VIP");
+                    } else {
+                        window.location.href="#/";
+                    }
+                }
+            });
+        }
+    },
+    
+    invitacion: function(id) {
+        clearInterval(this._refresh);
+//        console.log(id);
+        id_request = id;
+        $askNick = false;
+        var ws = this;
+        if(id!=undefined && id!=null && id!="") {
+            if(this._hash != "invitacion") {
+                $.ajax({
+                    url: '?sec=invitacion&get=inv_request&id_request='+id,
+                    dataType: 'json',
+                    data: {},
+                    success: function(data) {
+//                        console.log(data);
+                        if(data != null) {
+                            ws._invList = new InvitacionUsuariosCollection(data);
+                            ws._invListView = new InvitacionUsuariosView({
+                                collection: ws._invList
+                            });
+                            ws._invListView.render();
+                            ws._hash = "invitacion";
+                            _gaq.push(['_trackPageview', '#/'+ws._hash+'/id']);
+                            $title.html("Invitacion :: Lo Kiero!.cl - Subastas VIP");
+                        } else {
+                            window.location.href="#/";
+                        }
+                    }
+                });
+            } else {
+//                console.log("invitacion: cargada");
+            }
+        } else {
+            window.location.href="#/";
+        }
     },
     
     index: function() {
+        clearInterval(this._refresh);
+//        console.log("index");
         var ws = this;
         if(this._subView) {
-//            this._subView.remove();
             this._subView = null;
             this._subModel = null;
         }
-//        console.log("index");
-        clearInterval(this._refresh);
-//        console.log(ws._subastas);
-        if(ws._subastas == null) {
-//            console.log("subastas: null");
+        if(this._hash != "index") {
             $.ajax({
-                url: '?get=subastas&ord=0',
+                url: '?sec=svip&get=nextSubasta',
                 dataType: 'json',
                 data: {},
                 success: function(data) {
-//                    ws._data = data;
-//                    console.log(data);
-                    ws._subastas = new SubastaCollection(data);
+                    ws._subastas = new SubastaVip(data);
                     ws._index = new IndexView({
                         model: ws._subastas
-                    }); 
+                    });
                     ws._index.render();
-                    Backbone.history.loadUrl();
-                    
+                    ws._hash = "index";
+                    _gaq.push(['_trackPageview', '#/']);
                 }
             });
-        } else {
-            if(ws._index == null) {
-//                console.log("index: null");
-                ws._index = new IndexView({
-                    model: ws._subastas
-                }); 
-                ws._index.render();
-                Backbone.history.loadUrl();
-            } else {
-//                console.log("index: cargado");
-                ws._refresh = setInterval(function(){
-                    ws._subastas.lele();
-                }, 500);
-//                ws._index.render();
-//                Backbone.history.loadUrl();
-            }
         }
     },
     
-    subasta:function(id) {
-//        console.log("subasta");
-        if(this._index) {
-//            this._index.remove();
-            this._index = null;
-            this._subastas = null;
-        }
+    subasta:function(cod) {
         clearInterval(this._refresh);
         var ws = this;
-        if(ws._subModel == null) {
-//            console.log("subModel: null");
-            $.ajax({
-                url: '?get=subasta&id='+id,
-                dataType: 'json',
-                data: {},
-                success: function(data) {
-//                    ws._data = data;
-                    ws._subModel = new Subasta(data);
-                    ws._subView = new SubastaView({
-                        model: ws._subModel
-                    });
-                    ws._subView.render();
-                    Backbone.history.loadUrl();
-                }
-            });
-        } else {
-            if(ws._subView == null) {
-//                console.log("subView: null");
-                ws._subView = new SubastaView({
-                    model: ws._subModel
+        $.ajax({
+            url: '?sec=svip&get=subasta&cod='+cod,
+            dataType: 'json',
+            data: {},
+            success: function(data) {
+                ws._subVipModel = new SubastaVip(data);
+                ws._subVipView = new SubastaVipView({
+                    model: ws._subVipModel
                 });
-                ws._subView.render();
-                Backbone.history.loadUrl();
-            } else {
-//                console.log("subasta: cargado");
-                ws._refresh = setInterval(function(){
-                    ws._subModel.refresh();
-                }, 1000);
+                ws._subVipView.render();
+                ws._subVipModel.refresh();
+                ws._hash = "subasta";
+                _gaq.push(['_trackPageview', '#/'+ws._hash+'/'+cod]);
             }
-        }
+        });
+    },
+
+    subastas: function() {
+        
     }
 });
 
 $(document).ready(function() {
+    $title = $("title");
     cp = new CPrincipal();
     Backbone.history.start();
+    $notificacion = $("#notificacion");
+    $(".tp").tooltip({
+        'live':true,
+        'offset': 5
+    });
 });

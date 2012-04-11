@@ -7,12 +7,12 @@ class Bd {
     var $bd = "";
     
     function __construct($user="bid", $pass="Q6xZEMLY6RZZJxGW", $server="localhost", $bd="bid") {
-//        $this->user = $user;
-//        $this->pass = $pass;
-//        $this->bd = $bd;
-        $this->user = "root";
-        $this->pass = "";
-        $this->bd = "bid";
+        $this->user = $user;
+        $this->pass = $pass;
+        $this->bd = $bd;
+//        $this->user = "root";
+//        $this->pass = "";
+//        $this->bd = "bid";
         $this->server = $server;
         $this->conecta();
     }

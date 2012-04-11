@@ -1,0 +1,12 @@
+Tienda KCC creada por Wake up¨
+
+Instrucciones base de datos:
+
+1.- Deben crear una base de datos llamada "webpay" (o el nombre que prefieran).
+2.- Una vez creada la base de datos, subir las tablas "pagos.sql" y "webpay.sql" desde su PHPmyAdmin
+
+Luego podr‡n comprar correctamente en su tienda, obteniendo en la p‡gina de "exito.php" impreso en pantalla la OC, nœmero de tarjeta, tipo de cuotas, etc.
+
+
+Desarrolladores:
+Boris Dur‡n R. & Patricio Montesinos

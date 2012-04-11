@@ -13,7 +13,8 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Covered By Your Grace', arial, serif;
     text-shadow: 1px 1px 1px #000;
-    color: #ededed;
+    color: #494949;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 /*    font-weight: bold;*/
 }
 
@@ -200,18 +201,18 @@ p {
 #content {
     margin-bottom: 10px;
     margin-left: 10px;
-    padding: 0 0 0 10px;
-    border: 1px solid #ccc;
+    padding: 0;
+/*    border: 1px solid #ccc;*/
     display: inline-block;
-    width: 600px;
+    width: 780px;
     float: left;
 }
 
 #sidebar {
-    border: 1px solid #ccc;
+/*    border: 1px solid #ccc;*/
     display: inline-block;
     margin-left: 10px;
-    width: 213px;
+    width: 100px;
     float: left;
     z-index: 1000;
 }
@@ -402,6 +403,7 @@ p {
     border-bottom: 1px dashed #ccc;
     background: url('../img/bidder.png') 10px 4px no-repeat;
     padding-left: 30px;
+    overflow: hidden;
 }
 
 .subastaMini span#producto {
@@ -490,4 +492,179 @@ p {
 
 .rojo {
     color: red;
+}
+
+.subastaVipMain {
+    margin-top: 30px;
+    padding: 10px;
+    background: #efefef;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.subastaVipMain #info {
+    float: right;
+    width: 310px;
+    padding: 0;
+}
+
+.subastaVipMain #producto {
+    width: 410px;
+    float: left;
+}
+
+.subastaVipMain ul li {
+    padding: 3px;
+    font-size: 14px;
+}
+
+.btn-verde {
+    font-size: 30px;
+    margin-top: 5px;
+    -moz-box-shadow:inset 0px 1px 0px 0px #caefab;
+    -webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
+    box-shadow:inset 0px 1px 0px 0px #caefab;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77d42a), color-stop(1, #5cb811) );
+    background:-moz-linear-gradient( center top, #77d42a 5%, #5cb811 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77d42a', endColorstr='#5cb811');
+    background-color:#77d42a;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    border:1px solid #268a16;
+    display:inline-block;
+    color:#306108;
+    font-family:arial;
+    font-size:28px;
+    font-weight:bold;
+    padding:6px 15px;
+    text-decoration:none;
+    text-shadow:1px 1px 0px #aade7c;
+}
+
+.btn-verde:hover {
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5cb811), color-stop(1, #77d42a) );
+    background:-moz-linear-gradient( center top, #5cb811 5%, #77d42a 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cb811', endColorstr='#77d42a');
+    background-color:#5cb811;
+}
+.btn-verde:active {
+    position:relative;
+    top:1px;
+}
+
+.verde {
+    color: #8CDE4B;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.grande {
+    font-size: 18px;
+}
+
+.sombra {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.subastaVip #info > span {
+/*    width: 170px;*/
+    padding: 5px;
+/*    border: 1px solid red;*/
+    display: block;
+    line-height: 25px;
+    height: 25px;
+    vertical-align: middle;
+}
+
+.subastaVip {
+    margin-top: 30px;
+    padding: 10px;
+    background: #efefef;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.subastaVip #info {
+    float: right;
+    width: 340px;
+    padding: 0;
+}
+
+.subastaVip #producto {
+    width: 410px;
+    float: left;
+}
+
+.subastaVip span#tiempo {
+    font-size: 20px;
+    text-shadow:1px 1px 1px rgba(0,0,0,0.5);
+    border-bottom: 1px dashed #ccc;
+    background: url('../img/tiempo.png') 4px 4px no-repeat;
+    padding-left: 45px;
+}
+
+.subastaVip span#monto {
+    font-size: 16px;
+    text-align: left;
+    text-shadow:1px 1px 1px rgba(0,0,0,0.5);
+    background: url('../img/monto.png') 10px 10px no-repeat;
+    padding-left: 45px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.subastaVip span#bidder {
+    font-size: 16px;
+    text-align: left;
+    text-shadow:1px 1px 1px rgba(0,0,0,0.5);
+    border-bottom: 1px dashed #ccc;
+    background: url('../img/bidder.png') 10px 10px no-repeat;
+    padding-left: 45px;
+    overflow: hidden;
+}
+
+.subastaVip span#info_bid {
+    line-height: 30px;
+    vertical-align: middle;
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+select.small_field {
+    padding: 8px 8px;
+    border: 1px solid #ececec;
+    font-size: 20px;
+    color: #333;
+    margin: 0;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    line-height: 30px;
+    vertical-align: middle;
+    margin-top: 5px;
+}
+
+.btn-side {
+    color:#666;
+    font-size: 12px;
+    margin: 5px 0 0 10px;
+    line-height: 40px;
+    vertical-align: middle;
+}
+
+.productos {
+    margin-top: 10px;
+}
+.productos .prodMini {
+    display: inline-block;
+    width: 90px;
+    height: 90px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    padding: 5px;
 }

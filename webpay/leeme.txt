@@ -1,0 +1,10 @@
+Magento Chile
+
+1.- Cuando ya hayas instalado tu tienda KCC y funcioné todo perfecto, y te llegó la hora de instalar el módulo webpay en Magento, debes cambiar el "cierre.php" (solo para la KCC) por "cierre_para_modulo_magento.php" (solo para módulo webpay de magento).
+
+2.- Debes limpiar la base de datos creada, y volver a insertar las tablas "pagos" y "webpay" (Recuerda por el índice como único para la OC en ambas tablas, como indica el wiki de instalación, esto es por la eventual duplicidad de la OC que Transbank te exigirá que no suceda).
+
+3.- Procede a instalar el módulo y no tendrás problemas en la certificación oficial de Transbank.
+
+Boris Durán R.
+Magento Chile

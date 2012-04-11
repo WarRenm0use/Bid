@@ -1,20 +1,23 @@
 <?php
-include_once 'modelo/SubastaMP.php';
-include_once 'modelo/BidMP.php';
 include_once 'modelo/UsuarioMP.php';
+include_once 'modelo/CarroMP.php';
+include_once 'modelo/InvitacionMP.php';
+include_once 'modelo/SubastaVipMP.php';
 
 class CMain {
     protected $cp;
-    protected $suMP;
+    protected $caMP;
     protected $login;
     protected $layout;
 
     function __construct($cp) {
         $this->cp = $cp;
         $this->layout = "vista/main.phtml";
-        $this->suMP = new SubastaMP();
         $this->usMP = new UsuarioMP();
-        $this->biMP = new BidMP();
+        $this->caMP = new CarroMP();
+        $this->invMP = new InvitacionMP();
+        $this->suMP = new SubastaVipMP();
+//        $this->catchRequest();
         $this->getJSON();
         $this->setDo();
         $this->setOp();
@@ -29,6 +32,62 @@ class CMain {
             $this->cp->showLayout = false;
             $do = $_GET["do"];
             switch($do) {
+                case 'sign':
+                    $user = new stdClass();
+                    $user->NOM_USUARIO = $_POST["first_name"];
+                    $user->APE_USUARIO = $_POST["last_name"];
+                    $user->EMA_USUARIO = $_POST["email"];
+                    $user->NICK_USUARIO = $_POST["username"];
+                    $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
+                    $user->FB_UID = $_POST["session"]["userID"];
+                    $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
+                    $res = $this->usMP->save($user);
+                    if($res->ID_USUARIO > 0) {
+                        $this->cp->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
+                        $this->cp->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);
+                        $this->cp->getSession()->set("EMA_USUARIO", $res->EMA_USUARIO);
+                        $this->cp->getSession()->set("NOM_USUARIO", $res->NOM_USUARIO." ".$res->APE_USUARIO);
+                        $this->cp->getSession()->set("ID_FB", $_POST["session"]["userID"]);
+                        $carro = $this->caMP->lastByUser($res->ID_USUARIO, array("ID_CARRO"));
+                        $res->SQL = $carro->SQL;
+                        if(isset($carro->ID_CARRO)) {
+                            $this->caMP->updateCarro($carro->ID_CARRO);
+                            $carro = $this->caMP->find($carro->ID_CARRO, array("ID_CARRO","MONTO_CARRO"));
+                            $this->cp->getSession()->set("ID_CARRO", $carro->ID_CARRO);
+                            $res->ID_CARRO = $carro->ID_CARRO;
+                            $res->MONTO_CARRO = $carro->MONTO_CARRO;
+                            $res->MONTO_CARRO_H = $carro->MONTO_CARRO_H;
+                            $res->N_PRODUCTOS = $this->caMP->cuentaProductos($carro->ID_CARRO);
+                        } else {
+                            $caAux = new stdClass();
+                            $caAux->ID_USUARIO = $this->cp->getSession()->get("ID_USUARIO");
+                            $caAux->MONTO_CARRO = 0;
+                            $caAux->FECHA_INICIO = date("U");
+                            $caAux->ESTADO_CARRO = 0;
+                            $caAux->ID_CARRO = $this->caMP->save($caAux);
+                            $this->cp->getSession()->set("ID_CARRO", $caAux->ID_CARRO);
+                            $res->ID_CARRO = $caAux->ID_CARRO;
+                            $res->MONTO_CARRO = 0;
+                            $res->MONTO_CARRO_H = 0;
+                            $res->N_PRODUCTOS = 0;
+                        }
+                        if($res->IS_NEW == 1) {
+                            if($_POST["id_request"]!=0) {
+                                $req = $this->invMP->acepta($_POST["id_request"], $_POST["session"]["userID"]);
+                            }
+                            $this->cp->iniFacebook();
+                            try {
+                                $this->cp->facebook->api('/me/feed', 'POST', array(
+                                    'link' => 'www.lokiero.cl',
+                                    'message' => 'Estoy usando Lo Kiero!, la nueva forma de comprar los mejores productos con descuentos increibles, tu tambien puedes registrarte, es gratis!',
+                                    'icon' => 'http://www.lokiero.cl/img/icono.png',
+                                    'picture' => 'http://www.lokiero.cl/img/logoFB.png'
+                                ));
+                            } catch(FacebookApiException $e) {}
+                        }
+                        $this->cp->getSession()->salto("/");
+                    }
+                    break;
                 case 'login':
                     $user = new stdClass();
                     $user->NOM_USUARIO = $_POST["first_name"];
@@ -36,50 +95,59 @@ class CMain {
                     $user->EMA_USUARIO = $_POST["email"];
                     $user->NICK_USUARIO = $_POST["username"];
                     $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
-                    $user->FB_UID = $_POST["session"]["uid"];
+                    $user->FB_UID = $_POST["session"]["userID"];
                     $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
-                    $user->FB_SECRET = $_POST["session"]["secret"];
-                    $user->FB_SESSION_KEY = $_POST["session"]["session_key"];
-                    
                     $res = $this->usMP->save($user);
+//                    $user->FB_SECRET = $_POST["session"]["secret"];
+//                    $user->FB_SESSION_KEY = $_POST["session"]["session_key"];
+//                    echo "lala";
+//                    echo "<pre>";
+//                    print_r($res);
+//                    echo "</pre>";
                     if($res->ID_USUARIO > 0) {
                         $this->cp->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
-                        echo json_encode($res);
-                    } else {
-                        
-                    }
-                    break;
-                case 'bid':
-                    $idUs = $this->cp->getSession()->get("ID_USUARIO");
-//                    echo "idUs: ".$idUs;
-                    if(isset($_POST["ID_SUBASTA"]) && $this->cp->isLoged && $idUs>0) {
-                        $data = new stdClass();
-                        $now = date("U");
-                        $data->ID_SUBASTA = $_POST["ID_SUBASTA"];
-                        $data->ID_USUARIO = $idUs;
-                        $data->HORA_BID = $now;
-//                        print_r($data);
-                        $subAux = $this->suMP->find($data->ID_SUBASTA);
-                        $usAux = $this->usMP->find($data->ID_USUARIO);
-//                        print_r($usAux);
-                        if($subAux->RESTO_TIEMPO_SEC>=0 && $usAux->BID_RESTO > 0) {
-                            $this->biMP->save($data);
-                            $subAux->MONTO_SUBASTA += $subAux->COSTO_BID_PESOS;
-                            if($subAux->RESTO_TIEMPO_SEC<=10) {
-                                $subAux->RETRASO_SUBASTA += $subAux->TIEMPO_RETRASO;
-                            }
-                            $usAux2 = new stdClass();
-                            $usAux2->BID_USADO = $usAux->BID_USADO + $subAux->COSTO_BID_BID;
-                            $usAux2->ID_USUARIO = $usAux->ID_USUARIO;
-                            $subAux2 = new stdClass();
-                            $subAux2->MONTO_SUBASTA = $subAux->MONTO_SUBASTA;
-                            $subAux2->RETRASO_SUBASTA = $subAux->RETRASO_SUBASTA;
-                            $subAux2->ID_SUBASTA = $subAux->ID_SUBASTA;
-                            $subAux2->ID_USUARIO = $idUs;
-                            $this->usMP->update($usAux2);
-                            $this->suMP->update($subAux2);
+                        $this->cp->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);
+                        $this->cp->getSession()->set("EMA_USUARIO", $res->EMA_USUARIO);
+                        $this->cp->getSession()->set("NOM_USUARIO", $res->NOM_USUARIO." ".$res->APE_USUARIO);
+                        $this->cp->getSession()->set("ID_FB", $_POST["session"]["userID"]);
+                        $carro = $this->caMP->lastByUser($res->ID_USUARIO, array("ID_CARRO"));
+                        $res->SQL = $carro->SQL;
+                        if(isset($carro->ID_CARRO)) {
+                            $this->caMP->updateCarro($carro->ID_CARRO);
+                            $carro = $this->caMP->find($carro->ID_CARRO, array("ID_CARRO","MONTO_CARRO"));
+                            $this->cp->getSession()->set("ID_CARRO", $carro->ID_CARRO);
+                            $res->ID_CARRO = $carro->ID_CARRO;
+                            $res->MONTO_CARRO = $carro->MONTO_CARRO;
+                            $res->MONTO_CARRO_H = $carro->MONTO_CARRO_H;
+                            $res->N_PRODUCTOS = $this->caMP->cuentaProductos($carro->ID_CARRO);
+                        } else {
+                            $caAux = new stdClass();
+                            $caAux->ID_USUARIO = $this->cp->getSession()->get("ID_USUARIO");
+                            $caAux->MONTO_CARRO = 0;
+                            $caAux->FECHA_INICIO = date("U");
+                            $caAux->ESTADO_CARRO = 0;
+                            $caAux->ID_CARRO = $this->caMP->save($caAux);
+                            $this->cp->getSession()->set("ID_CARRO", $caAux->ID_CARRO);
+                            $res->ID_CARRO = $caAux->ID_CARRO;
+                            $res->MONTO_CARRO = 0;
+                            $res->MONTO_CARRO_H = 0;
+                            $res->N_PRODUCTOS = 0;
                         }
-                        echo $usAux->BID_TOTAL - $usAux->BID_USADO;
+                        if($res->IS_NEW == 1) {
+                            if($_POST["id_request"]!=0) {
+                                $req = $this->invMP->acepta($_POST["id_request"], $_POST["session"]["userID"]);
+                            }
+                            $this->cp->iniFacebook();
+                            try {
+                                $this->cp->facebook->api('/me/feed', 'POST', array(
+                                    'link' => 'www.lokiero.cl',
+                                    'message' => 'Estoy usando Lo Kiero!, la nueva forma de comprar los mejores productos con descuentos increibles, tu tambien puedes registrarte, es gratis!',
+                                    'icon' => 'http://www.lokiero.cl/img/icono.png',
+                                    'picture' => 'http://www.lokiero.cl/img/logoFB.png'
+                                ));
+                            } catch(FacebookApiException $e) {}
+                        }
+                        echo json_encode($res);
                     }
                     break;
             }
@@ -91,14 +159,6 @@ class CMain {
             $this->cp->showLayout = false;
             $get = $_GET["get"];
             switch($get) {
-                case 'subastas':
-                    $res = $this->suMP->fetchAll($_GET["ord"]);
-                    break;
-                case 'subasta':
-                    if(isset($_GET["id"])) {
-                        $res = $this->suMP->find($_GET["id"]);
-                    } else $res = null;
-                    break;
             }
             echo json_encode($res);
         }
@@ -108,7 +168,18 @@ class CMain {
         $op = $_GET["op"];
         switch($op) {
             default:
-                
+                $res = $this->suMP->nextSubasta();
+                $nUs = $this->suMP->nUsSubasta($res->ID_SVIP);
+                $res->RESTO_USUARIOS = $res->MIN_USUARIO - $nUs;
+                if($this->cp->getSession()->existe("ID_USUARIO")) {
+                    if($this->suMP->inSubasta($this->cp->getSession()->get("ID_USUARIO"), $res->ID_SVIP)) {
+                        $res->IN_SUBASTA = 1;
+                    } else {
+                        $res->IN_SUBASTA = 0;
+                    }
+                }
+                $this->smain = $res;
+                $this->titulo = "Inicio";
                 break;
         }
     }
