@@ -105,7 +105,8 @@ class ProductoMP {
                 ON CP.ID_CATEGORIA = $idCat
                 AND CP.ID_PRODUCTO = P.ID_PRODUCTO
                 AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN
-                AND P.ESTADO_PRODUCTO = 1";
+                AND P.ESTADO_PRODUCTO = 1
+                ORDER BY CP.ORDEN_PRODUCTO ASC";
         
         $res = $this->_bd->sql($sql);
         $arr = array();
@@ -129,7 +130,8 @@ class ProductoMP {
                 ON C.HASH_CATEGORIA = '$hashCat'
                 AND C.ID_CATEGORIA = CP.ID_CATEGORIA
                 AND CP.ID_PRODUCTO = P.ID_PRODUCTO
-                AND P.ESTADO_PRODUCTO = 1";
+                AND P.ESTADO_PRODUCTO = 1
+                ORDER BY CP.ORDEN_PRODUCTO ASC";
 //        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         $arr = array();

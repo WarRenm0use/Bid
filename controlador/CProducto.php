@@ -25,12 +25,6 @@ class CProducto {
     function getLayout() {
         return $this->layout;
     }
-    
-    function catchRequest() {
-        if(isset($_GET["request_ids"])) {
-            $this->cp->getSession()->salto("/#!/invitacion/".$_GET["request_ids"]);
-        }
-    }
 
     function setDo() {
         if(isset($_GET["do"])) {
