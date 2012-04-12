@@ -41,17 +41,17 @@ class CMain {
                     $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
                     $user->FB_UID = $_POST["session"]["userID"];
                     $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
-                    echo "0<br>";
+//                    echo "0<br>";
                     if($user->FB_UID > 0) {
-                    echo "1<br>";
+//                    echo "1<br>";
                     $res = $this->usMP->save($user);
-                    echo "2<br>";
-                    echo "<pre>User: ";
-                    print_r($user);
-                    echo "</pre>";
-                    echo "<pre>Res: ";
-                    print_r($res);
-                    echo "</pre>";
+//                    echo "2<br>";
+//                    echo "<pre>User: ";
+//                    print_r($user);
+//                    echo "</pre>";
+//                    echo "<pre>Res: ";
+//                    print_r($res);
+//                    echo "</pre>";
                     if($res->ID_USUARIO > 0) {
                         $this->cp->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
                         $this->cp->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);
@@ -95,10 +95,10 @@ class CMain {
                                 ));
                             } catch(FacebookApiException $e) {}
                         }
-//                        $this->cp->getSession()->salto("/");
-                        echo "<pre>";
-                        print_r($res);
-                        echo "</pre>";
+                        $this->cp->getSession()->salto("/");
+//                        echo "<pre>";
+//                        print_r($res);
+//                        echo "</pre>";
                     }
                     }
                     break;
@@ -110,7 +110,7 @@ class CMain {
 //                    $user->NICK_USUARIO = $_POST["username"];
                     $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
                     $user->FB_UID = $_POST["session"]["userID"];
-                    $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
+//                    $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
                     if($user->FB_UID > 0) {
                     $res = $this->usMP->save($user);
                     if($res->ID_USUARIO > 0) {

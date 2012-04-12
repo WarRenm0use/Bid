@@ -38,7 +38,7 @@ function checkLogin() {
 //});
 
 function setSession(res) {
-//    console.log("setSession");
+    console.log("setSession");
 //    console.log(res);
     FB.api('/me', function(response) {
 //        console.log("setSession 1");
@@ -46,10 +46,10 @@ function setSession(res) {
 //        response.id_request = (id_request)?id_request:0;
 //        console.log(response);
         $.ajax({
-            url: '/index.php?do=login',
+            url: '/?do=login',
             type: 'post',
             data: response,
-            dataType: 'json',
+//            dataType: 'json',
             success: function(data) {
                 console.log(data);
                 usuario = data;

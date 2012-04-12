@@ -156,7 +156,7 @@ class UsuarioMP {
         }
         
         $sql = "INSERT INTO $this->_dbTable ($vars) VALUES ($vals)";
-        echo $sql."<br>";
+//        echo $sql."<br>";
         $this->_bd->sql($sql);
         return mysql_insert_id();
     }
@@ -179,7 +179,7 @@ class UsuarioMP {
         }
         
         $sql = "UPDATE $this->_dbTable SET $val WHERE $this->_id = $data->ID_USUARIO";
-        echo $sql."<br>";
+//        echo $sql."<br>";
         return $this->_bd->sql($sql);
     }
 
