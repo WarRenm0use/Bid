@@ -41,11 +41,11 @@ class UsuarioMP {
     function existeNick($nick) {
         $nick = $this->_bd->limpia($nick);
 
-        if($attr == null) {
-            $sAttr = "*";
-        } else {
-            $sAttr = implode(",", $attr);
-        }
+//        if($attr == null) {
+//            $sAttr = "*";
+//        } else {
+//            $sAttr = implode(",", $attr);
+//        }
 
         $sql = "SELECT COUNT(ID_USUARIO) AS N FROM $this->_dbTable WHERE NICK_USUARIO = '$nick'";
 //        echo $sql."<br>";
