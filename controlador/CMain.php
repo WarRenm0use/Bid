@@ -85,7 +85,10 @@ class CMain {
                                 ));
                             } catch(FacebookApiException $e) {}
                         }
-                        $this->cp->getSession()->salto("/");
+//                        $this->cp->getSession()->salto("/");
+                        echo "<pre>";
+                        print_r($res);
+                        echo "</pre>";
                     }
                     break;
                 case 'login':
@@ -98,12 +101,6 @@ class CMain {
                     $user->FB_UID = $_POST["session"]["userID"];
                     $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
                     $res = $this->usMP->save($user);
-//                    $user->FB_SECRET = $_POST["session"]["secret"];
-//                    $user->FB_SESSION_KEY = $_POST["session"]["session_key"];
-//                    echo "lala";
-//                    echo "<pre>";
-//                    print_r($res);
-//                    echo "</pre>";
                     if($res->ID_USUARIO > 0) {
                         $this->cp->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
                         $this->cp->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);

@@ -89,6 +89,7 @@ class UsuarioMP {
             $data->BID_USADO = $usAux->BID_USADO;
             $data->BID_DISPONIBLE = $data->BID_TOTAL + $data->BID_GANADO - $data->BID_USADO;
             $data->IS_NEW = 0;
+            $data->NICK_USUARIO = $usAux->NICK_USUARIO;
         } else { //INSERT
             $data->FECHA_SIGN = $now;
             $data->LAST_SIGN = $now;
@@ -97,8 +98,8 @@ class UsuarioMP {
             $data->ID_USUARIO = $this->insert($data);
             $data->BID_DISPONIBLE = $data->BID_TOTAL + $data->BID_GANADO - $data->BID_USADO;
             $data->IS_NEW = 1;
+            $data->NICK_USUARIO = "";
         }
-        $data->NICK_USUARIO = $usAux->NICK_USUARIO;
         return $data;
     }
     
