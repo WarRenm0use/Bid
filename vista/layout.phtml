@@ -115,7 +115,7 @@
                 <ul id="pestanas">
                     <? if($cp->isLoged) { ?>
                         <li id="registro" class="tp" title="<?=$cp->getSession()->get("NICK_USUARIO")?> tienes <?=$cp->usuario->BID_DISPONIBLE?> Bids para usar en las subastas"><a href='/micuenta'><span><?=$cp->usuario->BID_DISPONIBLE?> Bids</span><img src='https://graph.facebook.com/<?=$cp->user?>/picture' height=32 border=0/></a></li>
-                        <li id="invitar" class="tp" title="Invita a tus amigos y gana Bids por cada uno que se registre"><a href="/invitaciones">Invita y Gana <img src="/img/ki2_10.png" width="34" height="38" border="0"/></a></li>
+<!--                        <li id="invitar" class="tp" title="Invita a tus amigos y gana Bids por cada uno que se registre"><a href="/invitaciones">Invita y Gana <img src="/img/ki2_10.png" width="34" height="38" border="0"/></a></li>-->
                         <li id="compraBid" class="tp" title="Compra Bids para participar de las subastas"><a href="/bids">Compra Bids <img src="/img/BID.png" width="36" height="38" border="0"/></a></li>
                         <li id="carroCompra" class="tp" title="Tienes <?=$cp->carro->N_PRODUCTOS?> productos en tu carro de compra por un total de $<?=$cp->carro->MONTO_CARRO_H?>"><a href="/carro">Carro de compra (<?=$cp->carro->N_PRODUCTOS?>)</a></li>
                     <? } else { ?>
