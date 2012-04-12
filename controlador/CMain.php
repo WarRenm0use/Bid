@@ -106,6 +106,7 @@ class CMain {
                     $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
                     $user->FB_UID = $_POST["session"]["userID"];
                     $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
+                    if($user->FB_UID > 0) {
                     $res = $this->usMP->save($user);
                     if($res->ID_USUARIO > 0) {
                         $this->cp->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
@@ -151,6 +152,7 @@ class CMain {
                             } catch(FacebookApiException $e) {}
                         }
                         echo json_encode($res);
+                    }
                     }
                     break;
             }
