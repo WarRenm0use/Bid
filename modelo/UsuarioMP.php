@@ -95,10 +95,10 @@ class UsuarioMP {
             $data->LAST_SIGN = $now;
             $data->BID_TOTAL = 0;
             $data->BID_USADO = 0;
+            $data->NICK_USUARIO = "";
             $data->ID_USUARIO = $this->insert($data);
             $data->BID_DISPONIBLE = $data->BID_TOTAL + $data->BID_GANADO - $data->BID_USADO;
             $data->IS_NEW = 1;
-            $data->NICK_USUARIO = "";
         }
         return $data;
     }
