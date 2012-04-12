@@ -155,20 +155,20 @@
 //                    setSession(response);
 //                });
                 FB.Event.subscribe('auth.logout', function(response) {
-                    console.log("logout");
+//                    console.log("logout");
                     window.location = "/?sec=log&do=out";
 //                    $registroBtn.click(conecta);
                 });
                 FB.getLoginStatus(function(response) {
-                    console.log("getLoginStatus");
+//                    console.log("getLoginStatus");
                     var res = response;
-                    console.log(response);
+//                    console.log(response);
                     if (response.authResponse) {
 //                        window.location.reload();
-                        console.log("->setSession");
+//                        console.log("setSession");
                         setSession(response);
                     } else {
-                        console.log("logout");
+//                        console.log("logout");
                         <? if($cp->isLoged) { ?>
                         window.location = "/?sec=log&do=out";
                         <? } ?>

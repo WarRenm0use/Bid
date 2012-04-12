@@ -38,7 +38,7 @@ function checkLogin() {
 //});
 
 function setSession(res) {
-    console.log("setSession");
+//    console.log("setSession");
 //    console.log(res);
     FB.api('/me', function(response) {
 //        console.log("setSession 1");
@@ -51,7 +51,7 @@ function setSession(res) {
             data: response,
             dataType: 'json',
             success: function(data) {
-                console.log(data);
+//                console.log(data);
                 usuario = data;
                 if(data.IS_NEW == 1) {
                     window.location = "/";
