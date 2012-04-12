@@ -70,7 +70,7 @@ class UsuarioMP {
         }
 
         $sql = "SELECT $sAttr FROM $this->_dbTable WHERE FB_UID = '$id'";
-        echo $sql."<br>";
+//        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         if($res) {
             return mysql_fetch_object($res);
