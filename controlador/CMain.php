@@ -37,7 +37,7 @@ class CMain {
                     $user->NOM_USUARIO = $_POST["first_name"];
                     $user->APE_USUARIO = $_POST["last_name"];
                     $user->EMA_USUARIO = $_POST["email"];
-                    $user->NICK_USUARIO = $_POST["username"];
+                    $user->NICK_USUARIO = "";
                     $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
                     $user->FB_UID = $_POST["session"]["userID"];
                     $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
@@ -93,7 +93,7 @@ class CMain {
                     $user->NOM_USUARIO = $_POST["first_name"];
                     $user->APE_USUARIO = $_POST["last_name"];
                     $user->EMA_USUARIO = $_POST["email"];
-                    $user->NICK_USUARIO = $_POST["username"];
+//                    $user->NICK_USUARIO = $_POST["username"];
                     $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
                     $user->FB_UID = $_POST["session"]["userID"];
                     $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];

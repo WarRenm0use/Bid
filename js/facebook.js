@@ -38,10 +38,10 @@ function checkLogin() {
 //});
 
 function setSession(res) {
-    console.log("setSession");
-    console.log(res);
+//    console.log("setSession");
+//    console.log(res);
     FB.api('/me', function(response) {
-        console.log("setSession 1");
+//        console.log("setSession 1");
         response.session = (res)?res.authResponse:null;
 //        response.id_request = (id_request)?id_request:0;
 //        console.log(response);
@@ -51,13 +51,13 @@ function setSession(res) {
             data: response,
             dataType: 'json',
             success: function(data) {
-                console.log(data);
+//                console.log(data);
                 usuario = data;
                 if(data.IS_NEW == 1) {
                     window.location = "/";
                     if($askNick) askNick(data.NICK_USUARIO);
                 } else if(data.NICK_USUARIO=="") {
-                    if($askNick) askNick();
+                    if($askNick) askNick("");
                 }
                 $invitarBtn.fadeIn();
                 $comprarBtn.fadeIn();
@@ -144,7 +144,7 @@ function checkReserva(id, fb_id) {
 
 //console.log(FB);
 function conecta() {
-    console.log("conecta");
+//    console.log("conecta");
     FB.login(function(response) {
 //         FB.getLoginStatus();
         setSession(response);
