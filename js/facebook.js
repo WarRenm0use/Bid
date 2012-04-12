@@ -56,7 +56,7 @@ function setSession(res) {
                 if(data.IS_NEW == 1) {
                     window.location = "/";
                     if($askNick) askNick(data.NICK_USUARIO);
-                } else if(data.NICK_USUARIO=="") {
+                } else if(data.NICK_USUARIO=="" || data.NICK_USUARIO == "NULL") {
                     if($askNick) askNick("");
                 }
                 $invitarBtn.fadeIn();
