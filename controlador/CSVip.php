@@ -145,14 +145,16 @@ class CSVip {
                                             $destino->nombre = $usu->NOM_USUARIO." ".$usu->APE_USUARIO;
                                             $email->destino[] = $destino;
                                             $email->titulo = "Reserva lista! - Lo Kiero!";
-                                            $email->cuerpo = "<table border=0 cellspacing=0 cellpadding=0 style='color:#666;'><tr><td><img src='http://dev.lokiero.cl/producto/".$prod->URL_IMAGEN."' width='300'></td><td><h1>".$destino->nombre." (".$usu->NICK_USUARIO.")</h1><p>La reserva para la subasta de un ".$prod->NOM_PRODUCTO." fue realizada correctamente, para ingresar visita esta pagina <a href='http://dev.lokiero.cl/svip/".$sub->COD_SUBASTA."'>Subasta ".$prod->NOM_PRODUCTO."</a></p><p>15 minutos antes de que comience la subasta se verificara que se haya logrado el minimo de usuarios requeridos, si se alcanza el minimo se activara la subasta, si no, sera anulada y reembolsaremos los bids que gastaste en la reserva.</p></td></tr></table>";
+                                            $email->cuerpo = "<table border=0 cellspacing=0 cellpadding=0 style='color:#666;'><tr><td><img src='http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."' width='300'></td><td><h1>".$destino->nombre." (".$usu->NICK_USUARIO.")</h1><p>La reserva para la subasta de un ".$prod->NOM_PRODUCTO." fue realizada correctamente, para ingresar visita esta pagina <a href='http://www.lokiero.cl/svip/".$sub->COD_SUBASTA."'>Subasta ".$prod->NOM_PRODUCTO."</a></p><p>15 minutos antes de que comience la subasta se verificara que se haya logrado el minimo de usuarios requeridos, si se alcanza el minimo se activara la subasta, si no, sera anulada y reembolsaremos los bids que gastaste en la reserva.</p></td></tr></table>";
                                             $this->cp->sendEmail($email);
                                         } else {
                                             $data->ERROR = 1;
+                                            $data->RESTO_USUARIOS = $sub->MIN_USUARIO - $nUs;
                                             $data->MENSAJE = "La reserva no pudo ser realizada, intentalo nuevamente";
                                         }
                                     } else { //faltan bids
                                         $data->ERROR = 1;
+                                        $data->RESTO_USUARIOS = $sub->MIN_USUARIO - $nUs;
                                         $data->MENSAJE = "No tienes Bids suficientes :(";
                                     }
                                 } else { //se alcanzo el maximo
