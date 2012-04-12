@@ -87,8 +87,8 @@ class CMain {
                                 } catch(FacebookApiException $e) {}
                             }
                         }
-                        $this->cp->getSession()->salto("/");
                     }
+                    $this->cp->getSession()->salto("/");
                     break;
                 case 'login':
                     $user = new stdClass();
