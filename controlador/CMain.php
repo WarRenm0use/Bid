@@ -41,8 +41,11 @@ class CMain {
                     $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
                     $user->FB_UID = $_POST["session"]["userID"];
                     $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
+                    echo "0<br>";
                     if($user->FB_UID > 0) {
+                    echo "1<br>";
                     $res = $this->usMP->save($user);
+                    echo "2<br>";
                     echo "<pre>User: ";
                     print_r($user);
                     echo "</pre>";
