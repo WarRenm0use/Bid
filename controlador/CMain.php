@@ -37,11 +37,17 @@ class CMain {
                     $user->NOM_USUARIO = $_POST["first_name"];
                     $user->APE_USUARIO = $_POST["last_name"];
                     $user->EMA_USUARIO = $_POST["email"];
-                    $user->NICK_USUARIO = "''";
+                    $user->NICK_USUARIO = "";
                     $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
                     $user->FB_UID = $_POST["session"]["userID"];
                     $user->FB_ACCESS_TOKEN = $_POST["session"]["access_token"];
                     $res = $this->usMP->save($user);
+                    echo "<pre>User: ";
+                    print_r($user);
+                    echo "</pre>";
+                    echo "<pre>Res: ";
+                    print_r($res);
+                    echo "</pre>";
                     if($res->ID_USUARIO > 0) {
                         $this->cp->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
                         $this->cp->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);
