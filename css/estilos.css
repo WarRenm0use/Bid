@@ -155,6 +155,7 @@ a *{
     border-radius:5px;
     min-height: 350px;
 /*    margin-bottom: 20px;*/
+    padding-bottom: 15px;
 }
 
 #contenido #inner {
@@ -294,7 +295,7 @@ a *{
     border: 1px solid #EDEDED;
     margin-right: 15px;
     margin-top: 20px;
-    margin-bottom: 15px;
+/*    margin-bottom: 15px;*/
 }
 
 #descripcion #texto {
