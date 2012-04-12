@@ -113,10 +113,14 @@ class CPagina {
             default:
                 $this->pagina = $this->paMP->findByHash($op);
                 if($this->pagina) {
+                    $this->titulo = $this->pagina->PAGINA_TITULO;
                     if($this->pagina->PAGINA_TIPO == 2) {
                         $this->layout = "vista/".$this->pagina->PAGINA_HTML;
                     }
-                } else $this->layout = "vista/404.phtml";
+                } else {
+                    $this->titulo = "404";
+                    $this->layout = "vista/404.phtml";
+                }
                 break;
         }
     }
