@@ -7,13 +7,13 @@ $smain = $cp->getCSec()->svip;
         <div class="imagen">
             <img src="/producto/<?=$smain->URL_IMAGEN?>" width="500"/>
         </div>
-        <div class="fb-comments" data-href="http://dev.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-num-posts="5" data-width="500"></div>
+        <div class="fb-comments" data-href="http://www.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-num-posts="5" data-width="500"></div>
     </div>
     <div id="descripcion" class="span6">
         <div id="texto">
             <h1><?=$smain->NOM_PRODUCTO?></h1>
             <div class="share">
-                <div id="shareme" data-url="http://dev.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-text="<?=$smain->NOM_PRODUCTO?> :: Lo Kiero!.cl - Subastas VIP"></div>
+                <div id="shareme" data-url="http://www.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-text="<?=$smain->NOM_PRODUCTO?> :: Lo Kiero!.cl - Subastas VIP"></div>
             </div>
             <span id="tiempo" data-bind="text: tiempo_texto">
                 <? if($smain->RESTO_TIEMPO_SEC < 0) { ?>
