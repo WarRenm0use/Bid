@@ -2,10 +2,11 @@
 <html  xmlns="http://www.w3.org/1999/xhtml"
        xmlns:og="http://ogp.me/ns#"
        xmlns:fb="http://www.facebook.com/2008/fbml">
-    <head>
+    <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# lokiero: http://ogp.me/ns/fb/lokiero#">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta property="og:title" content="<?=$cp->getTitulo();?>"/>
-        <meta property="og:type" content="subasta"/>
+        <meta property="og:type" content="<?=($cp->getCSec()->svip)?"lokiero:subasta":"website";?>" />
+        <meta property="og:url" content="http://www.lokiero.cl/<?=($cp->getCSec()->svip)?"svip/".$cp->getCSec()->svip->COD_SUBASTA:""?>" />
         <meta property="og:image" content="http://www.lokiero.cl/<?=($cp->getCSec()->svip)?"producto/".$cp->getCSec()->svip->URL_IMAGEN:"img/logoFB.png"?>"/>
         <meta property="og:site_name" content="Lo Kiero!"/>
         <meta property="og:description" content='La nueva forma de comprar, al mejor precio, con descuentos de hasta un 90%!' />
