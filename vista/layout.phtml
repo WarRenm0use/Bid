@@ -123,14 +123,15 @@
                     <? } ?>
                 </ul>
             </div>
+            <div id="contenido">
+                <? include $cp->getCSec()->getLayout(); ?>
+            </div>
             <? if($cp->sec == "main") { ?>
                 <div id="flechas">
                     <div id="ahora">AHORA</div>
                 </div>
             <? } ?>
-            <div id="contenido">
-                <? include $cp->getCSec()->getLayout(); ?>
-            </div>
+            
             <div id="sombra"></div>
             <div>
                 <img src="img/banner.png" style="margin-left: -25px;"/>

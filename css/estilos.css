@@ -182,8 +182,8 @@ a *{
     width:1000px;
     height:0px;
     z-index:2;
-    position: absolute;
-    top: 90px;
+    position: relative;
+/*    top: 90px;*/
     background: none;
 }
 
@@ -193,7 +193,7 @@ a *{
     background:url(../img/ki4_20.png) no-repeat;
     position: absolute;
     left: -21px;
-    top: 220px;
+    bottom: 50px;
     z-index: 10;
     font-size: 34px;
     color:#FFF;
