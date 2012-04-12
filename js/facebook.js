@@ -51,12 +51,12 @@ function setSession(res) {
             data: response,
             dataType: 'json',
             success: function(data) {
-//                console.log(data);
+                console.log(data);
                 usuario = data;
                 if(data.IS_NEW == 1) {
                     window.location = "/";
                     if($askNick) askNick(data.NICK_USUARIO);
-                } else if(data.NICK_USUARIO=="" || data.NICK_USUARIO == "NULL") {
+                } else if(data.NICK_USUARIO=="") {
                     if($askNick) askNick("");
                 }
                 $invitarBtn.fadeIn();
