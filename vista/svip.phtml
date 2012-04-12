@@ -35,7 +35,7 @@ $smain = $cp->getCSec()->svip;
             <? } ?>
         <? } else { ?>
             <a class="btn btn-primary btn-gigante tp" href="<?=$cp->loginUrl?>" id="registro2" data-placement="left" title="Usa tu cuenta de Facebook para registrarte!">Registrate con tu <b>Facebook</b>!</a>
-            <div class="fb-facepile" data-width="340" data-max-rows="4"></div>
+            <div class="fb-facepile" data-width="340" data-max-rows="4" data-size="large"></div>
         <? } ?>
         <? if($smain->ALLOW == 1) { ?>
         <div id="botones" style="<?=($smain->ESTADO_SUBASTA == 3 && $smain->ERROR == 0)?"":"display:none"?>">    
