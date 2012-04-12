@@ -49,7 +49,7 @@ function setSession(res) {
             url: '/?do=login',
             type: 'post',
             data: response,
-//            dataType: 'json',
+            dataType: 'json',
             success: function(data) {
                 console.log(data);
                 usuario = data;
