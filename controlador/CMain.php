@@ -77,8 +77,9 @@ class CMain {
                                     $req = $this->invMP->acepta($_POST["id_request"], $_POST["session"]["userID"]);
                                 }
                             }
+                            echo "preIniFacebook<br>";
                             $this->cp->iniFacebook();
-                            echo "finIniFacebook<br>";
+                            echo "posIniFacebook<br>";
                             echo "<pre>";
                             print_r($this->cp->facebook);
                             echo "</pre>";
