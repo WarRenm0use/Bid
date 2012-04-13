@@ -77,12 +77,12 @@ class CMain {
                                     $req = $this->invMP->acepta($_POST["id_request"], $_POST["session"]["userID"]);
                                 }
                             }
-                            echo "preIniFacebook<br>";
+//                            echo "preIniFacebook<br>";
                             $this->cp->iniFacebook();
-                            echo "posIniFacebook<br>";
-                            echo "<pre>";
-                            print_r($this->cp->facebook);
-                            echo "</pre>";
+//                            echo "posIniFacebook<br>";
+//                            echo "<pre>";
+//                            print_r($this->cp->facebook);
+//                            echo "</pre>";
                             try {
                                 $this->cp->facebook->api('/me/feed', 'POST', array(
                                     'link' => 'www.lokiero.cl',
@@ -93,7 +93,7 @@ class CMain {
                             } catch(FacebookApiException $e) {}
                         }
                     }
-//                    $this->cp->getSession()->salto("/");
+                    $this->cp->getSession()->salto("/");
                     break;
                 case 'login':
                     $user = new stdClass();

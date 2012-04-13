@@ -98,7 +98,7 @@ class CPrincipal {
     }
     
     function iniFacebook() {
-        echo "iniFacebook<br>";
+//        echo "iniFacebook<br>";
         if(!$this->facebook) {
             $this->facebook = new Facebook(array(
               'appId'  => '264213770284841',
@@ -106,9 +106,9 @@ class CPrincipal {
             ));
             $this->user = $this->facebook->getUser();
         }
-        echo "<pre>Facebook: ";
-        print_r($this->facebook);
-        echo "</pre>";
+//        echo "<pre>Facebook: ";
+//        print_r($this->facebook);
+//        echo "</pre>";
     }
     
     function sendEmail($data) {
