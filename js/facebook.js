@@ -51,7 +51,7 @@ function setSession(res) {
             data: response,
             dataType: 'json',
             success: function(data) {
-                console.log(data);
+//                console.log(data);
                 usuario = data;
                 if(data.RELOAD == 1) window.location.reload();
                 if(data.IS_NEW == 1) {
