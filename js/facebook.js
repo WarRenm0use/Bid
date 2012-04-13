@@ -51,19 +51,20 @@ function setSession(res) {
             data: response,
             dataType: 'json',
             success: function(data) {
-//                console.log(data);
+                console.log(data);
                 usuario = data;
+                if(data.RELOAD == 1) window.location.reload();
                 if(data.IS_NEW == 1) {
                     window.location = "/";
                     if($askNick) askNick(data.NICK_USUARIO);
                 } else if(data.NICK_USUARIO=="") {
                     if($askNick) askNick("");
                 }
-                $invitarBtn.fadeIn();
-                $comprarBtn.fadeIn();
-                $carroBtn.fadeIn();
-                $carroBtn.html("<a href='/carro'>Carro de compra ("+data.N_PRODUCTOS+")</a>").attr("data-original-title", "Tienes "+data.N_PRODUCTOS+"  productos en tu carro de compra por un total de $"+data.MONTO_CARRO_H);
-                $user.html("<a href='/micuenta'><span id='nBid'>"+data.BID_DISPONIBLE+"</span> Bids<img src='https://graph.facebook.com/"+response.id+"/picture' height=32 border=0/></a>").attr("data-original-title", data.NICK_USUARIO+" tienes "+data.BID_DISPONIBLE+" Bids para usar en las subastas");
+//                $invitarBtn.fadeIn();
+//                $comprarBtn.fadeIn();
+//                $carroBtn.fadeIn();
+//                $carroBtn.html("<a href='/carro'>Carro de compra ("+data.N_PRODUCTOS+")</a>").attr("data-original-title", "Tienes "+data.N_PRODUCTOS+"  productos en tu carro de compra por un total de $"+data.MONTO_CARRO_H);
+//                $user.html("<a href='/micuenta'><span id='nBid'>"+data.BID_DISPONIBLE+"</span> Bids<img src='https://graph.facebook.com/"+response.id+"/picture' height=32 border=0/></a>").attr("data-original-title", data.NICK_USUARIO+" tienes "+data.BID_DISPONIBLE+" Bids para usar en las subastas");
             }
         });
     });

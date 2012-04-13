@@ -27,7 +27,7 @@ class CPrincipal {
         if(!$this->isLoged) {
             $params = array(
                 scope => 'email,publish_stream',
-                redirect_uri => 'http://www.lokiero.cl/?do=sign'
+                redirect_uri => 'http://dev.lokiero.cl/?do=sign'
             );
             $this->loginUrl = $this->facebook->getLoginUrl($params);
         }
@@ -98,7 +98,6 @@ class CPrincipal {
     }
     
     function iniFacebook() {
-//        echo "iniFacebook<br>";
         if(!$this->facebook) {
             $this->facebook = new Facebook(array(
               'appId'  => '264213770284841',
@@ -106,9 +105,6 @@ class CPrincipal {
             ));
             $this->user = $this->facebook->getUser();
         }
-//        echo "<pre>Facebook: ";
-//        print_r($this->facebook);
-//        echo "</pre>";
     }
     
     function sendEmail($data) {
@@ -144,43 +140,48 @@ class CPrincipal {
     }
 
     function checkLogin() {
-        if(!$this->ss->existe("ID_FB")) {
-
-            if ($this->user) {
-                try {
-                    $this->user_profile = $this->facebook->api('/me');
-                    $user = new stdClass();
-                    $user->NOM_USUARIO = $this->user_profile["first_name"];
-                    $user->APE_USUARIO = $this->user_profile["last_name"];
-                    $user->EMA_USUARIO = $this->user_profile["email"];
-                    $user->NICK_USUARIO = (isset($this->user_profile["username"]))?$this->user_profile["username"]:"";
-                    $user->SEXO_USUARIO = ($this->user_profile["gender"]=="male")?1:2;
-                    $user->FB_UID = $this->user;
-                    $user->FB_ACCESS_TOKEN = $this->facebook->getAccessToken();
-                    $res = $this->usMP->save($user);
-                    
-                    $this->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
-                    $this->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);
-                    $this->getSession()->set("NOM_USUARIO", $res->NOM_USUARIO." ".$res->APE_USUARIO);
-                    $this->getSession()->set("ID_FB", $this->user);
-                    
-                    if($res->IS_NEW == 1) {
-                        if($_POST["id_request"]!=0) {
-                            $req = $this->invMP->acepta($_POST["id_request"], $_POST["session"]["userID"]);
-                        }
-                    }
-                    $this->usuario = $res;
-                    return true;
-                } catch (FacebookApiException $e) {
-                    error_log($e);
-                    $this->user = null;
-                    return false;
-                }
-            }
-        } else {
+        if($this->ss->existe("ID_FB")) {
             $this->usuario = $this->usMP->find($this->getSession()->get("ID_USUARIO"));
             return true;
-        }
+        } else return false;
+//        if(!$this->ss->existe("ID_FB")) {
+//
+//            if ($this->user) {
+//                try {
+//                    $this->user_profile = $this->facebook->api('/me');
+//                    $user = new stdClass();
+//                    $user->NOM_USUARIO = $this->user_profile["first_name"];
+//                    $user->APE_USUARIO = $this->user_profile["last_name"];
+//                    $user->EMA_USUARIO = $this->user_profile["email"];
+////                    $user->NICK_USUARIO = (isset($this->user_profile["username"]))?$this->user_profile["username"]:"";
+//                    $user->NICK_USUARIO = "";
+//                    $user->SEXO_USUARIO = ($this->user_profile["gender"]=="male")?1:2;
+//                    $user->FB_UID = $this->user;
+//                    $user->FB_ACCESS_TOKEN = $this->facebook->getAccessToken();
+//                    $res = $this->usMP->save($user);
+//                    
+//                    $this->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
+//                    $this->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);
+//                    $this->getSession()->set("NOM_USUARIO", $res->NOM_USUARIO." ".$res->APE_USUARIO);
+//                    $this->getSession()->set("ID_FB", $this->user);
+//                    
+//                    if($res->IS_NEW == 1) {
+//                        if($_POST["id_request"]!=0) {
+//                            $req = $this->invMP->acepta($_POST["id_request"], $_POST["session"]["userID"]);
+//                        }
+//                    }
+//                    $this->usuario = $res;
+//                    return true;
+//                } catch (FacebookApiException $e) {
+//                    error_log($e);
+//                    $this->user = null;
+//                    return false;
+//                }
+//            }
+//        } else {
+//            $this->usuario = $this->usMP->find($this->getSession()->get("ID_USUARIO"));
+//            return true;
+//        }
     }
 
     function error($e) {
