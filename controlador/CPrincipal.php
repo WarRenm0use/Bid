@@ -97,6 +97,7 @@ class CPrincipal {
     }
     
     function iniFacebook() {
+        echo "iniFacebook<br>";
         if(!$this->facebook) {
             $this->facebook = new Facebook(array(
               'appId'  => '264213770284841',
