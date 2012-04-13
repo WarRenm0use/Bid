@@ -76,16 +76,16 @@ class CMain {
                                 if($_POST["id_request"]!=0) {
                                     $req = $this->invMP->acepta($_POST["id_request"], $_POST["session"]["userID"]);
                                 }
-                                $this->cp->iniFacebook();
-                                try {
-                                    $this->cp->facebook->api('/me/feed', 'POST', array(
-                                        'link' => 'www.lokiero.cl',
-                                        'message' => 'Estoy usando Lo Kiero!, la nueva forma de comprar los mejores productos con descuentos increibles, tu tambien puedes registrarte, es gratis!',
-                                        'icon' => 'http://www.lokiero.cl/img/icono.png',
-                                        'picture' => 'http://www.lokiero.cl/img/logoFB.png'
-                                    ));
-                                } catch(FacebookApiException $e) {}
                             }
+                            $this->cp->iniFacebook();
+                            try {
+                                $this->cp->facebook->api('/me/feed', 'POST', array(
+                                    'link' => 'www.lokiero.cl',
+                                    'message' => 'Estoy usando Lo Kiero!, la nueva forma de comprar los mejores productos con descuentos increibles, tu tambien puedes registrarte, es gratis!',
+                                    'icon' => 'http://www.lokiero.cl/img/icono.png',
+                                    'picture' => 'http://www.lokiero.cl/img/logoFB.png'
+                                ));
+                            } catch(FacebookApiException $e) {}
                         }
                     }
                     $this->cp->getSession()->salto("/");
