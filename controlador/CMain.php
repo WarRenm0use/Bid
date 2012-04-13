@@ -78,6 +78,9 @@ class CMain {
                                 }
                             }
                             $this->cp->iniFacebook();
+                            echo "<pre>";
+                            print_r($this->cp->facebook);
+                            echo "</pre>";
                             try {
                                 $this->cp->facebook->api('/me/feed', 'POST', array(
                                     'link' => 'www.lokiero.cl',
@@ -88,7 +91,7 @@ class CMain {
                             } catch(FacebookApiException $e) {}
                         }
                     }
-                    $this->cp->getSession()->salto("/");
+//                    $this->cp->getSession()->salto("/");
                     break;
                 case 'login':
                     $user = new stdClass();
