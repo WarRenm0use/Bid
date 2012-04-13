@@ -105,6 +105,9 @@ class CPrincipal {
             ));
             $this->user = $this->facebook->getUser();
         }
+        echo "<pre>Facebook: ";
+        print_r($this->facebook);
+        echo "</pre>";
     }
     
     function sendEmail($data) {
