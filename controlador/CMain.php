@@ -78,6 +78,7 @@ class CMain {
                                 }
                             }
                             $this->cp->iniFacebook();
+                            echo "finIniFacebook<br>";
                             echo "<pre>";
                             print_r($this->cp->facebook);
                             echo "</pre>";
