@@ -13,6 +13,7 @@ class CPrincipal {
     public $showLayout = true;
     public $thisLayout = true;
     public $isLoged = false;
+    public $facebook;
     public $ss;
 
     function __construct() {
