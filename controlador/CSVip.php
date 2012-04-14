@@ -259,12 +259,23 @@ class CSVip {
                 case 'refresh':
 //                    $ses = $this->cp->getSession()->get($_GET["cod"]);
                     if(isset($_GET["cod"])) {
+                        $res = $this->suMP->getId($_GET["cod"]);
 //                        $res = $this->suMP->refreshById($this->cp->getSession()->get($_GET["cod"]."_id"));
-                        include $_GET["cod"].'.json';
+                        if($res) {
+                            $res = null;
+                            include $_GET["cod"].'.json';
+                        } else $res = null;
                     } else $res = null;
                     break;
                 case 'generate':
                     $res = $this->suMP->refreshById($_GET["id"]);
+                    break;
+                case 'ganador':
+                    $res = $this->suMP->getId($_GET["cod"]);
+                    if($res) {
+                        $res = $this->suMP->refreshById($res->ID_SVIP);
+                        $res->IS_GANADOR = ($res->ID_USUARIO == $this->cp->getSession()->get("ID_USUARIO"))?1:0;
+                    } else $res->IS_GANADOR = 0;
                     break;
                 case 'lala':
                     include $_GET["cod"].'.json';

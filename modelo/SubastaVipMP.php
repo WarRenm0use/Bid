@@ -57,9 +57,8 @@ class SubastaVipMP {
                     INNER JOIN PRODUCTO AS P 
                     INNER JOIN IMAGEN AS I 
                 ON S.ID_PRODUCTO = P.ID_PRODUCTO
-                    AND INICIO_SUBASTA > $now
                     AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN
-                    AND S.ESTADO_SUBASTA = 0
+                    AND S.ESTADO_SUBASTA IN (0,3)
                 ORDER BY INICIO_SUBASTA ASC
                 LIMIT 0,1";
         
@@ -362,7 +361,7 @@ class SubastaVipMP {
 
         $now = date("U");
         
-        $sql = "SELECT S.MONTO_SUBASTA, U.NICK_USUARIO, S.INICIO_SUBASTA, S.ESTADO_SUBASTA, 
+        $sql = "SELECT S.MONTO_SUBASTA, U.ID_USUARIO, U.NICK_USUARIO, S.INICIO_SUBASTA, S.ESTADO_SUBASTA, 
             ((S.DURACION_SUBASTA + S.RETRASO_SUBASTA) - ($now - S.INICIO_SUBASTA)) AS RESTO_TIEMPO_SEC,
             TIMEDIFF(
                 from_unixtime(S.INICIO_SUBASTA + S.DURACION_SUBASTA + S.RETRASO_SUBASTA), 
@@ -389,6 +388,15 @@ class SubastaVipMP {
             } else $row->ERROR = 0;
             return $row;
         } else return false;
+    }
+    
+    function getId($cod) {
+        $cod = $this->_bd->limpia($cod);
+        $sql = "SELECT ID_SVIP FROM SVIP WHERE COD_SUBASTA = '$cod'";
+        $res = $this->_bd->sql($sql);
+        if($res)
+            return mysql_fetch_object($res);
+        else return false;
     }
     
     function findbyCod($cod, $attr = null) {

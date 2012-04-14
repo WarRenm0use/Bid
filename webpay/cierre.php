@@ -26,14 +26,14 @@ $wp->Tbk_mac = $_POST['TBK_MAC'];
 $wp->Tbk_tasa_interes_max = $_POST['TBK_TASA_INTERES_MAX'];
 
 if ($wp->Tbk_respuesta == 0) {
-    $temporal = "/home/dev/www/cgi-bin/log/temporal.txt";
+    $temporal = "/home/prd/www/cgi-bin/log/temporal.txt";
     $fp = fopen($temporal, "w");
     if ($fp) {
         fwrite($fp, $wp->Tbk_codigo_autorizacion);
         fclose($fp);
     }
     
-    $filename = "/home/dev/www/cgi-bin/log/log" . $wp->Tbk_id_transaccion . ".txt";
+    $filename = "/home/prd/www/cgi-bin/log/log" . $wp->Tbk_id_transaccion . ".txt";
     $fp2 = fopen($filename, "w");
     if($fp2) {
         reset($_POST);
@@ -43,7 +43,7 @@ if ($wp->Tbk_respuesta == 0) {
         fclose($fp2);
     }
     
-    $cmdline = "/home/dev/www/cgi-bin/tbk_check_mac.cgi $filename";
+    $cmdline = "/home/prd/www/cgi-bin/tbk_check_mac.cgi $filename";
     exec($cmdline, $result, $retint);
     
     if ($result[0] == "CORRECTO") {
@@ -65,13 +65,14 @@ if ($wp->Tbk_respuesta == 0) {
                     $caAux = new stdClass();
                     $caAux->ID_CARRO = $ca->ID_CARRO;
                     $caAux->ESTADO_CARRO = 2;
+                    $caAux->FECHA_TERMINO = date("U");
                     $suma = $usMP->sumaBid($resumen->totalBid, $ca->ID_USUARIO);
                     $upd = $caMP->update($caAux);
                     $log = $wpMP->save($wp);
                     if($suma && $upd && $log) {
                         echo "ACEPTADO";
                     } else {
-                        if($suma) $usMP->eliminaBid($nBid, $idUs);
+                        if($suma) $usMP->eliminaBid($resumen->totalBid, $ca->ID_USUARIO);
                         if($upd) {
                             $caAux->ESTADO_CARRO = 0;
                             $upd = $caMP->update($caAux);

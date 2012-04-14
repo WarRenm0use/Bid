@@ -518,20 +518,21 @@ p.msg {
 
 .subastaVip #botones {
     margin-top: 10px;
-    width: 310px;
+    width: 100%;
 }
 
 .subastaVip #bid_place {
     display: inline-block;
     float: left;
-    padding-right: 5px;
-    border-right: 1px solid #ccc;
+    width: 100%;
+/*    padding-right: 5px;*/
+/*    border-right: 1px solid #ccc;*/
 }
 
 .subastaVip #rec_place {
     display: inline-block;
-    padding: 3px 5px;
-    float: left;
+    padding: 0;
+    float: right;
 }
 
 #rec_place select {

@@ -166,6 +166,9 @@ class CMain {
         switch($op) {
             default:
                 $res = $this->suMP->nextSubasta();
+//                echo "<pre>";
+//                print_r($res);
+//                echo "</pre>";
                 $nUs = $this->suMP->nUsSubasta($res->ID_SVIP);
                 $res->RESTO_USUARIOS = $res->MIN_USUARIO - $nUs;
                 if($this->cp->getSession()->existe("ID_USUARIO")) {

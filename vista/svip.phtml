@@ -15,7 +15,7 @@ $smain = $cp->getCSec()->svip;
             <div class="share">
                 <div id="shareme" data-url="http://www.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-text="<?=$smain->NOM_PRODUCTO?> :: Lo Kiero!.cl - Subastas VIP"></div>
             </div>
-            <span id="tiempo" data-bind="text: tiempo_texto">
+            <span id="tiempo" data-bind="text: tiempo_texto, style: {color: resto_tiempo_sec() < 10 ? 'red':'black'}">
                 <? if($smain->RESTO_TIEMPO_SEC < 0) { ?>
                     Terminada!
                 <? } else { ?>
@@ -33,22 +33,22 @@ $smain = $cp->getCSec()->svip;
                 <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Reserva tu cupo para ser parte de la subasta!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_reserva_disabled}"><b>RESERVA</b> TU CUPO!</a>
                 <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva"  style="display:none;" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
             <? } ?>
-        <? } else { ?>
+        <? } else if(!$cp->isLoged) { ?>
             <a class="btn btn-primary btn-gigante tp" href="<?=$cp->loginUrl?>" id="registro2" data-placement="left" title="Usa tu cuenta de Facebook para registrarte!">Registrate con tu <b>Facebook</b>!</a>
             <div class="fb-facepile" data-width="420" data-max-rows="4" data-size="large"></div>
         <? } ?>
         <? if($smain->ALLOW == 1) { ?>
-        <div id="botones" style="<?=($smain->ESTADO_SUBASTA == 3 && $smain->ERROR == 0)?"":"display:none"?>">    
+        <div id="botones" data-bind="fadeVisible: is_visible">    
             <div id="bid_place">
-                <a class="btn btn-large btn-success tp" id="bid" title="Haz clic para pujar en la subasta!" data-placement="right" data-bind="click: doBid, html: bid_texto">BID! (<span id="nBidSub"><?=$smain->BID_RESTO?></span>)</a>
+                <a class="btn btn-gigante btn-success tp" id="bid" title="Haz clic para pujar en la subasta!" data-placement="right" data-bind="click: doBid, html: bid_texto, css: {'disabled': is_disabled}">BID! (<span id="nBidSub"><?=$smain->BID_RESTO?></span>)</a>
             </div>
-            <div id="rec_place">
-                <select class="small_field" name="nBidRec" id="nBidRec" <?=($smain->RECARGA_RESTO == 0)?"disabled":""?>>
+            <div id="rec_place" data-bind="fadeVisible: hasRecarga">
+                <select class="small_field" name="nBidRec" id="nBidRec">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
                 </select>
-                <a class="btn tp <?=($smain->RECARGA_RESTO == 0)?"disabled":""?>" id="recarga" title="Te quedan <?=$smain->REGARGA_RESTO?> recargas" data-placement="right" data-bind="click: recarga, html: recarga_texto">Recarga Bids (<?=$smain->RECARGA_RESTO?>)</a>
+                <a class="btn tp <?=($smain->RECARGA_RESTO == 0)?"disabled":""?>" id="recarga" title="Te quedan <?=$smain->REGARGA_RESTO?> recargas" data-placement="right" data-bind="click: recarga, html: recarga_texto, css: {'disabled': is_recarga_disabled}">Recarga Bids (<?=$smain->RECARGA_RESTO?>)</a>
             </div>
             <div class="clear"></div>
         </div>
