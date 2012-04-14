@@ -61,8 +61,8 @@ $carro = $cp->getCSec()->carro;
             <input name="TBK_ID_SESION" type="hidden" id="TBK_ID_SESION" value="<?=$carro->ID_CARRO?>" />
             <input name="TBK_ORDEN_COMPRA" type="hidden" id="TBK_ORDEN_COMPRA" value="<?=$carro->ID_CARRO?>" />
             <input name="TBK_TIPO_TRANSACCION" type="hidden" id="TBK_TIPO_TRANSACCION" value="TR_NORMAL" />
-            <input name="TBK_URL_EXITO" type="hidden" id="TBK_URL_EXITO" value="http://dev.lokiero.cl/exito.php" />
-            <input name="TBK_URL_FRACASO" type="hidden" id="TBK_URL_FRACASO" value="http://dev.lokiero.cl/fracaso.php" />
+            <input name="TBK_URL_EXITO" type="hidden" id="TBK_URL_EXITO" value="http://www.lokiero.cl/exito" />
+            <input name="TBK_URL_FRACASO" type="hidden" id="TBK_URL_FRACASO" value="http://www.lokiero.cl/fracaso" />
             <input type="submit" class="btn btn-success" id="btnPagarTop" value="Pagar $<?=$carro->MONTO_CARRO_H?>"/>
         </form>
     <? } ?>
