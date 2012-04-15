@@ -26,7 +26,7 @@ class CPrincipal {
         $this->isLoged = $this->checkLogin();
         if(!$this->isLoged) {
             $params = array(
-                scope => 'email,publish_stream',
+                scope => 'email,publish_stream,user_birthday,publish_actions',
                 redirect_uri => 'http://www.lokiero.cl/?do=sign'
             );
             $this->loginUrl = $this->facebook->getLoginUrl($params);
