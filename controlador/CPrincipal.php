@@ -27,7 +27,7 @@ class CPrincipal {
         if(!$this->isLoged) {
             $params = array(
                 scope => 'email,publish_stream',
-                redirect_uri => 'http://dev.lokiero.cl/?do=sign'
+                redirect_uri => 'http://www.lokiero.cl/?do=sign'
             );
             $this->loginUrl = $this->facebook->getLoginUrl($params);
         }
@@ -40,7 +40,7 @@ class CPrincipal {
         $host = explode(".",$_SERVER["HTTP_HOST"]);
 //        echo $host[0]."<br>";
 //        if($_GET["sec"]!="svip" || $_GET["get"]!="refresh")
-//        if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);
+        if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);
 //        echo "<pre>";
 //        print_r($_SESSION);
 //        echo "</pre>";
