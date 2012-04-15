@@ -29,7 +29,7 @@ class CPagina {
                     $msg->titulo = "Nuevo Mensaje - LoKiero.cl";
                     $msg->cuerpo = "Nombre: ".$_POST["nom"]."<br/>Email: ".$_POST["ema"]."<br/>Usuario: ".$_POST["id_us"]."<br/>Mensaje: <br>".$_POST["msg"];
                     $msg->destino[0] = new stdClass();
-                    $msg->destino[0]->email = "super.neeph@gmail.com";
+                    $msg->destino[0]->email = "alvaro@lokiero.cl";
                     $msg->destino[0]->nombre = "Lo Kiero!";
                     $res = new stdClass();
                     $res->titulo = "Nuevo Mensaje - LoKiero.cl";
