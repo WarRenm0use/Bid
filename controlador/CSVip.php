@@ -147,6 +147,15 @@ class CSVip {
                                             $email->titulo = "Reserva lista! - Lo Kiero!";
                                             $email->cuerpo = "<table border=0 cellspacing=0 cellpadding=0 style='color:#666;'><tr><td><img src='http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."' width='300'></td><td><h1>".$destino->nombre." (".$usu->NICK_USUARIO.")</h1><p>La reserva para la subasta de un ".$prod->NOM_PRODUCTO." fue realizada correctamente, para ingresar visita esta pagina <a href='http://www.lokiero.cl/svip/".$sub->COD_SUBASTA."'>Subasta ".$prod->NOM_PRODUCTO."</a></p><p>15 minutos antes de que comience la subasta se verificara que se haya logrado el minimo de usuarios requeridos, si se alcanza el minimo se activara la subasta, si no, sera anulada y reembolsaremos los bids que gastaste en la reserva.</p></td></tr></table>";
                                             $this->cp->sendEmail($email);
+                                            $this->cp->iniFacebook();
+                                            try {
+                                                $this->cp->facebook->api('/me/feed', 'POST', array(
+                                                    'link' => 'www.lokiero.cl/svip/'.$sub->COD_SUBASTA,
+                                                    'message' => 'Ya reservé mi cupo para la subasta de un '.$prod->NOM_PRODUCTO.', tu también puedes hacerlo, apúrate!',
+                                                    'icon' => 'http://www.lokiero.cl/img/icono.png',
+                                                    'picture' => 'http://www.lokiero.cl/producto/'.$prod->URL_IMAGEN
+                                                ));
+                                            } catch(FacebookApiException $e) {}
                                         } else {
                                             $data->ERROR = 1;
                                             $data->RESTO_USUARIOS = $sub->MIN_USUARIO - $nUs;

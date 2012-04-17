@@ -34,7 +34,7 @@ $smain = $cp->getCSec()->svip;
                 <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva"  style="display:none;" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
             <? } ?>
         <? } else if(!$cp->isLoged) { ?>
-            <a class="btn btn-primary btn-gigante tp" href="<?=$cp->loginUrl?>" id="registro2" data-placement="left" title="Usa tu cuenta de Facebook para registrarte!">Registrate con tu <b>Facebook</b>!</a>
+            <a class="btn btn-primary btn-gigante tp" href="<?=$cp->loginUrl?>" id="registro2" data-placement="left" title="Usa tu cuenta de Facebook para registrarte!">Ingresa con tu <b>Facebook</b>!</a>
             <div class="fb-facepile" data-width="420" data-max-rows="4" data-size="large"></div>
         <? } ?>
         <? if($smain->ALLOW == 1) { ?>

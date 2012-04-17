@@ -40,7 +40,7 @@ class CPrincipal {
         $host = explode(".",$_SERVER["HTTP_HOST"]);
 //        echo $host[0]."<br>";
 //        if($_GET["sec"]!="svip" || $_GET["get"]!="refresh")
-        if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);
+//        if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);
 //        echo "<pre>";
 //        print_r($_SESSION);
 //        echo "</pre>";
@@ -128,7 +128,7 @@ class CPrincipal {
         $mail -> Subject = $data->titulo;
         $mail -> Body = "<table width='100%'  border=0 cellspacing=0 cellpadding=0>
                             <tr>
-                                <td><a href='http://dev.lokiero.cl/' title='Ir a Lo Kiero!'><img src='http://www.lokiero.cl/img/logo_ema.png' border=0/></a></td>
+                                <td><a href='http://www.lokiero.cl/' title='Ir a Lo Kiero!'><img src='http://www.lokiero.cl/img/logo_ema.png' border=0/></a></td>
                             </tr>
                             <tr>
                                 <td>".$data->cuerpo."</td>
@@ -228,6 +228,10 @@ class CPrincipal {
             case "pagina":
                 include_once 'CPagina.php';
                 $this->_CSec = new CPagina($this);
+                break;
+            case "cuenta":
+                include_once 'CCuenta.php';
+                $this->_CSec = new CCuenta($this);
                 break;
             case "main":
                 include_once 'CMain.php';

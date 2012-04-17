@@ -42,7 +42,7 @@ class CMain {
                             $user->APE_USUARIO = $this->cp->user_profile["last_name"];
                             $user->EMA_USUARIO = $this->cp->user_profile["email"];
         //                    $user->NICK_USUARIO = (isset($this->user_profile["username"]))?$this->user_profile["username"]:"";
-                            $user->NICK_USUARIO = "";
+//                            $user->NICK_USUARIO = "";
                             $user->SEXO_USUARIO = ($this->cp->user_profile["gender"]=="male")?1:2;
                             $user->FB_UID = $this->cp->user;
                             $user->FB_ACCESS_TOKEN = $this->cp->facebook->getAccessToken();
@@ -81,16 +81,16 @@ class CMain {
                                         if($_POST["id_request"]!=0) {
                                             $req = $this->invMP->acepta($_POST["id_request"], $_POST["session"]["userID"]);
                                         }
+                                        $this->cp->iniFacebook();
+                                        try {
+                                            $this->cp->facebook->api('/me/feed', 'POST', array(
+                                                'link' => 'www.lokiero.cl',
+                                                'message' => 'Estoy usando Lo Kiero!, la nueva forma de comprar los mejores productos con descuentos increibles, tu tambien puedes registrarte, es gratis!',
+                                                'icon' => 'http://www.lokiero.cl/img/icono.png',
+                                                'picture' => 'http://www.lokiero.cl/img/logoFB.png'
+                                            ));
+                                        } catch(FacebookApiException $e) {}
                                     }
-                                    $this->cp->iniFacebook();
-                                    try {
-                                        $this->cp->facebook->api('/me/feed', 'POST', array(
-                                            'link' => 'www.lokiero.cl',
-                                            'message' => 'Estoy usando Lo Kiero!, la nueva forma de comprar los mejores productos con descuentos increibles, tu tambien puedes registrarte, es gratis!',
-                                            'icon' => 'http://www.lokiero.cl/img/icono.png',
-                                            'picture' => 'http://www.lokiero.cl/img/logoFB.png'
-                                        ));
-                                    } catch(FacebookApiException $e) {}
                                 }
                             }
                         } catch (FacebookApiException $e) {
