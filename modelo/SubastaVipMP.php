@@ -62,7 +62,7 @@ class SubastaVipMP {
                 ORDER BY INICIO_SUBASTA ASC
                 LIMIT 0,1";
         
-        echo $sql."<br>";
+//        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         $arr = array();
         $row = mysql_fetch_object($res);
