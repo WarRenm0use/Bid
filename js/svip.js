@@ -26,6 +26,7 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
     this.cargando = ko.observable(false);
     this.refreshInterval = null;
     this.ultimos = ko.observableArray([]);
+    this.ganador = ko.observable(false);
 
     this.showUltimos = ko.computed(function(){
         return (this.ultimos().length>0 && this.estado_subasta()==3);
@@ -41,20 +42,20 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
             success: function(data) {
 //                console.log("ganador");
 //                console.log(data);
-//                if(data.IS_GANADOR == 1) console.log("GANASTE!!!");
-//                else console.log("PERDISTE!!!");
-//                if(data!=null) {
-//                    if(data.ESTADO_SUBASTA != ws.estado_subasta())
-//                        ws.estado_subasta(data.ESTADO_SUBASTA);
-//                    if(data.MONTO_SUBASTA != ws.monto_subasta())
-//                        ws.monto_subasta(data.MONTO_SUBASTA);
-//                    if(data.NICK_USUARIO != ws.nick_usuario())
-//                        ws.nick_usuario(data.NICK_USUARIO);
-//                    ws.resto_tiempo(data.RESTO_TIEMPO);
-//                    ws.resto_tiempo_sec(data.RESTO_TIEMPO_SEC);
-//                } else {
-//
-//                }
+                if(data.IS_GANADOR == 1) ws.ganador(true);
+                else ws.ganador(false);
+                if(data!=null) {
+                    if(data.ESTADO_SUBASTA != ws.estado_subasta())
+                        ws.estado_subasta(data.ESTADO_SUBASTA);
+                    if(data.MONTO_SUBASTA != ws.monto_subasta())
+                        ws.monto_subasta(data.MONTO_SUBASTA);
+                    if(data.NICK_USUARIO != ws.nick_usuario())
+                        ws.nick_usuario(data.NICK_USUARIO);
+                    ws.resto_tiempo(data.RESTO_TIEMPO);
+                    ws.resto_tiempo_sec(data.RESTO_TIEMPO_SEC);
+                } else {
+
+                }
             }
         });
     }
@@ -93,8 +94,13 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
                 break;
             case 4: //terminada
 //                console.log("tiempo_texto: termino");
-                this.titulo.html("Termino! :: "+this.tituloBase);
-                return "Termino!";
+                if(this.ganador()) {
+                    this.titulo.html("Ganaste! :: "+this.tituloBase);
+                    return "Ganaste!";
+                } else {
+                    this.titulo.html("Termino! :: "+this.tituloBase);
+                    return "Termino!";
+                }
                 break;
         }
     },this);
@@ -118,21 +124,23 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
             dataType: 'json',
             type: 'get',
             success: function(todo) {
-                var sub = todo.SUBASTA;
-                var last = todo.ULTIMOS;
-                var nLast = last.length;
-                if(sub!=null) {
-                    if(sub.ESTADO_SUBASTA != ws.estado_subasta())
-                        ws.estado_subasta(sub.ESTADO_SUBASTA);
-                    if(sub.MONTO_SUBASTA != ws.monto_subasta())
-                        ws.monto_subasta(sub.MONTO_SUBASTA);
-                    if(sub.NICK_USUARIO != ws.nick_usuario())
-                        ws.nick_usuario(sub.NICK_USUARIO);
-                    ws.resto_tiempo(sub.RESTO_TIEMPO);
-                    ws.resto_tiempo_sec(sub.RESTO_TIEMPO_SEC);
-                }
-                if(last!=null && nLast>0) {
-                    ws.ultimos(last);
+                if(todo!=null) {
+                    var sub = todo.SUBASTA;
+                    var last = todo.ULTIMOS;
+                    var nLast = last.length;
+                    if(sub!=null) {
+                        if(sub.ESTADO_SUBASTA != ws.estado_subasta())
+                            ws.estado_subasta(sub.ESTADO_SUBASTA);
+                        if(sub.MONTO_SUBASTA != ws.monto_subasta())
+                            ws.monto_subasta(sub.MONTO_SUBASTA);
+                        if(sub.NICK_USUARIO != ws.nick_usuario())
+                            ws.nick_usuario(sub.NICK_USUARIO);
+                        ws.resto_tiempo(sub.RESTO_TIEMPO);
+                        ws.resto_tiempo_sec(sub.RESTO_TIEMPO_SEC);
+                    }
+                    if(last!=null && nLast>0) {
+                        ws.ultimos(last);
+                    }
                 }
             }
         });

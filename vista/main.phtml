@@ -17,7 +17,7 @@ $smain = $cp->getCSec()->smain;
                 <li id="dia" class="dia">Ya comenz&oacute;!!</li>
                 <? } ?>
                 <? if($smain->ESTADO_SUBASTA == 0) { ?>
-                <li id="entrada" class="tp entrada" data-placement="left" rel='twipsy' title="Para ser parte de esta subasta debes pagar $<?=$smain->BID_ENTRADA?> Bids">Entrada: <span class="verde bold grande sombra">$<?=$smain->BID_ENTRADA?></span> Bids<img src="img/bid2.png" width="19" height="22"></li>
+                <li id="entrada" class="tp entrada" data-placement="left" rel='twipsy' title="<?=($smain->BID_ENTRADA>0)?"Para ser parte de esta subasta debes pagar $".$smain->BID_ENTRADA." Bids":"Es GRATIS, ap&uacute;rate y reserva tu cupo AHORA!!"?>">Entrada: <span class="verde bold grande sombra"><?=($smain->BID_ENTRADA>0)?"$".$smain->BID_ENTRADA." Bids":"GRATIS!!"?></li>
                 <? if($smain->RESTO_USUARIOS > 1) { ?>
                     <li data-bind="dot: ru_titulo, html: ru_texto" id="usuarios" class="tp usuarios" data-placement="left" rel='twipsy'>Faltan <?=$smain->RESTO_USUARIOS?> usuarios</li>
                 <? } else if($smain->RESTO_USUARIOS > 0) { ?>

@@ -278,20 +278,41 @@ class CSVip {
 //                        $res = $this->suMP->refreshById($this->cp->getSession()->get($_GET["cod"]."_id"));
                         if($res) {
                             $res = null;
-                            include $_GET["cod"].'.json';
+                            include "subastas/".$_GET["cod"].'.json';
                         } else $res = null;
                     } else $res = null;
                     break;
                 case 'generate':
-                    $res = new stdClass();
-                    $res->SUBASTA = $this->suMP->refreshById($_GET["id"]);
-                    $res->ULTIMOS = $this->biMP->fetchLast($_GET["id"]);
+                    if($_GET["k"] == "ad2u9V4VMhNbfzaphTzAxVXXHMQN56") {
+                        $res = new stdClass();
+                        $res->SUBASTA = $this->suMP->refreshById($_GET["id"]);
+                        $res->ULTIMOS = $this->biMP->fetchLast($_GET["id"]);
+                    }
                     break;
                 case 'ganador':
-                    $res = $this->suMP->getId($_GET["cod"]);
+                    $res = $this->suMP->findByCod($_GET["cod"]);
                     if($res) {
-                        $res = $this->suMP->refreshById($res->ID_SVIP);
+//                        $res = $this->suMP->refreshById($idSub->ID_SVIP);
+//                        $res->ID_SVIP = $idSub->ID_SVIP;
                         $res->IS_GANADOR = ($res->ID_USUARIO == $this->cp->getSession()->get("ID_USUARIO"))?1:0;
+//                        $usu = $this->usMP->find($res->ID_USUARIO, array("NOM_USUARIO", "APE_USUARIO", "EMA_USUARIO", "NICK_USUARIO", "FB_UID"));
+//                        $email = new stdClass();
+//                        $destino = new stdClass();
+//                        $destino->email = $usu->EMA_USUARIO;
+//                        $destino->nombre = $usu->NOM_USUARIO." ".$usu->APE_USUARIO;
+//                        $email->destino[] = $destino;
+//                        $email->titulo = "Ganaste un ".$res->NOM_PRODUCTO."! - Lo Kiero!";
+//                        $email->cuerpo = "<table border=0 cellspacing=0 cellpadding=0 style='color:#666;'><tr><td><img src='http://www.lokiero.cl/producto/".$res->URL_IMAGEN."' width='300'></td><td><h1>".$destino->nombre." (".$usu->NICK_USUARIO.") GANASTE!</h1><p>Felicitaciones, acabas de ganar la subasta del ".$res->NOM_PRODUCTO.", para reclamar tu premio debes entrar en tu <a href='http://www.lokiero.cl/micuenta'>cuenta</a> y comprar el producto al precio subastado ;).</p></td></tr></table>";
+//                        $this->cp->iniFacebook();
+//                        try {
+//                            $this->cp->facebook->api('/'.$usu->FB_UID.'/feed', 'POST', array(
+//                                'link' => 'www.lokiero.cl/svip/'.$res->COD_SUBASTA,
+//                                'message' => 'GANE un '.$res->NOM_PRODUCTO.' en Lo Kiero!!!',
+//                                'icon' => 'http://www.lokiero.cl/img/icono.png',
+//                                'picture' => 'http://www.lokiero.cl/producto/'.$res->URL_IMAGEN
+//                            ));
+//                        } catch(FacebookApiException $e) {}
+//                        $this->cp->sendEmail($email);
                     } else $res->IS_GANADOR = 0;
                     break;
                 case 'lala':
