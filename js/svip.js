@@ -28,7 +28,7 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
     this.ultimos = ko.observableArray([]);
 
     this.showUltimos = ko.computed(function(){
-        return (this.ultimos().length>0);
+        return (this.ultimos().length>0 && this.estado_subasta()==3);
     }, this);
     
     this.getGanador = function() {
