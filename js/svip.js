@@ -11,6 +11,8 @@ ko.bindingHandlers.fadeVisible = {
     }
 };
 var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) {
+    this.titulo = $("title");
+    this.tituloBase = this.titulo.html();
     this.cod_subasta = cod;
     this.in_subasta = ko.observable(in_sub);
     this.bid_resto = ko.observable(rb);
@@ -23,7 +25,12 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
     this.monto_subasta = ko.observable(ms);
     this.cargando = ko.observable(false);
     this.refreshInterval = null;
+    this.ultimos = ko.observableArray([]);
 
+    this.showUltimos = ko.computed(function(){
+        return (this.ultimos().length>0);
+    }, this);
+    
     this.getGanador = function() {
         var ws = this,
             ts = new Date();
@@ -63,7 +70,7 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
     }, this);
     
     this.bid_texto = ko.computed(function(){
-        return "BID! ("+this.bid_resto()+")";
+        return "Lo Kiero! ("+this.bid_resto()+")";
     },this);
     
     this.tiempo_texto = ko.computed(function(){
@@ -74,16 +81,19 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
                 return this.resto_tiempo();
                 break;
             case 1: //activada
+                this.titulo.html("Ya esta por comenzar! :: "+this.tituloBase);
                 return "Ya esta por comenzar!";
                 break;
             case 2: //anulada
                 return "Anulada!";
                 break;
             case 3: //en curso
+                this.titulo.html(this.resto_tiempo()+" :: "+this.tituloBase);
                 return this.resto_tiempo();
                 break;
             case 4: //terminada
 //                console.log("tiempo_texto: termino");
+                this.titulo.html("Termino! :: "+this.tituloBase);
                 return "Termino!";
                 break;
         }
@@ -107,18 +117,22 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
             url: '/?sec=svip&get=refresh&cod='+ws.cod_subasta+"&"+ts.getTime(),
             dataType: 'json',
             type: 'get',
-            success: function(data) {
-                if(data!=null) {
-                    if(data.ESTADO_SUBASTA != ws.estado_subasta())
-                        ws.estado_subasta(data.ESTADO_SUBASTA);
-                    if(data.MONTO_SUBASTA != ws.monto_subasta())
-                        ws.monto_subasta(data.MONTO_SUBASTA);
-                    if(data.NICK_USUARIO != ws.nick_usuario())
-                        ws.nick_usuario(data.NICK_USUARIO);
-                    ws.resto_tiempo(data.RESTO_TIEMPO);
-                    ws.resto_tiempo_sec(data.RESTO_TIEMPO_SEC);
-                } else {
-
+            success: function(todo) {
+                var sub = todo.SUBASTA;
+                var last = todo.ULTIMOS;
+                var nLast = last.length;
+                if(sub!=null) {
+                    if(sub.ESTADO_SUBASTA != ws.estado_subasta())
+                        ws.estado_subasta(sub.ESTADO_SUBASTA);
+                    if(sub.MONTO_SUBASTA != ws.monto_subasta())
+                        ws.monto_subasta(sub.MONTO_SUBASTA);
+                    if(sub.NICK_USUARIO != ws.nick_usuario())
+                        ws.nick_usuario(sub.NICK_USUARIO);
+                    ws.resto_tiempo(sub.RESTO_TIEMPO);
+                    ws.resto_tiempo_sec(sub.RESTO_TIEMPO_SEC);
+                }
+                if(last!=null && nLast>0) {
+                    ws.ultimos(last);
                 }
             }
         });
@@ -223,6 +237,7 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
                 success: function(data) {
                     vm.cargando(false);
                     if(data.ERROR == 0) {
+                        $btn_login.html("<a href='/micuenta'><span>"+data.BID_DISPONIBLE+" Bids</span><img src='https://graph.facebook.com/"+data.ID_FB+"/picture' height=32 border=0/></a>").attr("data-original-title",data.NICK_USUARIO+" tienes "+data.BID_DISPONIBLE+" Bids para usar en las subastas");
                         vm.in_subasta(true);
                         _gaq.push(['_trackPageview', '/svip/'+vm.cod_subasta+'/reservar/ok']);
                     } else {
@@ -259,6 +274,7 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
                     success: function(data) {
                         ws.cargando(false);
                         if(data.ERROR == 0) {
+                            $btn_login.html("<a href='/micuenta'><span>"+data.BID_RESTO_US+" Bids</span><img src='https://graph.facebook.com/"+data.ID_FB+"/picture' height=32 border=0/></a>").attr("data-original-title",data.NICK_USUARIO+" tienes "+data.BID_RESTO_US+" Bids para usar en las subastas");
                             ws.bid_resto(data.BID_RESTO);
                             ws.recarga_resto(data.RECARGA_RESTO);
                         }

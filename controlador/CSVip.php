@@ -41,6 +41,8 @@ class CSVip {
                             $res->ERROR = !$this->suMP->delReserva($idUs, $data->ID_SVIP);
                             if(!$res->ERROR) {
                                 $sub = $this->suMP->find($data->ID_SVIP, array("BID_ENTRADA", "MIN_USUARIO"));
+                                $res->NICK_USUARIO = $this->cp->getSession()->get("NICK_USUARIO");
+                                $res->ID_FB = $this->cp->getSession()->get("ID_FB");
                                 $res->BID_DISPONIBLE = $this->usMP->devuelveBid($sub->BID_ENTRADA, $idUs);
                                 $nUs = $this->suMP->nUsSubasta($data->ID_SVIP);
                                 $res->RESTO_USUARIOS = $sub->MIN_USUARIO - $nUs;
@@ -71,7 +73,7 @@ class CSVip {
                     break;
                 case 'recarga':
                     $idUs = $this->cp->getSession()->get("ID_USUARIO");
-                    $ses = $this->cp->getSession()->get($_POST["COD_SUBASTA"]);
+                    $ses = $this->cp->getSession()->get($_POST["COD_SUBASTA"]."_allow");
                     if(isset($_POST["ID_SVIP"]) && $this->cp->isLoged && $idUs>0 && $ses) {
                         $idSu = $_POST["ID_SVIP"];
                         $monto = $_POST["MONTO_RECARGA"];
@@ -85,6 +87,8 @@ class CSVip {
                                 if($usAux->RECARGA_RESTO > 0) {
                                     if($usu->BID_DISPONIBLE >= $monto) {
                                         $data = $this->suMP->recargaBid($monto, $idSu, $idUs);
+                                        $data->NICK_USUARIO = $this->cp->getSession()->get("NICK_USUARIO");
+                                        $data->ID_FB = $this->cp->getSession()->get("ID_FB");
                                         $data->BID_RESTO_US = $this->usMP->restaBid($monto, $idUs);
                                         $data->RECARGA_RESTO = $suAux->N_RECARGA_BID - $data->RECARGA_USADA;
                                         $data->ERROR = 0;
@@ -132,6 +136,8 @@ class CSVip {
                                         $data->ESTADO_RESERVA = 1;
                                         $data->ID_SVIP_USUARIO = $this->suMP->setReserva($data);
                                         if($data->ID_SVIP_USUARIO > 0) {
+                                            $data->NICK_USUARIO = $this->cp->getSession()->get("NICK_USUARIO");
+                                            $data->ID_FB = $this->cp->getSession()->get("ID_FB");
                                             $data->RESTO_USUARIOS = $sub->MIN_USUARIO - $nUs - 1;
                                             $data->ERROR = 0;
                                             $data->BID_DISPONIBLE = $this->usMP->restaBid($sub->BID_ENTRADA, $idUs);
@@ -188,14 +194,14 @@ class CSVip {
                 case 'bid':
                     $idUs = $this->cp->getSession()->get("ID_USUARIO");
                     $nomUs = $this->cp->getSession()->get("NICK_USUARIO");
-                    $ses = $this->cp->getSession()->get($_POST["COD_SUBASTA"]);
+                    $ses = $this->cp->getSession()->get($_POST["COD_SUBASTA"]."_allow");
 //                    $res = new stdClass();
 //                    $res->post = $_POST;
-//                    $res->ses = $_SESSION;
+//                    $res->ses = $ses;
 //                    $res->idUs = $idUs;
 //                    $res->nomUs = $nomUs;
-//                    echo json_encode($res);
-                    if(isset($_POST["COD_SUBASTA"]) && isset($_POST["ID_SVIP"]) && $this->cp->isLoged && $idUs>0 && $ses) {
+                    
+                    if(isset($_POST["COD_SUBASTA"]) && isset($_POST["ID_SVIP"]) && $this->cp->isLoged && $idUs>0 && $ses>0) {
                         $data = new stdClass();
                         $now = microtime(true);
                         $data->ID_SVIP = $_POST["ID_SVIP"];
@@ -277,7 +283,9 @@ class CSVip {
                     } else $res = null;
                     break;
                 case 'generate':
-                    $res = $this->suMP->refreshById($_GET["id"]);
+                    $res = new stdClass();
+                    $res->SUBASTA = $this->suMP->refreshById($_GET["id"]);
+                    $res->ULTIMOS = $this->biMP->fetchLast($_GET["id"]);
                     break;
                 case 'ganador':
                     $res = $this->suMP->getId($_GET["cod"]);
@@ -314,11 +322,11 @@ class CSVip {
                         $usAux = $this->suMP->fetchUsuario($res->ID_SVIP, $idUs);
                         $res->BID_RESTO = $usAux->BID_RESTO;
                         $res->RECARGA_RESTO = $res->N_RECARGA_BID - $usAux->RECARGA_USADA;
-                        $this->cp->getSession()->set($_GET["id"], 1);
+                        $this->cp->getSession()->set($_GET["id"]."_allow", 1);
                         $this->cp->getSession()->set($_GET["id"]."_id", $res->ID_SVIP);
                         $res->ALLOW = 1;
                     } else {
-                        $this->cp->getSession()->set($_GET["id"], 0);
+                        $this->cp->getSession()->set($_GET["id"]."_allow", 0);
                         $this->cp->getSession()->set($_GET["id"]."_id", $res->ID_SVIP);
                         $res->ALLOW = 0;
                     }

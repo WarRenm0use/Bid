@@ -738,3 +738,23 @@ h1, h2, h3, h4, h5, h6 {
     padding: 9px 15px;
     border-top: none;
 }
+
+#descripcion ul.ultimos {
+    margin-left: 10px;
+    width: 300px;
+}
+
+#descripcion ul.ultimos li {
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #ededed;
+}
+
+#descripcion ul.ultimos li span.tiempo {
+    width: 100px;
+    display: inline-block;
+}
+
+#descripcion ul.ultimos li span.nick {
+    font-weight: bold;
+}

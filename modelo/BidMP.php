@@ -19,6 +19,23 @@ class BidMP {
         }
         return $arr;
     }
+    
+    function fetchLast($id, $tipo=2,$n=10) {
+        $id = $this->_bd->limpia($id);
+        if($tipo==1) {
+            $sql = "SELECT * FROM $this->_dbTable WHERE ID_SUBASTA = $id ORDER BY HORA_BID DESC LIMIT 0,$n";
+        } else if($tipo==2) {
+            $sql = "SELECT S.HORA_BID, from_unixtime(S.HORA_BID, '%T') AS HORA_BID_H, U.NICK_USUARIO FROM $this->_dbTable AS S INNER JOIN USUARIO AS U ON S.ID_SVIP = $id AND S.ID_USUARIO = U.ID_USUARIO ORDER BY HORA_BID DESC LIMIT 0,$n";
+        }
+        $res = $this->_bd->sql($sql);
+        $arr = array();
+        while($row = mysql_fetch_object($res)) {
+            $sec = explode(".",$row->HORA_BID);
+            $row->HORA_BID_H = $row->HORA_BID_H.".".$sec[1];
+            $arr[] = $row;
+        }
+        return $arr;
+    }
 
     function find($id, $attr = null) {
         $id = $this->_bd->limpia($id);

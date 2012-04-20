@@ -53,6 +53,12 @@ $smain = $cp->getCSec()->svip;
             <div class="clear"></div>
         </div>
         <? } ?>
+        <div data-bind="fadeVisible: showUltimos">
+            <h3 style="margin-bottom:5px;">&Uacute;ltimos</h3>
+            <ul data-bind="foreach: ultimos" class="ultimos">
+                <li><span data-bind="text: $data.HORA_BID_H" class="tiempo"></span> <span data-bind="text: $data.NICK_USUARIO" class="nick"></span></li>
+            </ul>
+        </div>
     </div>
     <div class="clear"></div>
 </div>

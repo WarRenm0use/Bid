@@ -61,6 +61,7 @@ var SVipViewModel = function(id, cod, in_sub, ru) {
                     vm.resto_usuarios(data.RESTO_USUARIOS);
                     vm.cargando(false);
                     if(data.ERROR == 0) {
+                        $btn_login.html("<a href='/micuenta'><span>"+data.BID_DISPONIBLE+" Bids</span><img src='https://graph.facebook.com/"+data.ID_FB+"/picture' height=32 border=0/></a>").attr("data-original-title",data.NICK_USUARIO+" tienes "+data.BID_DISPONIBLE+" Bids para usar en las subastas");
                         vm.in_subasta(false);
                         _gaq.push(['_trackPageview', '/svip/'+vm.cod_subasta+'/anular/ok']);
                     } else {
@@ -90,6 +91,7 @@ var SVipViewModel = function(id, cod, in_sub, ru) {
                     vm.resto_usuarios(data.RESTO_USUARIOS);
                     vm.cargando(false);
                     if(data.ERROR == 0) {
+                        $btn_login.html("<a href='/micuenta'><span>"+data.BID_DISPONIBLE+" Bids</span><img src='https://graph.facebook.com/"+data.ID_FB+"/picture' height=32 border=0/></a>").attr("data-original-title",data.NICK_USUARIO+" tienes "+data.BID_DISPONIBLE+" Bids para usar en las subastas");
                         vm.in_subasta(true);
                         _gaq.push(['_trackPageview', '/svip/'+vm.cod_subasta+'/reservar/ok']);
                     } else {
