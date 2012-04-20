@@ -58,11 +58,11 @@ class SubastaVipMP {
                     INNER JOIN IMAGEN AS I 
                 ON S.ID_PRODUCTO = P.ID_PRODUCTO
                     AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN
-                    AND S.ESTADO_SUBASTA IN (0,3)
+                    AND S.ESTADO_SUBASTA IN (0,1,3)
                 ORDER BY INICIO_SUBASTA ASC
                 LIMIT 0,1";
         
-//        echo $sql."<br>";
+        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         $arr = array();
         $row = mysql_fetch_object($res);
