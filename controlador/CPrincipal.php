@@ -24,7 +24,7 @@ class CPrincipal {
         $this->secret = "6dfc87d94a03dbe7d4512d31f3fc16d2";
         $this->iniFacebook();
         $this->isLoged = $this->checkLogin();
-        if(!$this->isLoged) {
+        if(!$this->isLoged && $_SERVER["REMOTE_ADDR"] != "50.56.80.62") {
             $params = array(
                 scope => 'email,publish_stream,user_birthday,publish_actions',
                 redirect_uri => 'http://www.lokiero.cl/?do=sign'

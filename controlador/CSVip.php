@@ -286,7 +286,7 @@ class CSVip {
 //                    echo "<pre>";
 //                    print_r($_SERVER);
 //                    echo "</pre>";
-                    if($_GET["k"] == "ad2u9V4VMhNbfzaphTzAxVXXHMQN56") {
+                    if($_SERVER["REMOTE_ADDR"] == "50.56.80.62" && $_GET["k"] == "ad2u9V4VMhNbfzaphTzAxVXXHMQN56") {
                         $res = new stdClass();
                         $res->SUBASTA = $this->suMP->refreshById($_GET["id"]);
                         $res->ULTIMOS = $this->biMP->fetchLast($_GET["id"]);
