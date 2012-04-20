@@ -40,7 +40,7 @@ $smain = $cp->getCSec()->svip;
         <? if($smain->ALLOW == 1) { ?>
         <div id="botones" data-bind="fadeVisible: is_visible">    
             <div id="bid_place">
-                <a class="btn btn-gigante btn-success tp" id="bid" title="Haz clic para pujar en la subasta!" data-placement="right" data-bind="click: doBid, html: bid_texto, css: {'disabled': is_disabled}">BID! (<span id="nBidSub"><?=$smain->BID_RESTO?></span>)</a>
+                <a class="btn btn-gigante btn-success tp" id="bid" title="Haz clic para pujar en la subasta!" data-placement="right" data-bind="click: doBid, html: bid_texto, css: {'disabled': is_disabled}">Lo Kiero! (<span id="nBidSub"><?=$smain->BID_RESTO?></span>)</a>
             </div>
             <div id="rec_place" data-bind="fadeVisible: hasRecarga">
                 <select class="small_field" name="nBidRec" id="nBidRec">

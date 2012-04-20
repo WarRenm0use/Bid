@@ -61,7 +61,7 @@ if ($wp->Tbk_respuesta == 0) {
                 $resumen->totalBid += $prod[$i]->VALOR_BID*$prod[$i]->CANTIDAD_CARRO_PROD;
             }
             if ($ca) {
-                if ($ca->MONTO_CARRO == $wp->Tbk_monto && $ca->MONTO_CARRO == $resumen->totalMonto) {
+                if ($ca->MONTO_CARRO == $wp->Tbk_monto && $ca->MONTO_PRODUCTOS == $resumen->totalMonto && $ca->MONTO_CARRO = ($ca->MONTO_PRODUCTOS + $ca->MONTO_DESPACHO)) {
                     $caAux = new stdClass();
                     $caAux->ID_CARRO = $ca->ID_CARRO;
                     $caAux->ESTADO_CARRO = 2;

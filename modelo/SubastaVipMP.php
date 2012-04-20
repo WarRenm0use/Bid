@@ -350,6 +350,42 @@ class SubastaVipMP {
         } else return false;
     }
     
+    function fetchByUsuario($id, $attr = null) {
+        $id = $this->_bd->limpia($id);
+
+        if($attr == null) {
+            $sAttr = "*";
+        } else {
+            $sAttr = implode(",", $attr);
+        }
+        
+        $sql = "SELECT S.ID_SVIP, S.MONTO_SUBASTA, S.ID_USUARIO, S.INICIO_SUBASTA, S.COD_SUBASTA, S.ESTADO_SUBASTA, P.NOM_PRODUCTO, I.URL_IMAGEN
+            FROM SVIP_USUARIO AS SU
+                INNER JOIN SVIP AS S 
+                INNER JOIN PRODUCTO AS P 
+                INNER JOIN IMAGEN AS I
+            ON 
+                SU.ID_USUARIO = $id
+                AND ESTADO_RESERVA = 1
+                AND S.ID_SVIP = SU.ID_SVIP
+                AND P.ID_PRODUCTO = S.ID_PRODUCTO
+                AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN
+                ORDER BY S.INICIO_SUBASTA DESC";
+//        echo $sql."<br>";
+        $res = $this->_bd->sql($sql);
+        if($res) {
+            while($row = mysql_fetch_object($res)) {
+                if($row->ID_USUARIO == $id) $row->IS_GANADOR = true;
+                else $row->IS_GANADOR = false;
+                $img = explode(".", $row->URL_IMAGEN);
+                $imgMini = $img[0]."_mini.".$img[1];
+                $row->URL_IMAGEN_MINI = $imgMini;
+                $r[] = $row;
+            }
+            return $r;
+        } else return false;
+    }
+    
     function refreshById($id, $attr = null) {
         $id = $this->_bd->limpia($id);
 

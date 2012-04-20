@@ -1,19 +1,21 @@
-var bloqDes = function() {
-    $.ajax({
-        url: '/?sec=carro&do=bloqdes',
-//        type: 'post',
-        dataType: 'json',
-//        data: {
-//            'ESTADO_CARRO': est
-//        },
-        success: function(data) {
-            if(data.ERROR == 0) {
-                window.location.reload();
-            } else {
-                showNotificacion(data.MENSAJE);
+var desForm,
+bloqDes = function() {
+//    if(desForm.checkForm()) {
+        $.ajax({
+            url: '/?sec=carro&do=bloqdes',
+    //        type: 'post',
+            dataType: 'json',
+            success: function(data) {
+                if(data.ERROR == 0) {
+                    window.location.reload();
+                } else {
+                    showNotificacion(data.MENSAJE);
+                }
             }
-        }
-    });
+        });
+//    } else {
+//        
+//    }
 },
 eliminar = function (e) {
     var $this = $(this);
@@ -59,11 +61,75 @@ eliminar = function (e) {
         });
     }
     e.preventDefault();
+},
+
+cargaDespacho = function(id) {
+    $.ajax({
+        url: "/?sec=carro&get=direccion",
+        type: "post",
+        dataType: "json",
+        data: {
+            id_dir: id
+        },
+        success: function(data) {
+            $("#dir", $desForm).val(data.DIRECCION);
+            $("#ema", $desForm).val(data.EMA_RECEPTOR);
+            $("#nom", $desForm).val(data.NOM_RECEPTOR);
+            $("#tel", $desForm).val(data.TEL_RECEPTOR);
+            $("#com").val(data.ID_COMUNA).trigger("liszt:updated");
+        }
+    });
 };
 
 $(document).ready(function() {
+    $desForm = $("#desForm");
+    desForm = $desForm.bind("invalid-form.validate",
+        function() {
+            showNotificacion("Debes completar todos los campos para el despacho");
+        }).validate({
+            rules: {},
+            errorPlacement: function(error, element) {
+                var $e = $(element);
+                if($e.hasClass("error")) {
+                    $e.parent().parent().addClass("error");
+                } else {
+                    $e.parent().parent().removeClass("error");
+                }
+            },
+            submitHandler: function(form) {
+//                console.log("enviar");
+                $.ajax({
+                    url: form.action,
+                    type: "post",
+                    dataType: "json",
+                    data: $(form).serializeArray(),
+                    success: function(data) {
+//                        console.log("recibido");
+//                        console.log(data);
+//                        $btn.removeClass("disabled");
+                        if(data.ERROR == 0) bloqDes();
+                        else showNotificacion(data.MENSAJE);
+                    }
+                });
+                return false;
+            },
+            success: function(label) {}
+        });
     $del = $(".delete");
     $del.on("click", eliminar);
     $bloqdes = $(".bloqdes");
-    $bloqdes.on("click", bloqDes);
+    if($desForm.length>0) {
+        $bloqdes.on("click", function(){$desForm.submit()});
+    } else {
+        $bloqdes.on("click", bloqDes);
+    }
+    $(".chzn-select").chosen();
+    var $idDir = $("#id_dir");
+    if($idDir.length>0) {
+        var $dirSel = $idDir.chosen().change(function(){
+            var $sel = $(this).find("option:selected");
+            cargaDespacho($sel.val());
+        });
+        cargaDespacho($dirSel.find("option:selected").val());
+    }
 });

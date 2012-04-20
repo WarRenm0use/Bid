@@ -14,7 +14,7 @@
         <script src="/js/jquery-1.7.min.js" type="text/javascript"></script>
 <!--        <script src="/js/jquery.tmpl.min.js" type="text/javascript"></script>-->
         <script src="/js/jquery.validate.min.js" type="text/javascript"></script>
-        <script src="/js/facebook.js" type="text/javascript"></script>
+        <script src="/js/facebook.js?lala" type="text/javascript"></script>
         <script src="/js/knockout-2.0.0.js" type="text/javascript"></script>
         <script src="/js/jquery.bar.js" type="text/javascript"></script>
         <script src="/js/bootstrap.min.js" type="text/javascript"></script>
@@ -104,11 +104,14 @@
         <div id="contenedor">
             <div class="menu">
                 <ul>
+                    <li><a href="/">INICIO</a></li>
                     <li><a href="/quienes-somos">QUIÉNES SOMOS</a></li>
                     <li><a href="/bids">BIDS</a></li>
                     <li><a href="/terminos">TÉRMINOS Y CONDICIONES</a></li>
-                    <li><a href="/faq">PREGUNTAS FRECUENTES</a></li>
+                    <li><a href="/faq">FAQ</a></li>
                     <li><a href="/contacto">CONTACTO</a></li>
+                    <li><a href="https://www.facebook.com/LoKieroBid" style="padding: 0;"><img src="/img/fb_icon.png" width="30" style="float: left;margin-bottom: -10px;" class="tp" title="Siguenos en Facebook" data-placement="bottom"/></a></li>
+                    <li><a href="https://twitter.com/lo_kiero" style="padding: 0;"><img src="/img/tw_icon.png" width="30" style="float: left;margin-bottom: -10px;"  class="tp" title="Siguenos en Twitter" data-placement="bottom"/></a></li>
                 </ul>
             </div><!--fin menu -->
             <div id="encabezado">
@@ -205,5 +208,25 @@
             }());
 //            ko.applyBindings(new baseViewModel('<?=$cp->getSession()->get("NICK_USUARIO")?>', <?=$cp->usuario->BID_DISPONIBLE?>, <?=$cp->carro->N_PRODUCTOS?>, '<?=$cp->carro->MONTO_CARRO_H?>'));
         </script>
+        <div class='modal hide fade in' id="askNick">
+            <div class='modal-header'>
+                <h3>Bienvenido</h3>
+            </div>
+            <form id='nickForm' class='form-horizontal' style="margin:0;">
+                <div class='modal-body'>
+                    <p>Perfecto!, ahora solo falta el nombre con que quieres ser identificado</p>
+                        <div class='control-group'>
+                            <label class='control-label' for='username'>Nombre:</label>
+                            <div class='controls'>
+                                <input type='text' name='username' id='username' class='span3 required' value='' />
+                            </div>
+                        </div>
+                </div>
+                <div class='modal-footer'>
+                    <p id='msg' class='feedback'></p>
+                    <input type='submit' class='btn btn-primary' value='Guardar' id='btnGuardar'/>
+                </div>
+            </form>
+        </div>
     </body>
 </html>

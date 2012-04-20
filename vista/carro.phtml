@@ -1,6 +1,23 @@
 <?
+function getSelect($obj, $val, $id, $nom, $sel=null, $onChange=null) {
+    $r = "<SELECT name='$nom' id='$nom' onChange=\"".$onChange."\" class='chzn-select' style='width:220px'>";
+    foreach($obj as $o) {
+        if($sel!=null && $o->$id==$sel) {
+            $r .= "<OPTION value='".trim($o->$id)."' selected>".utf8_encode($o->$val)."</OPTION>";
+        } else {
+            $r .= "<OPTION value='".trim($o->$id)."'>".utf8_encode($o->$val)."</OPTION>";
+        }
+    }
+    $r .= "</SELECT>";
+    return $r;
+}
+
 $carro = $cp->getCSec()->carro;
+$dir = $cp->getCSec()->dir;
+$dirDes = $cp->getCSec()->dirDes;
 ?>
+<link rel="stylesheet" href="css/chosen.css" type="text/css" />
+<script type="text/javascript" src="js/chosen.jquery.min.js"></script>
 <script src="/js/carro.js" type="text/javascript"></script>
 <div id="inner">
     <? if($carro->N_PRODUCTOS > 0) { ?>
@@ -39,6 +56,7 @@ $carro = $cp->getCSec()->carro;
         <tbody>
             <? for($i=0; $i<$carro->N_PRODUCTOS; $i++) { ?>
             <? $prod = $carro->PRODUCTOS[$i]; ?>
+            <? $carro->TIENE_DESPACHO += $prod->TIENE_DESPACHO ?>
             <tr id_carro_prod="<?=$prod->ID_CARRO_PROD?>">
                 <td title="<?=$prod->NOM_PRODUCTO?> <?=($prod->ESTADO_PRODUCTO==0)?" - Sin Stock":""?>" class="<?=($prod->ESTADO_PRODUCTO==0)?"red":""?>"><img src="/producto/<?=$prod->URL_IMAGEN?>" border="0" height="15" style="margin-right:5px;"/><?=$prod->NOM_PRODUCTO?></td>
                 <td class="<?=($prod->ESTADO_PRODUCTO==0)?"red":""?>">$<?=$prod->PRECIO_CARRO_PROD_H?></td>
@@ -49,8 +67,80 @@ $carro = $cp->getCSec()->carro;
                 <? } ?>
             </tr>
             <? } ?>
+            <? if($carro->ESTADO_CARRO != 0) { ?>
+            <tr>
+                <td colspan="3" style="text-align:right; font-weight: bold;">Despacho</td>
+                <td>$<?=$carro->MONTO_DESPACHO_H?></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:right; font-weight: bold;">Total</td>
+                <td><strong>$<?=$carro->MONTO_CARRO_H?></strong></td>
+            </tr>
+            <? } else { ?>
+            <tr>
+                <td colspan="3" style="text-align:right; font-weight: bold;">Total</td>
+                <td colspan="2" ><strong>$<?=$carro->MONTO_PRODUCTOS_H?></strong></td>
+            </tr>
+            <? } ?>
         </tbody>
     </table>
+<!--    <pre><?//print_r($carro)?></pre>-->
+    <? if($carro->TIENE_DESPACHO > 0) { ?>
+    <div id="despacho" class="well">
+        <h2>Despacho</h2>
+        <? if($carro->ESTADO_CARRO == 0) { ?>
+        <p>Ingrese los datos necesarios para enviar los productos.</p>
+        <form class="form-horizontal" id="desForm" action="/?sec=carro&do=setDes">
+            <div class="row">
+                <div class="span5">
+                    <? if($dir) { ?>
+                    <div class="control-group">
+                        <label class="control-label" for="id_dir">Mis Direcciones:</label>
+                        <div class="controls">
+                            <?=getSelect($cp->getCSec()->dir, "DIRECCION", "ID_DIRECCION", "id_dir", $carro->ID_DIRECCION); ?>
+                        </div>
+                    </div>
+                    <? } ?>
+                    <div class="control-group">
+                        <label class="control-label" for="nom">Nombre:</label>
+                        <div class="controls">
+                            <input type="text" name="nom" id="nom" class="required" value=""/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="tel">Tel&eacute;fono:</label>
+                        <div class="controls">
+                            <input type="text" name="tel" id="tel" class="required" value=""/>
+                        </div>
+                    </div>
+                </div>
+                <div class="span5">
+                    <div class="control-group">
+                        <label class="control-label" for="ema">Email:</label>
+                        <div class="controls">
+                            <input type="text" name="ema" id="ema" class="required email" value=""/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="dir">Direcci&oacute;n:</label>
+                        <div class="controls">
+                            <input type="text" name="dir" id="dir" class="required" value=""/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="com">Comuna:</label>
+                        <div class="controls">
+                            <?=getSelect($cp->getCSec()->com, "NOM_COMUNA", "ID_COMUNA", "com"); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <? } else { ?>
+        <p>Los productos ser&aacute;n enviados a <strong><?=$dirDes->NOM_RECEPTOR?></strong> (<?=$dirDes->EMA_RECEPTOR?>, <?=$dirDes->TEL_RECEPTOR?>) a la direcci&oacute;n <strong><?=$dirDes->DIRECCION?></strong>, <?=$dirDes->NOM_COMUNA?></p>
+        <? } ?>
+    </div>
+    <? } ?>
     <div class="top-nav">
     <? if($carro->ESTADO_CARRO == 0) { ?>
         <a class="btn btn-success bloqdes" style="color:white;">Confirmar<i class="icon-arrow-right icon-white icon-right"></i></a>

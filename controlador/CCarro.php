@@ -2,6 +2,9 @@
 include_once 'modelo/UsuarioMP.php';
 include_once 'modelo/ProductoMP.php';
 include_once 'modelo/CarroMP.php';
+include_once 'modelo/SubastaVipMP.php';
+include_once 'modelo/ComunaMP.php';
+include_once 'modelo/DireccionDespachoMP.php';
 
 class CCarro {
     protected $cp;
@@ -17,6 +20,8 @@ class CCarro {
         $this->usMP = new UsuarioMP();
         $this->prMP = new ProductoMP();
         $this->caMP = new CarroMP();
+        $this->coMP = new ComunaMP();
+        $this->diMP = new DireccionDespachoMP();
         $this->getJSON();
         $this->setDo();
         $this->setOp();
@@ -24,6 +29,21 @@ class CCarro {
 
     function getLayout() {
         return $this->layout;
+    }
+    
+    function iniCarro() {
+        $carro = new stdClass();
+        if(!$this->cp->getSession()->existe("ID_CARRO") || $this->cp->getSession()->get("ID_CARRO")*1 == 0) {
+            $carro->ID_USUARIO = $this->cp->getSession()->get("ID_USUARIO");
+            $carro->MONTO_CARRO = 0;
+            $carro->FECHA_INICIO = date("U");
+            $carro->ESTADO_CARRO = 0;
+            $carro->ID_CARRO = $this->caMP->save($carro);
+            if($carro->ID_CARRO > 0) $this->cp->getSession()->set("ID_CARRO", $carro->ID_CARRO);
+        } else {
+            $carro->ID_CARRO = $this->cp->getSession()->get("ID_CARRO");
+        }
+        return $carro;
     }
 
     function setDo() {
@@ -90,6 +110,8 @@ class CCarro {
                             if($carro->ID_CARRO > 0) {
                                 $res = $this->caMP->find($carro->ID_CARRO);
                                 if($res->ESTADO_CARRO == 0) {
+                                    $prod->TIPO_CARRO_PROD = 1;
+                                    $prod->ID_SUBASTA = null;
                                     $r1 = $this->caMP->addProducto($carro->ID_CARRO, $prod);
                                     $r2 = $this->caMP->updateCarro($carro->ID_CARRO);
                                     if($r1 && $r2) {
@@ -112,6 +134,61 @@ class CCarro {
                         } else {
                             $res->ERROR = 1;
                             $res->MENSAJE = "Debes seleccionar productos";
+                        }
+                    } else {
+                        $res->ERROR = 1;
+                        $res->MENSAJE = "Debes iniciar sesi&oacute;n";
+                    }
+                    echo json_encode($res);
+                    break;
+                case 'addSub':
+                    if($this->cp->getSession()->existe("ID_USUARIO")) {
+                        $this->suMP = new SubastaVipMP();
+                        if(isset($_POST["id_svip"])) {
+                            $sub = $this->suMP->find($_POST["id_svip"], array("ID_SVIP", "ID_USUARIO", "ID_PRODUCTO", "MONTO_SUBASTA", "ESTADO_SUBASTA"));
+                            if(isset($sub->ID_USUARIO) && $sub->ID_USUARIO == $this->cp->getSession()->get("ID_USUARIO")) {
+//                                $prod = $this->prMP->find($sub->ID_PRODUCTO, array("ID_PRODUCTO", "PRECIO_VENTA"));
+                                $prod = new stdClass();
+                                $prod->ID_PRODUCTO = $sub->ID_PRODUCTO;
+                                $prod->PRECIO_VENTA = $sub->MONTO_SUBASTA;
+                                $prod->CANTIDAD = 1;
+                                $carro = $this->iniCarro();
+                                if(!$this->caMP->existeSubasta($sub)) {
+                                    if($carro->ID_CARRO > 0) {
+                                        $res = $this->caMP->find($carro->ID_CARRO);
+                                        if($res->ESTADO_CARRO == 0) {
+                                            $prod->TIPO_CARRO_PROD = 2;
+                                            $prod->ID_SUBASTA = $_POST["id_svip"];
+                                            $r1 = $this->caMP->addProducto($carro->ID_CARRO, $prod);
+                                            $r2 = $this->caMP->updateCarro($carro->ID_CARRO);
+                                            if($r1 && $r2) {
+                                                $res = $this->caMP->find($carro->ID_CARRO);
+                                                $res->PRODUCTOS = $this->caMP->fetchProductos($carro->ID_CARRO);
+                                                $res->ERROR = 0;
+                                                $res->MENSAJE = "El producto fue agregado correctamente al carro";
+                                            } else {
+                                                $res->ERROR = 1;
+                                                $res->MENSAJE = "El producto no pudo ser agregado, intentalo nuevamente";
+                                            }
+                                        } else {
+                                            $res->ERROR = 1;
+                                            $res->MENSAJE = "No puedes agregar productos a este carro";
+                                        }
+                                    } else {
+                                        $res->ERROR = 1;
+                                        $res->MENSAJE = "El producto no pudo ser agregado, intentalo nuevamente";
+                                    }
+                                } else {
+                                    $res->ERROR = 1;
+                                    $res->MENSAJE = "Este producto ya fue agregado a un carro";
+                                }
+                            } else {
+                                $res->ERROR = 1;
+                                $res->MENSAJE = "No puedes agregar esta subasta";
+                            }
+                        } else {
+                            $res->ERROR = 1;
+                            $res->MENSAJE = "Debes seleccionar una subasta";
                         }
                     } else {
                         $res->ERROR = 1;
@@ -216,6 +293,69 @@ class CCarro {
                     }
                     echo json_encode($res);
                     break;
+                case 'setDes':
+                    if($this->cp->isLoged) {
+                        $res = new stdClass();
+                        $dir = new stdClass();
+                        $dir->ID_COMUNA = $_POST["com"];
+                        $dir->DIRECCION = $_POST["dir"];
+                        $dir->ID_USUARIO = $this->cp->getSession()->get("ID_USUARIO");
+                        $dir->TEL_RECEPTOR = $_POST["tel"];
+                        $dir->EMA_RECEPTOR = $_POST["ema"];
+                        $dir->NOM_RECEPTOR = $_POST["nom"];
+                        $dir->ESTADO_DIRECCION = 1;
+                        $dir->ID_DIRECCION = (isset($_POST["id_dir"]))?$_POST["id_dir"]:0;
+                        if($dir->ID_DIRECCION == 0) {
+                            $idDir = $this->diMP->save($dir);
+                        } else {
+                            $idDir = $this->diMP->update($dir);
+                        }
+                        
+                        $dir->ID_DIRECCION = ($dir->ID_DIRECCION == 0)?$idDir:$dir->ID_DIRECCION;
+                        if($dir->ID_DIRECCION) {
+                            $com = $this->coMP->find($dir->ID_COMUNA);
+                            $car = $this->caMP->find($this->cp->getSession()->get("ID_CARRO"));
+                            
+                            $prod = $this->caMP->fetchProductos($this->cp->getSession()->get("ID_CARRO"));
+    //                        print_r($com);
+    //                        print_r($dir);
+    //                        print_r($prod);
+
+                            $nProd = count($prod);
+                            $maxDes = 0;
+                            if($com->ID_REGION == 13) { //RM
+                                for($i=0; $i<$nProd; $i++) {
+                                    $maxDes = ($prod[$i]->TIENE_DESPACHO == 1 && $prod[$i]->COSTO_STGO > $maxDes)?$prod[$i]->COSTO_STGO:$maxDes;
+                                }
+                            } else { //REGIONES
+                                for($i=0; $i<$nProd; $i++) {
+                                    $maxDes = ($prod[$i]->TIENE_DESPACHO == 1 && $prod[$i]->COSTO_REGIONES > $maxDes)?$prod[$i]->COSTO_REGIONES:$maxDes;
+                                }
+                            }
+                            $ca = new stdClass();
+                            $ca->ID_CARRO = $car->ID_CARRO;
+                            $ca->ID_COMUNA = $dir->ID_COMUNA;
+                            $ca->MONTO_DESPACHO = $maxDes;
+                            $ca->ID_DIRECCION = $dir->ID_DIRECCION;
+                            $ca->TEL_DESPACHO = $dir->TEL_RECEPTOR;
+                            $ca->NOM_DESPACHO = $dir->NOM_RECEPTOR;
+                            $ca->EMA_DESPACHO = $dir->EMA_RECEPTOR;
+                            $ca->DIR_DESPACHO = $dir->DIRECCION;
+                            $updCar = $this->caMP->update($ca);
+                            if($updCar) {
+                                $res->ERROR = 0;
+                                $res->MENSAJE = "";
+                            } else {
+                                $res->ERROR = 1;
+                                $res->MENSAJE = "La dirección no pudo ser guardada, por favor intentalo nuevamente";
+                            }
+                        } else {
+                            $res->ERROR = 1;
+                            $res->MENSAJE = "La dirección no pudo ser guardada, por favor intentalo nuevamente";
+                        }
+                        echo json_encode($res);
+                    }
+                    break;
             }
             die();
         }
@@ -256,6 +396,12 @@ class CCarro {
                         $res->LOGIN = 0;
                     }
                     break;
+                case 'direccion':
+                    if($this->cp->isLoged) {
+                        $res = $this->diMP->find($_POST["id_dir"]);
+                        $res->LOGIN = 1;
+                    } else $res->LOGIN = 0;
+                    break;
             }
             echo json_encode($res);
             die();
@@ -274,6 +420,18 @@ class CCarro {
                     $res = $carro;
                     $res->PRODUCTOS = $prod;
                     $res->LOGIN = 1;
+                    if($carro->ESTADO_CARRO == 0) {
+                        $this->com = $this->coMP->fetchAll();
+                        $this->dir = $this->diMP->fetchByUsuario($this->cp->getSession()->get("ID_USUARIO"));
+                        if($this->dir) {
+                            $nueva = new stdClass();
+                            $nueva->ID_DIRECCION = 0;
+                            $nueva->DIRECCION = "Nueva direcci&oacute;n";
+                            $this->dir[] = $nueva;
+                        }
+                    } else {
+                        $this->dirDes = $this->diMP->find($carro->ID_DIRECCION);
+                    }
                 } else {
                     $this->cp->getSession()->salto("/");
                 }

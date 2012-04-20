@@ -42,6 +42,8 @@ class CarroMP {
         if($res) {
             $row = mysql_fetch_object($res);
             $row->MONTO_CARRO_H = number_format($row->MONTO_CARRO, 0, ",", ".");
+            $row->MONTO_PRODUCTOS_H = number_format($row->MONTO_PRODUCTOS, 0, ",", ".");
+            $row->MONTO_DESPACHO_H = number_format($row->MONTO_DESPACHO, 0, ",", ".");
             return $row;
         } else return false;
     }
@@ -99,7 +101,16 @@ class CarroMP {
     
     function fetchProductos($idCarro) {
         $idCarro = $this->_bd->limpia($idCarro);
-        $sql = "SELECT CP.*, P.NOM_PRODUCTO, P.VALOR_BID, I.URL_IMAGEN, P.ESTADO_PRODUCTO FROM CARRO_PRODUCTO AS CP INNER JOIN PRODUCTO AS P INNER JOIN IMAGEN AS I ON CP.ID_CARRO = $idCarro AND CP.ESTADO_CARRO_PROD = 1 AND CP.ID_PRODUCTO = P.ID_PRODUCTO AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN";
+        $sql = "SELECT CP.*, P.NOM_PRODUCTO, P.VALOR_BID, I.URL_IMAGEN, P.ESTADO_PRODUCTO, P.TIENE_DESPACHO, D.COSTO_STGO, D.COSTO_REGIONES 
+                FROM CARRO_PRODUCTO AS CP 
+                    INNER JOIN PRODUCTO AS P 
+                    INNER JOIN DESPACHO AS D
+                    INNER JOIN IMAGEN AS I 
+                ON CP.ID_CARRO = $idCarro 
+                    AND CP.ESTADO_CARRO_PROD = 1 
+                    AND CP.ID_PRODUCTO = P.ID_PRODUCTO 
+                    AND P.ID_DESPACHO = D.ID_DESPACHO
+                    AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN";
         $res = $this->_bd->sql($sql);
         $arr = array();
         while($row = mysql_fetch_object($res)) {
@@ -115,18 +126,27 @@ class CarroMP {
         $idCarro = $this->_bd->limpia($idCarro);
         $now = date("U");
         $sql = "INSERT INTO CARRO_PRODUCTO 
-                (ID_PRODUCTO, ID_CARRO, FECHA_CARRO_PROD, PRECIO_CARRO_PROD, CANTIDAD_CARRO_PROD, ESTADO_CARRO_PROD) VALUES 
-                ($producto->ID_PRODUCTO, $idCarro, $now, $producto->PRECIO_VENTA, $producto->CANTIDAD, 1)";
-        
+                (ID_PRODUCTO, ID_CARRO, ID_SUBASTA, FECHA_CARRO_PROD, PRECIO_CARRO_PROD, CANTIDAD_CARRO_PROD, ESTADO_CARRO_PROD, TIPO_CARRO_PROD) VALUES 
+                ($producto->ID_PRODUCTO, $idCarro, $producto->ID_SUBASTA, $now, $producto->PRECIO_VENTA, $producto->CANTIDAD, 1, $producto->TIPO_CARRO_PROD)";
+//        echo $sql;
         if($this->_bd->sql($sql)) {
             $sql = "UPDATE $this->_dbTable SET MONTO_CARRO = MONTO_CARRO + ".($producto->PRECIO_VENTA*$producto->CANTIDAD)." WHERE ID_CARRO = $idCarro";
+//            echo $sql;
             return $this->_bd->sql($sql);
+        } else return false;
+    }
+    
+    function existeSubasta($Sub) {
+        $sql = "SELECT ID_CARRO_PROD FROM CARRO_PRODUCTO WHERE TIPO_CARRO_PROD = 2 AND ID_SUBASTA = $Sub->ID_SVIP AND ESTADO_CARRO_PROD = 1";
+        $res = $this->_bd->sql($sql);
+        if($res) {
+            return mysql_fetch_object($res);
         } else return false;
     }
     
     function updateCarro($idCarro) {
         $idCarro = $this->_bd->limpia($idCarro);
-        $sql = "SELECT P.ID_PRODUCTO, P.PRECIO_VENTA FROM CARRO_PRODUCTO AS CP INNER JOIN PRODUCTO AS P ON CP.ID_CARRO = $idCarro AND CP.ESTADO_CARRO_PROD = 1 AND CP.ID_PRODUCTO = P.ID_PRODUCTO AND P.ESTADO_PRODUCTO = 1 GROUP BY P.ID_PRODUCTO";
+        $sql = "SELECT P.ID_PRODUCTO, P.PRECIO_VENTA FROM CARRO_PRODUCTO AS CP INNER JOIN PRODUCTO AS P ON CP.ID_CARRO = $idCarro AND CP.ESTADO_CARRO_PROD = 1 AND CP.ID_PRODUCTO = P.ID_PRODUCTO AND P.ESTADO_PRODUCTO = 1 AND P.TIPO_CARRO_PROD = 1 GROUP BY P.ID_PRODUCTO";
         $res = $this->_bd->sql($sql);
         while($row = mysql_fetch_object($res)) {
             $sql = "UPDATE CARRO_PRODUCTO SET PRECIO_CARRO_PROD = $row->PRECIO_VENTA WHERE ID_CARRO = $idCarro AND ID_PRODUCTO = $row->ID_PRODUCTO";
@@ -136,9 +156,9 @@ class CarroMP {
         $res = $this->_bd->sql($sql);
         $row = mysql_fetch_object($res);
         if($row->TOTAL) {
-            $sql = "UPDATE $this->_dbTable SET MONTO_CARRO = $row->TOTAL WHERE ID_CARRO = $idCarro";
+            $sql = "UPDATE $this->_dbTable SET MONTO_CARRO = ($row->TOTAL + MONTO_DESPACHO), MONTO_PRODUCTOS = $row->TOTAL WHERE ID_CARRO = $idCarro";
         } else {
-            $sql = "UPDATE $this->_dbTable SET MONTO_CARRO = 0 WHERE ID_CARRO = $idCarro";
+            $sql = "UPDATE $this->_dbTable SET MONTO_CARRO = 0, MONTO_PRODUCTOS = 0, MONTO_DESPACHO = 0 WHERE ID_CARRO = $idCarro";
         }
         $res = $this->_bd->sql($sql);
         
@@ -191,7 +211,7 @@ class CarroMP {
         $sql = "UPDATE $this->_dbTable SET 
                 $val
                 WHERE $this->_id = $data->ID_CARRO";
-        
+//        echo $sql;
         return $this->_bd->sql($sql);
     }
 }

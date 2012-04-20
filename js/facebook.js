@@ -72,21 +72,18 @@ function setSession(res) {
 
 function askNick(nick) {
     nick = (nick)?nick:"";
-    modal = $("<div class='modal hide fade in'><div class='modal-header'><h3>Bienvenido</h3></div><div class='modal-body'><p>Perfecto!, ahora solo falta el nombre con que quieres ser identificado</p><form id='nickForm' class='form-horizontal'><div class='control-group'><label class='control-label' for='username'>Nombre:</label><div class='controls'><input type='text' name='username' id='username' class='span3 required' value='"+nick+"'></div></div></div><div class='modal-footer'><p id='msg' class='feedback'></p><input type='submit' class='btn btn-primary' value='Guardar' id='btnGuardar'/></div></form></div>");
+    var modal = $("#askNick");
     $modal = modal.modal({
         'show': true,
         'backdrop': 'static'
     });
-    
-    var $btn = $("#btnGuardar", $modal);
+    $("#username", modal).val(nick);
+    var $btn = $("#btnGuardar", modal);
     var validator = $("#nickForm", modal).bind("invalid-form.validate",
         function() {
+            $("#msg", modal).html("Debes ingresar un nombresss");
         }).validate({
-        errorPlacement: function(error, element) {
-            if(!$btn.hasClass("disabled")) {
-                $("#msg", modal).html("Debes ingresar un nombre");
-            }
-        },
+        errorPlacement: function(error, element) {},
         submitHandler: function(form) {
             if(!$btn.hasClass("disabled")) {
                 $.ajax({
@@ -98,6 +95,7 @@ function askNick(nick) {
                     },
                     beforeSend: function() {
                         $btn.val("Guardando").addClass("disabled");
+                        $("#msg", modal).html("");
                     },
                     success: function(data) {
 //                        console.log(data);
@@ -117,6 +115,8 @@ function askNick(nick) {
         success: function(label) {
         }
     });
+    
+//    console.log(validator);
 }
 
 function checkReserva(id, fb_id) {

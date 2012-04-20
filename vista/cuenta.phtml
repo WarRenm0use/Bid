@@ -1,0 +1,18 @@
+<?
+
+?>
+<script src="/js/cuenta.js" type="text/javascript"></script>
+<div id="inner">
+    <h1>Mi Cuenta</h1>
+    <div class="row">
+        <div class="span2" style="padding: 15px 0;">
+            <ul class="nav nav-pills nav-stacked">
+                <li class="<?=($cp->getCSec()->op == "subastas")?"active":""?>"><a href="/micuenta/subastas">Subastas</a></li>
+<!--                <li class="<?=($cp->getCSec()->op == "misdatos")?"active":""?>"><a href="/micuenta/misdatos">Mis datos</a></li>-->
+            </ul>
+        </div>
+        <div class="span8" style="margin-left: 0;padding: 8px 20px;min-height: 200px;">
+            <? include $cp->getCSec()->getLayoutOp(); ?>
+        </div>
+    </div>
+</div>

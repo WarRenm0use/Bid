@@ -1,0 +1,95 @@
+<?
+$sub = $cp->getCSec()->res;
+$nSub = count($sub);
+?>
+<h2>Subastas</h2>
+<? if($sub) { ?>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Subasta</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acci&oacute;n</th>
+        </tr>
+    </thead>
+    <tbody>
+        <? for($i=0; $i<$nSub; $i++) { ?>
+        <? $s = $sub[$i]; ?>
+        <tr id_svip="<?=$s->ID_SVIP?>">
+            <td><?=$s->NOM_PRODUCTO?></td>
+            <td><?=date("d.m.Y H:i", $s->INICIO_SUBASTA)?></td>
+            <td>
+                <? 
+                    switch($s->ESTADO_SUBASTA) {
+                        case 0:
+                            $cs = "label-warning";
+                            $est = "Reservada";
+                            break;
+                        case 1:
+                            $cs = "label-info";
+                            $est = "Por comenzar";
+                            break;
+                        case 2:
+                            $cs = "";
+                            $est = "Anulada";
+                            break;
+                        case 3:
+                            $cs = "label-success";
+                            $est = "Activa";
+                            break;
+                        case 4:
+                            $cs = "label-inverse";
+                            $est = "Terminada";
+                            break;
+                    }
+                    
+                    echo "<span class=\"label $cs\">$est</span>";
+                ?>
+            </td>
+            <td>
+                <? 
+                    switch($s->ESTADO_SUBASTA) {
+                        case 0:
+                            $show = false;
+                            break;
+                        case 1:
+                            $show = true;
+                            $cs = "btn-primary";
+                            $txt = "Ir a la subasta";
+                            $iconL = "";
+                            $iconR = "<i class='icon-white icon-share-alt'></i>";
+                            $est = "";
+                            $hr = "/svip/".$s->COD_SUBASTA;
+                            break;
+                        case 2:
+                            $show = false;
+                            break;
+                        case 3:
+                            $show = true;
+                            $cs = "btn-success";
+                            $txt = "Ir a la subasta";
+                            $iconL = "";
+                            $iconR = "<i class='icon-white icon-share-alt'></i>";
+                            $est = "";
+                            $hr = "/svip/".$s->COD_SUBASTA;
+                            break;
+                        case 4:
+                            $show = $s->IS_GANADOR;
+                            $cs = "addSub btn-success";
+                            $txt = "Agregar al carro";
+                            $iconL = "<i class='icon-white icon-shopping-cart'></i>";
+                            $iconR = "";
+                            $est = ($s->IN_CARRO)?"disabled":"";
+                            break;
+                    }
+                    if($show) echo "<a href='$hr' class=\"btn btn-small $cs $est\">$iconL $txt $iconR</a>";
+                ?>
+            </td>
+        </tr>
+        <? } ?>
+    </tbody>
+</table>
+<? } else { ?>
+<p>Todavia no has participado de ninguna subasta :(</p>
+<? } ?>
