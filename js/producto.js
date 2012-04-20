@@ -20,7 +20,7 @@ $(document).ready(function(){
                     success: function(data) {
                         showNotificacion(data.MENSAJE);
                         if(data.ERROR == 0) {
-                            $carroBtn.html("<a href='/carro'>Carro de compra ("+data.PRODUCTOS.length+")</a>").attr("data-original-title", "Tienes "+data.PRODUCTOS.length+"  productos en tu carro de compra por un total de $"+data.MONTO_CARRO_H);
+                            $carroBtn.html("<a href='/carro'>Carro de compra ("+data.PRODUCTOS.length+")</a>").attr("data-original-title", "Tienes "+data.PRODUCTOS.length+"  productos en tu carro de compra por un total de $"+data.MONTO_PRODUCTOS_H);
                         }
                     }
                 });

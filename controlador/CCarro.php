@@ -64,7 +64,14 @@ class CCarro {
                                     if($this->caMP->updateProducto($prod)) {
                                         $this->caMP->updateCarro($this->cp->getSession()->get("ID_CARRO"));
                                         $res = $this->caMP->find($carro->ID_CARRO);
-                                        $res->N_PRODUCTOS = $this->caMP->cuentaProductos($carro->ID_CARRO);
+                                        $prod = $this->caMP->fetchProductos($carro->ID_CARRO);
+//                                        $res->N_PRODUCTOS = $this->caMP->cuentaProductos($carro->ID_CARRO);
+                                        $res->N_PRODUCTOS = ($prod)?count($prod):0;
+                                        $desp = 0;
+                                        for($i=0; $i<$res->N_PRODUCTOS; $i++) {
+                                            $desp += $prod[$i]->TIENE_DESPACHO;
+                                        }
+                                        $res->TIENE_DESPACHO = $desp;
                                         $res->ERROR = 0;
                                         $res->MENSAJE = "El producto fue eliminado correctamente";
                                     } else {
@@ -111,7 +118,7 @@ class CCarro {
                                 $res = $this->caMP->find($carro->ID_CARRO);
                                 if($res->ESTADO_CARRO == 0) {
                                     $prod->TIPO_CARRO_PROD = 1;
-                                    $prod->ID_SUBASTA = null;
+                                    $prod->ID_SUBASTA = 0;
                                     $r1 = $this->caMP->addProducto($carro->ID_CARRO, $prod);
                                     $r2 = $this->caMP->updateCarro($carro->ID_CARRO);
                                     if($r1 && $r2) {
@@ -121,7 +128,7 @@ class CCarro {
                                         $res->MENSAJE = "Los productos fueron agregados correctamente al carro";
                                     } else {
                                         $res->ERROR = 1;
-                                        $res->MENSAJE = "Los productos no pudieron ser agregados, intentalo nuevamente";
+                                        $res->MENSAJE = "Los productos no pudieron ser agregados, intentalo nuevamente 2";
                                     }
                                 } else {
                                     $res->ERROR = 1;
@@ -129,7 +136,7 @@ class CCarro {
                                 }
                             } else {
                                 $res->ERROR = 1;
-                                $res->MENSAJE = "Los productos no pudieron ser agregados, intentalo nuevamente";
+                                $res->MENSAJE = "Los productos no pudieron ser agregados, intentalo nuevamente 1";
                             }
                         } else {
                             $res->ERROR = 1;
@@ -277,6 +284,33 @@ class CCarro {
                             if($carro->ESTADO_CARRO == 0 || $carro->ESTADO_CARRO == 1) {
                                 $ca->ESTADO_CARRO = ($carro->ESTADO_CARRO == 0)?1:0;
                                 $res->ERROR = 0;
+                                $prod = $this->caMP->fetchProductos($this->cp->getSession()->get("ID_CARRO"));
+                                $nProd = ($prod)?count($prod):0;
+                                $desp = 0;
+                                for($i=0; $i<$nProd; $i++) {
+                                    $desp += $prod[$i]->TIENE_DESPACHO;
+                                }
+                                $maxDes = 0;
+                                if($desp>0) {
+                                    $com = $this->coMP->find($carro->ID_COMUNA);
+                                    if($com->ID_REGION == 13) { //RM
+                                        for($i=0; $i<$nProd; $i++) {
+                                            $maxDes = ($prod[$i]->TIENE_DESPACHO == 1 && $prod[$i]->COSTO_STGO > $maxDes)?$prod[$i]->COSTO_STGO:$maxDes;
+                                        }
+                                    } else { //REGIONES
+                                        for($i=0; $i<$nProd; $i++) {
+                                            $maxDes = ($prod[$i]->TIENE_DESPACHO == 1 && $prod[$i]->COSTO_REGIONES > $maxDes)?$prod[$i]->COSTO_REGIONES:$maxDes;
+                                        }
+                                    }
+                                } else {
+                                    $ca->ID_COMUNA = 0;
+                                    $ca->ID_DIRECCION = 0;
+                                    $ca->TEL_DESPACHO = "";
+                                    $ca->NOM_DESPACHO = "";
+                                    $ca->EMA_DESPACHO = "";
+                                    $ca->DIR_DESPACHO = "";
+                                }
+                                $ca->MONTO_DESPACHO = $maxDes;
                                 $this->caMP->update($ca);
                                 $this->caMP->updateCarro($carro->ID_CARRO);
                             } else {
@@ -313,29 +347,26 @@ class CCarro {
                         
                         $dir->ID_DIRECCION = ($dir->ID_DIRECCION == 0)?$idDir:$dir->ID_DIRECCION;
                         if($dir->ID_DIRECCION) {
-                            $com = $this->coMP->find($dir->ID_COMUNA);
+//                            $com = $this->coMP->find($dir->ID_COMUNA);
                             $car = $this->caMP->find($this->cp->getSession()->get("ID_CARRO"));
                             
-                            $prod = $this->caMP->fetchProductos($this->cp->getSession()->get("ID_CARRO"));
-    //                        print_r($com);
-    //                        print_r($dir);
-    //                        print_r($prod);
+//                            $prod = $this->caMP->fetchProductos($this->cp->getSession()->get("ID_CARRO"));
 
-                            $nProd = count($prod);
-                            $maxDes = 0;
-                            if($com->ID_REGION == 13) { //RM
-                                for($i=0; $i<$nProd; $i++) {
-                                    $maxDes = ($prod[$i]->TIENE_DESPACHO == 1 && $prod[$i]->COSTO_STGO > $maxDes)?$prod[$i]->COSTO_STGO:$maxDes;
-                                }
-                            } else { //REGIONES
-                                for($i=0; $i<$nProd; $i++) {
-                                    $maxDes = ($prod[$i]->TIENE_DESPACHO == 1 && $prod[$i]->COSTO_REGIONES > $maxDes)?$prod[$i]->COSTO_REGIONES:$maxDes;
-                                }
-                            }
+//                            $nProd = count($prod);
+//                            $maxDes = 0;
+//                            if($com->ID_REGION == 13) { //RM
+//                                for($i=0; $i<$nProd; $i++) {
+//                                    $maxDes = ($prod[$i]->TIENE_DESPACHO == 1 && $prod[$i]->COSTO_STGO > $maxDes)?$prod[$i]->COSTO_STGO:$maxDes;
+//                                }
+//                            } else { //REGIONES
+//                                for($i=0; $i<$nProd; $i++) {
+//                                    $maxDes = ($prod[$i]->TIENE_DESPACHO == 1 && $prod[$i]->COSTO_REGIONES > $maxDes)?$prod[$i]->COSTO_REGIONES:$maxDes;
+//                                }
+//                            }
                             $ca = new stdClass();
                             $ca->ID_CARRO = $car->ID_CARRO;
                             $ca->ID_COMUNA = $dir->ID_COMUNA;
-                            $ca->MONTO_DESPACHO = $maxDes;
+//                            $ca->MONTO_DESPACHO = $maxDes;
                             $ca->ID_DIRECCION = $dir->ID_DIRECCION;
                             $ca->TEL_DESPACHO = $dir->TEL_RECEPTOR;
                             $ca->NOM_DESPACHO = $dir->NOM_RECEPTOR;

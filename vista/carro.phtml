@@ -68,18 +68,20 @@ $dirDes = $cp->getCSec()->dirDes;
             </tr>
             <? } ?>
             <? if($carro->ESTADO_CARRO != 0) { ?>
+            <? if($carro->MONTO_DESPACHO > 0) { ?>
             <tr>
                 <td colspan="3" style="text-align:right; font-weight: bold;">Despacho</td>
-                <td>$<?=$carro->MONTO_DESPACHO_H?></td>
+                <td id="carro_despacho">$<?=$carro->MONTO_DESPACHO_H?></td>
             </tr>
+            <? } ?>
             <tr>
                 <td colspan="3" style="text-align:right; font-weight: bold;">Total</td>
-                <td><strong>$<?=$carro->MONTO_CARRO_H?></strong></td>
+                <td id="carro_total"><strong>$<?=$carro->MONTO_CARRO_H?></strong></td>
             </tr>
             <? } else { ?>
             <tr>
                 <td colspan="3" style="text-align:right; font-weight: bold;">Total</td>
-                <td colspan="2" ><strong>$<?=$carro->MONTO_PRODUCTOS_H?></strong></td>
+                <td colspan="2" id="carro_total"><strong>$<?=$carro->MONTO_PRODUCTOS_H?></strong></td>
             </tr>
             <? } ?>
         </tbody>

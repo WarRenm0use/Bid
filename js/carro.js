@@ -1,4 +1,4 @@
-var desForm,
+var desForm, $bloqdes,
 bloqDes = function() {
 //    if(desForm.checkForm()) {
         $.ajax({
@@ -34,8 +34,16 @@ eliminar = function (e) {
                 $this.tooltip("show");
             },
             success: function(data) {
+//                console.log(data);
                 showNotificacion(data.MENSAJE);
                 if(data.ERROR == 0) {
+                    $bloqdes.off("click");
+                    if(data.TIENE_DESPACHO > 0) {
+                        $bloqdes.on("click", function(){$desForm.submit()});
+                    } else {
+                        $("#despacho").remove();
+                        $bloqdes.on("click", bloqDes);
+                    }
                     $this.tooltip("hide");
                     var $nFilas = $(".delete");
                     if($nFilas.length > 1) {
@@ -51,7 +59,8 @@ eliminar = function (e) {
                             $cont.html("<h1>Carro de compra</h1><p>No tienes productos en el carro.</p>");
                         });
                     }
-                    $carroBtn.html("<a href='/carro'>Carro de compra ("+data.N_PRODUCTOS+")</a>").attr("data-original-title", "Tienes "+data.N_PRODUCTOS+"  productos en tu carro de compra por un total de $"+data.MONTO_CARRO_H);
+                    $carroBtn.html("<a href='/carro'>Carro de compra ("+data.N_PRODUCTOS+")</a>").attr("data-original-title", "Tienes "+data.N_PRODUCTOS+"  productos en tu carro de compra por un total de $"+data.MONTO_PRODUCTOS_H);
+                    $("#carro_total").html("<strong>$"+data.MONTO_PRODUCTOS_H+"</strong>");
                 } else {
                     $this.tooltip("hide");
                     $this.attr("data-original-title", "Quitar del carro").removeClass("disabled");

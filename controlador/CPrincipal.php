@@ -81,11 +81,12 @@ class CPrincipal {
             $res->SQL = $carro->SQL;
             if(isset($carro->ID_CARRO)) {
                 $this->caMP->updateCarro($carro->ID_CARRO);
-                $carro = $this->caMP->find($carro->ID_CARRO, array("ID_CARRO","MONTO_CARRO"));
+                $carro = $this->caMP->find($carro->ID_CARRO, array("ID_CARRO","MONTO_CARRO", "MONTO_PRODUCTOS"));
                 $this->getSession()->set("ID_CARRO", $carro->ID_CARRO);
                 $res->ID_CARRO = $carro->ID_CARRO;
                 $res->MONTO_CARRO = $carro->MONTO_CARRO;
                 $res->MONTO_CARRO_H = $carro->MONTO_CARRO_H;
+                $res->MONTO_PRODUCTOS_H = $carro->MONTO_PRODUCTOS_H;
                 $res->N_PRODUCTOS = $this->caMP->cuentaProductos($carro->ID_CARRO);
             } else {
                 $caAux = new stdClass();
@@ -98,6 +99,7 @@ class CPrincipal {
                 $res->ID_CARRO = $caAux->ID_CARRO;
                 $res->MONTO_CARRO = 0;
                 $res->MONTO_CARRO_H = 0;
+                $res->MONTO_PRODUCTOS_H = 0;
                 $res->N_PRODUCTOS = 0;
             }
             $this->carro = $res;
