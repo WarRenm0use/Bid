@@ -120,7 +120,7 @@ class CMain {
                                 $this->cp->getSession()->set("NOM_USUARIO", $res->NOM_USUARIO." ".$res->APE_USUARIO);
                                 $this->cp->getSession()->set("ID_FB", $_POST["session"]["userID"]);
                                 $res->RELOAD = 1;
-                            }
+                            } else $res->RELOAD = 0;
                             $carro = $this->caMP->lastByUser($res->ID_USUARIO, array("ID_CARRO"));
                             if(isset($carro->ID_CARRO)) {
                                 $this->caMP->updateCarro($carro->ID_CARRO);
