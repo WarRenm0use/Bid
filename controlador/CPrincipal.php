@@ -37,7 +37,7 @@ class CPrincipal {
 //        echo "<pre>";
 //        print_r($_SERVER);
 //        echo "</pre>";
-        $host = explode(".",$_SERVER["HTTP_HOST"]);
+//        $host = explode(".",$_SERVER["HTTP_HOST"]);
 //        echo $host[0]."<br>";
 //        if($_GET["sec"]!="svip" || $_GET["get"]!="refresh")
 //        if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);

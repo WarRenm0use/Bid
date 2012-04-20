@@ -30,10 +30,11 @@ class UsuarioMP {
         }
 
         $sql = "SELECT $sAttr FROM $this->_dbTable WHERE $this->_id = $id";
+//        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         if($res) {
             $row = mysql_fetch_object($res);
-            $row->BID_DISPONIBLE = $row->BID_TOTAL + $data->BID_GANADO - $row->BID_USADO;
+            $row->BID_DISPONIBLE = $row->BID_TOTAL + $row->BID_GANADO - $row->BID_USADO;
             return $row;
         } else return false;
     }

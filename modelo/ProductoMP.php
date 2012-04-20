@@ -34,6 +34,7 @@ class ProductoMP {
         } else {
             $sql = "SELECT $sAttr FROM $this->_dbTable WHERE $this->_id = $id";
         }
+//        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         if($res) {
             return mysql_fetch_object($res);

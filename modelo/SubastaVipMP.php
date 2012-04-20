@@ -386,6 +386,31 @@ class SubastaVipMP {
         } else return false;
     }
     
+    function getGanador($id) {
+        $id = $this->_bd->limpia($id);
+        $now = date("U");
+        
+        $sql = "SELECT S.ID_SVIP, S.COD_SUBASTA, S.MONTO_SUBASTA, U.ID_USUARIO, U.NICK_USUARIO, S.INICIO_SUBASTA, S.ESTADO_SUBASTA, S.ID_PRODUCTO,  
+            ((S.DURACION_SUBASTA + S.RETRASO_SUBASTA) - ($now - S.INICIO_SUBASTA)) AS RESTO_TIEMPO_SEC,
+            TIMEDIFF(
+                from_unixtime(S.INICIO_SUBASTA + S.DURACION_SUBASTA + S.RETRASO_SUBASTA), 
+                from_unixtime($now)
+            ) AS RESTO_TIEMPO
+            FROM SVIP AS S 
+                INNER JOIN USUARIO AS U 
+            ON 
+                S.ID_USUARIO = U.ID_USUARIO 
+                AND S.ID_SVIP = $id
+                AND S.ESTADO_SUBASTA = 4
+                ";
+//        echo $sql."<br>";
+        $res = $this->_bd->sql($sql);
+        if($res) {
+            $row = mysql_fetch_object($res);
+            return $row;
+        } else return false;
+    }
+    
     function refreshById($id, $attr = null) {
         $id = $this->_bd->limpia($id);
 
@@ -397,7 +422,7 @@ class SubastaVipMP {
 
         $now = date("U");
         
-        $sql = "SELECT S.MONTO_SUBASTA, U.ID_USUARIO, U.NICK_USUARIO, S.INICIO_SUBASTA, S.ESTADO_SUBASTA, 
+        $sql = "SELECT S.ID_SVIP, S.COD_SUBASTA, S.MONTO_SUBASTA, U.ID_USUARIO, U.NICK_USUARIO, S.INICIO_SUBASTA, S.ESTADO_SUBASTA, S.ID_PRODUCTO,  
             ((S.DURACION_SUBASTA + S.RETRASO_SUBASTA) - ($now - S.INICIO_SUBASTA)) AS RESTO_TIEMPO_SEC,
             TIMEDIFF(
                 from_unixtime(S.INICIO_SUBASTA + S.DURACION_SUBASTA + S.RETRASO_SUBASTA), 
@@ -408,6 +433,7 @@ class SubastaVipMP {
             ON 
                 S.ID_USUARIO = U.ID_USUARIO 
                 AND S.ID_SVIP = $id
+                AND (S.ESTADO_SUBASTA = 0 OR S.ESTADO_SUBASTA = 1 OR S.ESTADO_SUBASTA = 3)
                 ";
 //        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
@@ -417,6 +443,9 @@ class SubastaVipMP {
             if($row->RESTO_TIEMPO_SEC < 0 ) {
                 $sql = "UPDATE SVIP SET ESTADO_SUBASTA = 4, TERMINO_SUBASTA = $now WHERE ID_SVIP = $id";
                 $this->_bd->sql($sql);
+                $row->RESTO_TIEMPO_SEC = 0;
+                $row->RESTO_TIEMPO = "00:00:00";
+                $row->ESTADO_SUBASTA = 4;
             }
             if($row->INICIO_SUBASTA > $now) {
                 $row->ERROR = 1;
