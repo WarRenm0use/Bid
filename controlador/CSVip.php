@@ -174,7 +174,7 @@ class CSVip {
                                     }
                                 } else { //se alcanzo el maximo
                                     $data->ERROR = 1;
-                                    $data->MENSAJE = "Ya no quedan cupos :(";
+                                    $data->MENSAJE = "Ya no quedan cupos :(, pero pronto tendremos otra subasta ;)";
                                 }
                             } else {
                                 $data->ERROR = 1;

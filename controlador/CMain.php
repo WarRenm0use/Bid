@@ -177,6 +177,12 @@ class CMain {
                     } else {
                         $res->IN_SUBASTA = 0;
                     }
+                    $this->cp->iniFacebook();
+                    try {
+                        $like = $this->cp->facebook->api('/me/likes/347983325244042', 'GET');
+                        if($like["data"][0]["id"] == "347983325244042") $this->cp->like = true;
+                        else $this->cp->like = false;
+                    } catch(FacebookApiException $e) {}
                 }
                 $this->smain = $res;
                 $this->titulo = "Inicio";
