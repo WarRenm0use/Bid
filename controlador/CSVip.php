@@ -155,9 +155,10 @@ class CSVip {
                                             $this->cp->sendEmail($email);
                                             $this->cp->iniFacebook();
                                             try {
+                                                $msg = ($sub->BID_ENTRADA > 0)?", solo cuesta $".$sub->BID_ENTRADA." Bids!":", es GRATIS!!";
                                                 $this->cp->facebook->api('/me/feed', 'POST', array(
                                                     'link' => 'www.lokiero.cl/svip/'.$sub->COD_SUBASTA,
-                                                    'message' => 'Ya reservé mi cupo para la subasta de un '.$prod->NOM_PRODUCTO.', tu también puedes hacerlo, apúrate!',
+                                                    'message' => 'Ya reservé mi cupo para la subasta de un '.$prod->NOM_PRODUCTO.', tu también puedes hacerlo'.$msg.', apúrate quedan pocos cupos!',
                                                     'icon' => 'http://www.lokiero.cl/img/icono.png',
                                                     'picture' => 'http://www.lokiero.cl/producto/'.$prod->URL_IMAGEN
                                                 ));
@@ -306,7 +307,7 @@ class CSVip {
                                 try {
                                     $this->cp->facebook->api('/'.$usu->FB_UID.'/feed', 'POST', array(
                                         'link' => 'www.lokiero.cl/svip/'.$res->SUBASTA->COD_SUBASTA,
-                                        'message' => 'GANE un '.$prod->NOM_PRODUCTO.' en Lo Kiero!!!',
+                                        'message' => 'Acabo de GANAR la subasta de un '.$prod->NOM_PRODUCTO.' en LoKiero.cl, lo compré por solo $'.$res->SUBASTA->MONTO_SUBASTA_H."!, Es increíble!",
                                         'icon' => 'http://www.lokiero.cl/img/icono.png',
                                         'picture' => 'http://www.lokiero.cl/producto/'.$prod->URL_IMAGEN
                                     ));

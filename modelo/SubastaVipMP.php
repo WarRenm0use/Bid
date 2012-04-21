@@ -440,6 +440,7 @@ class SubastaVipMP {
         if($res) {
             $row = mysql_fetch_object($res);
             $row->NOW = $now;
+            $row->MONTO_SUBASTA_H = number_format($row->MONTO_SUBASTA, 0, ",", ".");
             if($row->RESTO_TIEMPO_SEC < 0 ) {
                 $sql = "UPDATE SVIP SET ESTADO_SUBASTA = 4, TERMINO_SUBASTA = $now WHERE ID_SVIP = $id";
                 $this->_bd->sql($sql);
