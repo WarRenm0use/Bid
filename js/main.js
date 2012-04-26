@@ -106,7 +106,7 @@ var SVipViewModel = function(id, cod, in_sub, ru) {
 }
 
 $(document).ready(function(){
-     $("#manual").on("click",function() {
+     $("#manual").on("click",function(e) {
             $.fancybox([
                 'http://dev.lokiero.cl/img/tutorial/1.png',
                 'http://dev.lokiero.cl/img/tutorial/2.jpg',
@@ -123,6 +123,7 @@ $(document).ready(function(){
                 'type'              : 'image',
                 'changeFade'        : 0
             });
+            e.preventDefault();
     });
     if(window.location.hash && window.location.hash=="#manual") {
         $.fancybox([
