@@ -10,9 +10,9 @@ class Bd {
         $this->user = $user;
         $this->pass = $pass;
         $this->bd = $bd;
-//        $this->user = "root";
-//        $this->pass = "";
-//        $this->bd = "bid";
+//        $this->user = "lokiero";
+//        $this->pass = "6BVZZpxb7xvhVPvz";
+//        $this->bd = "lokiero";
         $this->server = $server;
         $this->conecta();
     }

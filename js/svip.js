@@ -324,3 +324,24 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
         }
     }, this);
 }
+
+$(document).ready(function(){
+     $("#manual").on("click",function() {
+            $.fancybox([
+                'http://www.lokiero.cl/img/tutorial/1.png',
+                'http://www.lokiero.cl/img/tutorial/2.jpg',
+                'http://www.lokiero.cl/img/tutorial/3.jpg',
+                'http://www.lokiero.cl/img/tutorial/4.jpg',
+                'http://www.lokiero.cl/img/tutorial/5.jpg',
+                'http://www.lokiero.cl/img/tutorial/6.jpg',
+                'http://www.lokiero.cl/img/tutorial/7.jpg',
+                'http://www.lokiero.cl/img/tutorial/8.jpg'
+            ], {
+                'padding'			: 0,
+                'transitionIn'		: 'none',
+                'transitionOut'		: 'none',
+                'type'              : 'image',
+                'changeFade'        : 0
+            });
+    });
+});
