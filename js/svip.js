@@ -344,4 +344,22 @@ $(document).ready(function(){
                 'changeFade'        : 0
             });
     });
+    if(window.location.hash && window.location.hash=="#manual") {
+        $.fancybox([
+                'http://dev.lokiero.cl/img/tutorial/1.png',
+                'http://dev.lokiero.cl/img/tutorial/2.jpg',
+                'http://dev.lokiero.cl/img/tutorial/3.jpg',
+                'http://dev.lokiero.cl/img/tutorial/4.jpg',
+                'http://dev.lokiero.cl/img/tutorial/5.jpg',
+                'http://dev.lokiero.cl/img/tutorial/6.jpg',
+                'http://dev.lokiero.cl/img/tutorial/7.jpg',
+                'http://dev.lokiero.cl/img/tutorial/8.jpg'
+            ], {
+                'padding'			: 0,
+                'transitionIn'		: 'none',
+                'transitionOut'		: 'none',
+                'type'              : 'image',
+                'changeFade'        : 0
+            });
+    }
 });
