@@ -49,7 +49,33 @@ class CPrincipal {
 //        print_r($_SESSION);
 //        $this->isLoged = $this->checkLogin();
 //        $this->checkLogin();
+        $this->catchRequest();
         $this->setSec();
+    }
+    
+    function catchRequest() {
+        if(isset($_GET["request_ids"])) {
+            $this->showLayout = false;
+            $res = $this->invMP->findByReq($_GET["request_ids"], 0);
+//            echo "<pre>";
+//            print_r($_GET);
+//            echo "</pre>";
+//            echo "<pre>";
+//            print_r($res);
+//            echo "</pre>";
+            $nInv = count($res);
+            $this->iniFacebook();
+            if($nInv > 0) {
+                if($nInv == 1) { //1 usuario lo invito
+                    $this->invMP->acepta($res[0], $this->user);
+                    $this->getSession()->salto("/");
+                } else { //mas de 1 usuario lo invito
+                    $this->getSession()->salto("/invitacion/".$_GET["request_ids"]);
+                }
+            } else {
+                $this->getSession()->salto("/");
+            }
+        }
     }
     
     function getSecret() {

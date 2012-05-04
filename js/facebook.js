@@ -164,46 +164,48 @@ function handleSessionResponse(response) {
     }
 }
 
-var invitar = function() {
-    $.ajax({
-        url: '?sec=invitacion&get=invitacion',
-        dataType: 'json',
-        data: {},
-        success: function(data) {
-//            console.log(data);
-            if(data.INVITACION_DISP>0) {
-                FB.ui({
-                    method: 'apprequests', 
-                    title: 'Invita a tus amigos y gana Bids!',
-                    filters: ['app_non_users'],
-                    message: 'Registrate y subasta productos con hasta un 90% de descuento!', 
-                    exclude_ids: data.INVITADOS,
-                    max_recipients: data.INVITACION_DISP
-                }, enviarInvitaciones);
-            }
-        }
-    });
-    return false;
-}
-
 var enviarInvitaciones = function(response) {
-//    console.log("enviarInvitacion");
-//    console.log(response);
+    console.log("enviarInvitacion");
+    console.log(response);
     if(response) {
         $.ajax({
-            url: '?sec=invitacion&do=invitar',
+            url: '/?sec=invitacion&do=invitar',
             type: 'post',
             data: response,
             dataType: 'json',
             success: function(data) {
 //                console.log("listo");
-//                console.log(data);
-                cp._invitacion.update(data.MODELO);
-                cp._invitaciones.add(data.INVITACIONES);
+                console.log(data);
+//                cp._invitacion.update(data.MODELO);
+//                cp._invitaciones.add(data.INVITACIONES);
             }
         });
     }
 }
+
+//var invitar = function() {
+//    $.ajax({
+//        url: '/?sec=invitacion&get=invitacion',
+//        dataType: 'json',
+//        data: {},
+//        success: function(data) {
+////            console.log(data);
+//            if(data.INVITACION_DISP>0) {
+//                FB.ui({
+//                    method: 'apprequests', 
+//                    title: 'Invita a tus amigos y gana Bids!',
+//                    filters: ['app_non_users'],
+//                    message: 'Registrate gratis y subasta productos con hasta un 100% de descuento!', 
+//                    exclude_ids: data.INVITADOS,
+//                    max_recipients: data.INVITACION_DISP
+//                }, enviarInvitaciones);
+//            }
+//        }
+//    });
+//    return false;
+//}
+
+
 
 function getInvitaciones() {
     FB.api('264213770284841', function(response) {

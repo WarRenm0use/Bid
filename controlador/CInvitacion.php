@@ -11,7 +11,7 @@ class CInvitacion {
 
     function __construct($cp) {
         $this->cp = $cp;
-        $this->layout = "vista/main.phtml";
+        $this->layout = "vista/invitaciones.phtml";
         $this->usMP = new UsuarioMP();
         $this->invMP = new InvitacionMP();
         $this->catchRequest();
@@ -55,9 +55,13 @@ class CInvitacion {
                     if(count($_POST)>0) {
                         $this->cp->iniFacebook();
                         if($this->cp->user) {
+                            $usAux = $this->usMP->find($this->cp->getSession()->get("ID_USUARIO"), array("INVITACION_TOTAL", "INVITACION_USADA", "INVITACION_RECHAZADA"));
+                            $usAux->INVITACION_DISP = $usAux->INVITACION_TOTAL - $usAux->INVITACION_USADA + $usAux->INVITACION_RECHAZADA;
                             $req = $_POST["request"];
                             $to = $_POST["to"];
                             $nTo = count($to);
+                            $nTo = ($nTo > $usAux->INVITACION_DISP)?$usAux->INVITACION_DISP:$nTo;
+                            
                             $newInv = array();
                             for($i=0; $i<$nTo; $i++) {
                                 $aux = new stdClass();
@@ -65,16 +69,18 @@ class CInvitacion {
                                 $aux->ID_REQUEST = $req;
                                 $aux->ID_USUARIO = $this->cp->getSession()->get("ID_USUARIO");
                                 $aux->ID_FROM = $this->cp->getSession()->get("ID_FB");
-                                $aux->FECHA_REQUEST = date("Y-m-d H:i:s");
+                                $aux->FECHA_REQUEST = date("U");
                                 $aux->NOM_TO = $inv["to"]["name"];
                                 $aux->ID_TO = $to[$i];
                                 $aux->ESTADO_INVITACION = 0;
                                 $aux->ID_INVITACION = $this->invMP->insert($aux);
+                                $aux->ESTADO_INVITACION_H = "Enviada";
+                                $aux->FECHA_REQUEST_H = date("d-m-Y H:i:s", $aux->FECHA_REQUEST);
                                 if($aux->ID_INVITACION > 0) $newInv[] = $aux;
                             }
-                            $usAux = $this->usMP->find($this->cp->getSession()->get("ID_USUARIO"), array("INVITACION_TOTAL", "INVITACION_USADA", "INVITACION_RECHAZADA"));
                             $usAux->ID_USUARIO = $this->cp->getSession()->get("ID_USUARIO");
                             $usAux->INVITACION_USADA = $usAux->INVITACION_USADA+count($newInv);
+                            unset($usAux->INVITACION_DISP);
                             unset($usAux->BID_RESTO);
                             unset($usAux->BID_DISPONIBLE);
                             $this->usMP->update($usAux);
@@ -92,12 +98,20 @@ class CInvitacion {
                         $this->cp->iniFacebook();
                         if($this->cp->user) {
                             $res = new stdClass();
-                            if($this->invMP->remove($_POST["id_request"], $_POST["id_to"], $this->cp->getSession()->get("ID_FB"))) {
-                                $res->ERROR = 0;
-                                $res->MENSAJE = "La invitacion fue eliminada correctamente";
+                            $inv = $this->invMP->find($_POST["id_request"], $_POST["id_to"]);
+                            if($inv->ESTADO_INVITACION == 0) {
+                                if($this->invMP->remove($_POST["id_request"], $_POST["id_to"], $this->cp->getSession()->get("ID_FB"))) {
+                                    $res = $this->usMP->find($this->cp->getSession()->get("ID_USUARIO"), array("INVITACION_TOTAL", "INVITACION_USADA", "INVITACION_RECHAZADA"));
+                                    $res->INVITACION_DISP = $res->INVITACION_TOTAL - $res->INVITACION_USADA + $res->INVITACION_RECHAZADA;
+                                    $res->ERROR = 0;
+                                    $res->MENSAJE = "La invitacion fue eliminada correctamente";
+                                } else {
+                                    $res->ERROR = 1;
+                                    $res->MENSAJE = "La invitacion no pudo ser eliminada, intentalo nuevamente!";
+                                }
                             } else {
                                 $res->ERROR = 1;
-                                $res->MENSAJE = "La invitacion no pudo ser eliminada, intentalo nuevamente!";
+                                $res->MENSAJE = "No puedes eliminar esa invitación";
                             }
                             echo json_encode($res);
                         }    
@@ -193,13 +207,21 @@ class CInvitacion {
     }
 
     function setOp() {
-        if(isset($_GET["op"])) {
-            $op = $_GET["op"];
-            switch($op) {
-                default:
-
-                    break;
-            }
+        $op = $_GET["op"];
+        switch($op) {
+            default:
+                $res = new stdClass();
+                if($this->cp->getSession()->existe("ID_USUARIO")) {
+                    $usAux = $this->usMP->find($this->cp->getSession()->get("ID_USUARIO"), array("INVITACION_TOTAL", "INVITACION_USADA", "INVITACION_RECHAZADA"));
+                    $res->MODELO->INVITACION_DISP = $usAux->INVITACION_TOTAL - $usAux->INVITACION_USADA + $usAux->INVITACION_RECHAZADA;
+                    $res->MODELO->INVITACION_TOTAL = $usAux->INVITACION_TOTAL;
+                    $res->MODELO->INVITACION_USADA = $usAux->INVITACION_USADA;
+                    $res->INVITACIONES = $this->invMP->fetchByFb($this->cp->getSession()->get("ID_FB"));
+                    $this->inv = $res;
+                } else {
+                    $this->cp->getSession()->salto("/");
+                }
+                break;
         }
     }
 }

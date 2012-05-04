@@ -37,10 +37,24 @@ class InvitacionMP {
             $sAttr = implode(",", $attr);
         }
 
-        $sql = "SELECT $sAttr FROM $this->_dbTable WHERE ID_FROM = '$id' AND ESTADO_INVITACION <> 3";
+        $sql = "SELECT $sAttr, from_unixtime(FECHA_REQUEST, '%d-%m-%Y %T') AS FECHA_REQUEST_H FROM $this->_dbTable WHERE ID_FROM = '$id' AND ESTADO_INVITACION <> 3";
 //        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         while($row = mysql_fetch_object($res)) {
+            switch($row->ESTADO_INVITACION) {
+                case 0:
+                    $row->ESTADO_INVITACION_H = "Enviada";
+                    break;
+                case 1:
+                    $row->ESTADO_INVITACION_H = "Aceptada";
+                    break;
+                case 2:
+                    $row->ESTADO_INVITACION_H = "Rechazada";
+                    break;
+                default:
+                    $row->ESTADO_INVITACION_H = "Rechazada";
+                    break;
+            }
             $arr[] = $row;
         }
         return $arr;
@@ -105,38 +119,38 @@ class InvitacionMP {
         $idFrom = $this->_bd->limpia($idFrom);
         $req = $this->find($idR, $idTo, array("ID_FROM"));
         if($idFrom == $req->ID_FROM) {
-            $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 3 WHERE ID_REQUEST = $idR AND ID_TO = $idTo";
+            $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 3 WHERE ID_REQUEST = $idR AND ID_TO = $idTo AND ESTADO_INVITACION = 0";
             $res1 = $this->_bd->sql($sql);
-
-            $sql = "UPDATE USUARIO 
-                        SET INVITACION_USADA = INVITACION_USADA-1
-                    WHERE FB_UID = '".$req->ID_FROM."'";
-            $res2 = $this->_bd->sql($sql);
-
+            if($res1) {
+                $sql = "UPDATE USUARIO 
+                            SET INVITACION_USADA = INVITACION_USADA-1
+                        WHERE FB_UID = '".$req->ID_FROM."'";
+                $res2 = $this->_bd->sql($sql);
+            } else $res2 = false;
             return ($res1 && $res2);
         } else return false;
     }
     
-    function acepta($idR, $idTo, $bids=2) {
-        $idR = $this->_bd->limpia($idR);
-        $idTo = $this->_bd->limpia($idTo);
+    function acepta($inv, $bids=2) {
+//        $idR = $this->_bd->limpia($idR);
+//        $idTo = $this->_bd->limpia($idTo);
         $bids = $this->_bd->limpia($bids);
-        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 1 WHERE ID_REQUEST = $idR AND ID_TO = $idTo";
+        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 1 WHERE ID_REQUEST = $inv->ID_REQUEST AND ID_TO = $inv->ID_TO";
         $res1 = $this->_bd->sql($sql);
-        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 2 WHERE ID_REQUEST <> $idR AND ID_TO = $idTo";
+        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 2 WHERE ID_REQUEST <> $inv->ID_REQUEST AND ID_TO = $inv->ID_TO AND ESTADO_INVITACION = 0";
         $res2 = $this->_bd->sql($sql);
-        $req = $this->find($idR, $idTo, array("ID_FROM"));
+//        $req = $this->find($idR, $idTo, array("ID_FROM"));
         $sql = "UPDATE USUARIO 
                     SET INVITACION_ACEPTADA = INVITACION_ACEPTADA+1,
                     BID_GANADO = BID_GANADO+$bids
-                WHERE FB_UID = '".$req->ID_FROM."'";
+                WHERE FB_UID = '".$inv->ID_FROM."'";
         
         $res3 = $this->_bd->sql($sql);
         
         $rec = $this->fetchByTo($idTo, array("ID_FROM"));
         $nRec = count($rec);
         for($i=0; $i<$nRec; $i++) {
-            if($rec[$i]->ID_FROM != $req->ID_FROM) {
+            if($rec[$i]->ID_FROM != $inv->ID_FROM) {
                 if($i==0) $idRec = $rec[$i]->ID_FROM;
                 else $idRec .= ",".$rec[$i]->ID_FROM;
             }

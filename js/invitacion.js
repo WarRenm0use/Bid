@@ -1,221 +1,159 @@
-var Invitacion = Backbone.Model.extend({
-    update: function(newModel) {
-        this.set({
-            INVITACION_DISP: newModel.INVITACION_DISP,
-            INVITACION_TOTAL: newModel.INVITACION_TOTAL,
-            INVITACION_USADA: newModel.INVITACION_USADA
-        });
+ko.bindingHandlers.fadeVisible = {
+    init: function(element, valueAccessor) {
+        // Initially set the element to be instantly visible/hidden depending on the value
+        var value = valueAccessor();
+        $(element).toggle(ko.utils.unwrapObservable(value)); // Use "unwrapObservable" so we can handle values that may or may not be observable
     },
-    change: function() {
-        this.view.updateModel();
-    },
-    del: function(cb) {
-        console.log("model.del");
+    update: function(element, valueAccessor) {
+        // Whenever the value subsequently changes, slowly fade the element in or out
+        var value = valueAccessor();
+        ko.utils.unwrapObservable(value) ? $(element).fadeIn() : $(element).fadeOut();
+    }
+};
+
+var InvitacionesViewModel = function(disp, usada, inv) {
+    var self = this;
+    this.inv_disp = ko.observable(disp);
+    this.inv_usada = ko.observable(usada);
+    this.inv = ko.observableArray(inv);
+    
+    this.hasInvitaciones = ko.computed(function(){
+        return (this.inv_disp()>0);
+    }, this);
+    
+    this.noHasInvitaciones = ko.computed(function(){
+        return !(this.inv_disp()>0);
+    }, this);
+    
+    this.hasSentInvitaciones = ko.computed(function(){
+//        return (this.inv_usada()>0);
+        return true;
+    }, this);
+    
+    this.inv_texto = ko.computed(function(){
+        return "Invita más amigos ("+this.inv_disp()+")";
+    }, this);
+    
+    this.enviarInvitaciones = function(response) {
+//        var ws = this;
+//        console.log(ws);
+//        console.log(response);
+        if(response) {
+            $.ajax({
+                url: '/?sec=invitacion&do=invitar',
+                type: 'post',
+                data: response,
+                dataType: 'json',
+                success: function(data) {
+//                    console.log(data);
+                    self.inv_disp(data.MODELO.INVITACION_DISP);
+                    self.inv_usada(data.MODELO.INVITACION_USADA);
+                    self.inv(data.INVITACIONES);
+//                    console.log(self.inv());
+                }
+            });
+        }
+    }
+    
+    this.invitar = function() {
         var ws = this;
         $.ajax({
-            url: '?sec=invitacion&do=delete',
+            url: '/?sec=invitacion&get=invitacion',
+            dataType: 'json',
+            data: {},
+            success: function(data) {
+                if(data.INVITACION_DISP>0) {
+                    FB.ui({
+                        method: 'apprequests', 
+                        title: 'Invita a tus amigos y gana Bids!',
+                        filters: ['app_non_users'],
+                        message: 'Registrate gratis y subasta productos con hasta un 100% de descuento!', 
+                        exclude_ids: data.INVITADOS,
+                        max_recipients: data.INVITACION_DISP
+                    }, ws.enviarInvitaciones);
+                }
+            }
+        });
+        return false;
+    }
+    
+    this.del = function(d, e) {
+        var ws = this,
+            $this = $(e.target);
+        
+        if(!$this.hasClass("disabled")) {
+            if(ws.ESTADO_INVITACION == 0) {
+                $.ajax({
+                    url: '/?sec=invitacion&do=delete',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        'id_request': ws.ID_REQUEST,
+                        'id_to': ws.ID_TO
+                    },
+                    beforeSend: function() {
+                        $this.tooltip('hide');
+                        $this.attr("data-original-title", "Eliminando invitación...").addClass("disabled");
+                        $this.tooltip('show');
+                    },
+                    success: function(data) {
+                        $this.removeClass("disabled");
+                        showNotificacion(data.MENSAJE);
+                        $this.tooltip('hide');
+                        if(data.ERROR == 0) {
+                            self.inv.remove(d);
+                            self.inv_disp(data.INVITACION_DISP);
+                            self.inv_usada(data.INVITACION_USADA);
+                        } else {
+                            $this.attr("data-original-title", "Eliminar invitación");
+                        }
+                    }
+                });
+            } else showNotificacion("No puedes eliminar esa invitación");
+        }
+        return false;
+    }
+}
+
+var delInvitacion = function(e) {
+    var $this = $(this),
+        $fila;
+    if(!$this.hasClass("disabled")) {
+        $fila = $this.parent().parent();
+        $.ajax({
+            url: '/?sec=invitacion&do=delete',
             type: 'post',
             dataType: 'json',
             data: {
-                'id_request': ws.get("ID_REQUEST"),
-                'id_to': ws.get("ID_TO")
+                'id_request': $fila.attr("id_req"),
+                'id_to': $fila.attr("id_to")
+            },
+            beforeSend: function() {
+                $this.tooltip('hide');
+                $this.attr("data-original-title", "Eliminando invitación...").addClass("disabled");
+                $this.tooltip('show');
             },
             success: function(data) {
                 console.log(data);
+                $this.removeClass("disabled");
                 showNotificacion(data.MENSAJE);
+                $this.tooltip('hide');
                 if(data.ERROR == 0) {
-                    ws.view.die();
-                } else {
-                    
-                }
-            }
-        });
-    }
-});
-
-var InvitacionCollection = Backbone.Collection.extend({
-    model: Invitacion,
-    change: function() {
-        this.view.updateCollection();
-    },
-//    add: function() {
-//        
-//    }
-});
-
-var InvitacionUsuariosCollection = Backbone.Collection.extend({});
-
-var InvitacionLineView = Backbone.View.extend({
-    fila: $("#invitacionFilaTmpl").template(),
-    tagName: "tr",
-    events: {
-        "click #delete": "del"
-    },
-    initialize: function() {
-        this.model.view = this;
-    },
-    render: function() {
-        $(this.el).html($.tmpl(this.fila, this.model));
-//        console.log("render");
-//        console.log(this);
-        return this;
-    },
-    del: function() {
-//        console.log("view.del");
-//        console.log(this.model);
-//        $(this.el).remove();
-        this.model.del();
-        return false;
-    },
-    die: function() {
-//        console.log("view.die");
-        var ws = this;
-        $(this.el).fadeOut('slow', function(){
-            $(ws.el).remove();
-        });
-        this.model.collection.remove(this.model);
-    }
-});
-
-var InvitacionesView = Backbone.View.extend({
-    el: $("#contenido"),
-    $el: null,
-    template: $("#invitacionesTmpl").template(),
-    fila: $("#invitacionFilaTmpl").template(),
-    $invitarBtn: null,
-    initialize: function() {
-        this.collection.view = this;
-        this.model.view = this;
-        this.collection.bind("add", this.updateCollection, this);
-//        this.collection.bind("remove", this.removeCollection, this);
-    },
-    render: function() {
-        this.$el = $(this.el);
-        this.el.empty();
-        $flechas.fadeOut();
-        this.$el.html($.tmpl(this.template, this.model));
-//        $.tmpl(this.fila, this.collection.models).prependTo(this.$el.find("#invitaciones"));
-        for(var i=0; i<this.collection.length; i++) {
-            var fila = new InvitacionLineView({
-                model: this.collection.models[i]
-            });
-            $(fila.render().el).prependTo(this.$el.find("#invitaciones"));
-        }
-        this.$el.find("#inner").hide().fadeIn();
-        this.$invitarBtn = this.$el.find("#btnInvitar");
-        this.$invitarBtn.on("click", invitar);
-        return this;
-    },
-    updateModel: function() {
-//        console.log("updateModel");
-        this.$el.html($.tmpl(this.template, this.model));
-        this.$invitarBtn.on("click", invitar);
-    },
-    updateCollection: function() {
-//        console.log("updateCollection");
-//        $.tmpl(this.fila, this.collection.models).prependTo(this.$el.find("#invitaciones"));
-        for(var i=0; i<this.collection.length; i++) {
-            var fila = new InvitacionLineView({
-                model: this.collection.models[i]
-            });
-            $(fila.render().el).prependTo(this.$el.find("#invitaciones"));
-        }
-    },
-    removeCollection: function() {
-//        console.log("remove");
-//        console.log(this.collection);
-    }
-});
-
-var InvitacionView = Backbone.View.extend({
-    el: $("#subastas"),
-    template: $("#invAcepta").template(),
-    events: {
-        "click #acepta": "acepta"
-    },
-    initialize: function() {
-      this.model.view = this;
-    },
-    render: function() {
-        var sg = this;
-        sg.el.empty();
-        $("#titulo").html("Invitacion");
-        $.tmpl(sg.template, sg.model).appendTo(sg.el).hide().fadeIn();
-        return this;
-    },
-    acepta: function() {
-//        console.log("invitacion.acepta: "+id_request);
-//        console.log("SubastaView.doBid");
-//        console.log(this);
-//        this.model.doBid();
-        conecta();
-    }
-});
-
-var InvitacionUsuariosView = Backbone.View.extend({
-    el: $("#contenido"),
-    $el: null,
-    template: $("#invitacionUsuariosTmpl").template(),
-    $btnGuardar: null,
-    initialize: function() {
-        this.collection.view = this;
-    },
-    render: function() {
-        this.$el = $(this.el);
-        this.el.empty();
-        $flechas.fadeOut();
-        this.$el.html($.tmpl(this.template, this.collection));
-        this.$el.find("#inner").hide().fadeIn();
-        this.$btnGuardar = this.$el.find("#btnGuardar");
-        this.validator = $("#formu").bind("invalid-form.validate",
-            function() {
-                $(".msg").html("Debes seleccionar a alguien");
-            }).validate({
-            rules: {
-                id_request: {
-                    required: true,
-                    minlength: 1
-                }
-            },
-            errorPlacement: function(error, element) {
-            },
-            submitHandler: function(form) {
-                var btn = $("#btnGuardar", form),
-                    msg = $(".msg");
-                    
-                if(!btn.hasClass("disabled")) {
-                    $.ajax({
-                        url: '?sec=invitacion&do=aceptar',
-                        type: 'post',
-                        dataType: 'json',
-                        data: {
-                            'id_request': $("input[name='id_request']:checked", form).val()
-                        },
-                        beforeSend: function() {
-                            $(".id_request").attr("disabled", true)
-                            btn.val("Guardando...").addClass("disabled");
-                            msg.html("");
-                        },
-                        success: function(data) {
-//                            console.log(data);
-                            msg.html(data.MENSAJE);
-                            if(data.ERROR == 0) {
-                                btn.val("Guardado!");
-                                setTimeout(function(){
-                                    window.location.href="#!/";
-                                }, 2000);
-                            } else {
-                                $(".id_request").attr("disabled", false)
-                                btn.val("Guardar").removeClass("disabled");
-                            }
-                        }
+                    $this.fadeOut(function() {
+                        $fila.remove();
                     });
+                } else {
+
                 }
-                return false;
-            },
-            success: function(label) {
             }
         });
-        return this;
     }
+    e.preventDefault();
+}
+
+$(document).ready(function(){
+//    var $btnInvitar = $("#btnInvitar"),
+//        $btnEliminar = $(".delete");
+//    $btnInvitar.on("click", invitar);
+//    $btnEliminar.on("click", delInvitacion);
 });

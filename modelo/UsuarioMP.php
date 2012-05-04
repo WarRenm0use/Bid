@@ -22,7 +22,6 @@ class UsuarioMP {
 
     function find($id, $attr = null) {
         $id = $this->_bd->limpia($id);
-
         if($attr == null) {
             $sAttr = "*";
         } else {
