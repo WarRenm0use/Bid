@@ -26,7 +26,7 @@ $dirDes = $cp->getCSec()->dirDes;
             <a class="btn btn-success bloqdes" style="color:white;">Confirmar<i class="icon-arrow-right icon-white icon-right"></i></a>
         <? } else { ?>
             <a class="bloqdes">< Volver al Paso 1</a>
-            <form action="/cgi-bin/tbk_bp_pago.cgi" method="post" style="display:inline-block">
+<!--            <form action="/cgi-bin/tbk_bp_pago.cgi" method="post" style="display:inline-block">
                 <input name="TBK_MONTO" type="hidden" id="TBK_MONTO" value="<?=$carro->MONTO_CARRO?>00" />
                 <input name="TBK_ID_SESION" type="hidden" id="TBK_ID_SESION" value="<?=$carro->ID_CARRO?>" />
                 <input name="TBK_ORDEN_COMPRA" type="hidden" id="TBK_ORDEN_COMPRA" value="<?=$carro->ID_CARRO?>" />
@@ -34,7 +34,7 @@ $dirDes = $cp->getCSec()->dirDes;
                 <input name="TBK_URL_EXITO" type="hidden" id="TBK_URL_EXITO" value="http://www.lokiero.cl/exito" />
                 <input name="TBK_URL_FRACASO" type="hidden" id="TBK_URL_FRACASO" value="http://www.lokiero.cl/fracaso" />
                 <input type="submit" class="btn btn-success" id="btnPagarTop" value="Pagar $<?=$carro->MONTO_CARRO_H?>"/>
-            </form>
+            </form>-->
         <? } ?>
         </div>
     <? } ?>
@@ -148,7 +148,7 @@ $dirDes = $cp->getCSec()->dirDes;
         <a class="btn btn-success bloqdes" style="color:white;">Confirmar<i class="icon-arrow-right icon-white icon-right"></i></a>
     <? } else { ?>
         <a class="bloqdes">< Volver al Paso 1</a>
-        <form action="/cgi-bin/tbk_bp_pago.cgi" method="post" style="display:inline-block">
+<!--        <form action="/cgi-bin/tbk_bp_pago.cgi" method="post" style="display:inline-block">
             <input name="TBK_MONTO" type="hidden" id="TBK_MONTO" value="<?=$carro->MONTO_CARRO?>00" />
             <input name="TBK_ID_SESION" type="hidden" id="TBK_ID_SESION" value="<?=$carro->ID_CARRO?>" />
             <input name="TBK_ORDEN_COMPRA" type="hidden" id="TBK_ORDEN_COMPRA" value="<?=$carro->ID_CARRO?>" />
@@ -156,7 +156,7 @@ $dirDes = $cp->getCSec()->dirDes;
             <input name="TBK_URL_EXITO" type="hidden" id="TBK_URL_EXITO" value="http://www.lokiero.cl/exito" />
             <input name="TBK_URL_FRACASO" type="hidden" id="TBK_URL_FRACASO" value="http://www.lokiero.cl/fracaso" />
             <input type="submit" class="btn btn-success" id="btnPagarTop" value="Pagar $<?=$carro->MONTO_CARRO_H?>"/>
-        </form>
+        </form>-->
     <? } ?>
     </div>
     <div class="clear"></div>
