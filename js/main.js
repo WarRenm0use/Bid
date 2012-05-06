@@ -106,7 +106,16 @@ var SVipViewModel = function(id, cod, in_sub, ru) {
 }
 
 $(document).ready(function(){
-     $("#manual").on("click",function(e) {
+    $('.flexslider').flexslider({
+        animation: "fade", 
+        directionNav: true,
+        controlNav: true,
+        keyboardNav: true,
+        prevText: "Previous", 
+        nextText: "Next"
+    });
+
+    $("#manual").on("click",function(e) {
             $.fancybox([
                 'http://dev.lokiero.cl/img/tutorial/1.png',
                 'http://dev.lokiero.cl/img/tutorial/2.jpg',

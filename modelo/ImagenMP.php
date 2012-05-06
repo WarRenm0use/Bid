@@ -23,7 +23,7 @@ class ImagenMP {
     function fetchByProducto($idElm) {
         $idElm = $this->_bd->limpia($idElm);
         
-        $sql = "SELECT * FROM $this->_dbTable WHERE ID_PRODUCTO = $idElm";
+        $sql = "SELECT * FROM $this->_dbTable WHERE ID_PRODUCTO = $idElm AND ESTADO_IMAGEN = 1 ORDER BY ID_IMAGEN ASC";
         
         $res = $this->_bd->sql($sql);
         $arr = array();

@@ -1,6 +1,7 @@
 <?php
 include_once 'modelo/UsuarioMP.php';
 include_once 'modelo/CarroMP.php';
+include_once 'modelo/ImagenMP.php';
 include_once 'modelo/InvitacionMP.php';
 include_once 'modelo/SubastaVipMP.php';
 
@@ -17,6 +18,7 @@ class CMain {
         $this->caMP = new CarroMP();
         $this->invMP = new InvitacionMP();
         $this->suMP = new SubastaVipMP();
+        $this->imMP = new ImagenMP();
 //        $this->catchRequest();
         $this->getJSON();
         $this->setDo();
@@ -166,9 +168,7 @@ class CMain {
         switch($op) {
             default:
                 $res = $this->suMP->nextSubasta();
-//                echo "<pre>";
-//                print_r($res);
-//                echo "</pre>";
+                $res->IMAGENES = $this->imMP->fetchByProducto($res->ID_PRODUCTO);
                 $nUs = $this->suMP->nUsSubasta($res->ID_SVIP);
                 $res->RESTO_USUARIOS = $res->MIN_USUARIO - $nUs;
                 if($this->cp->getSession()->existe("ID_USUARIO")) {

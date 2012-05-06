@@ -4,6 +4,7 @@ include_once 'modelo/ProductoMP.php';
 include_once 'modelo/BidMP.php';
 include_once 'modelo/UsuarioMP.php';
 include_once 'modelo/InvitacionMP.php';
+include_once 'modelo/ImagenMP.php';
 
 class CSVip {
     protected $cp;
@@ -17,6 +18,7 @@ class CSVip {
         $this->suMP = new SubastaVipMP();
         $this->usMP = new UsuarioMP();
         $this->biMP = new BidMP();
+        $this->imMP = new ImagenMP();
         $this->getJSON();
         $this->setDo();
         $this->setOp();
@@ -352,6 +354,7 @@ class CSVip {
                 if(isset($_GET["id"])) {
                     $_GET["id"] = mysql_escape_string($_GET["id"]);
                     $res = $this->suMP->findByCod($_GET["id"]);
+                    $res->IMAGENES = $this->imMP->fetchByProducto($res->ID_PRODUCTO);
                     $idUs = $this->cp->getSession()->get("ID_USUARIO");
                     if($this->suMP->inSubasta($idUs, $res->ID_SVIP)) {
                         $usAux = $this->suMP->fetchUsuario($res->ID_SVIP, $idUs);

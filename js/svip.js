@@ -326,6 +326,14 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
 }
 
 $(document).ready(function(){
+    $('.flexslider').flexslider({
+        animation: "fade", 
+        directionNav: true,
+        controlNav: true,
+        keyboardNav: true,
+        prevText: "Previous", 
+        nextText: "Next"
+    });
      $("#manual").on("click",function(e) {
             $.fancybox([
                 'http://www.lokiero.cl/img/tutorial/1.png',

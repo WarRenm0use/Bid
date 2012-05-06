@@ -1,11 +1,20 @@
 <?
 $smain = $cp->getCSec()->svip;
 ?>
+<link href="/css/flexslider.css?05052012" rel="stylesheet" type="text/css" />
+<script src="/js/jquery.flexslider-min.js" type="text/javascript"></script>
 <script src="/js/svip.js?26042012" type="text/javascript"></script>
 <div class="subastaVip row">
     <div class="span6">
         <div class="imagen">
-            <img src="/producto/<?=$smain->URL_IMAGEN?>" width="500"/>
+            <div class="flexslider">
+            <ul class="slides">
+                <? $nImg = count($smain->IMAGENES); ?>
+                <? for($i=0; $i<$nImg; $i++) { ?>
+                <li><a href="/svip/<?=$smain->COD_SUBASTA?>"><img src="http://www.lokiero.cl/producto/<?=$smain->IMAGENES[$i]->URL_IMAGEN?>" /></a></li>
+                <? } ?>
+            </ul>
+            </div>
         </div>
         <div class="fb-live-stream" data-event-app-id="264213770284841" data-width="500" data-height="600" data-xid="<?=$smain->COD_SUBASTA?>" data-via-url="http://www.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-always-post-to-friends="true"></div>
     </div>
