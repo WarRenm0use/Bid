@@ -40,8 +40,8 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
             dataType: 'json',
             type: 'get',
             success: function(data) {
-//                console.log("ganador");
-//                console.log(data);
+                console.log("ganador");
+                console.log(data);
                 if(data.IS_GANADOR == 1) ws.ganador(true);
                 else ws.ganador(false);
                 if(data!=null) {
@@ -125,6 +125,8 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
             type: 'get',
             success: function(todo) {
                 if(todo!=null) {
+                    console.log("refresh");
+                    console.log(todo);
                     var sub = todo.SUBASTA;
                     var last = todo.ULTIMOS;
                     var nLast = last.length;

@@ -314,11 +314,13 @@ class CSVip {
                                         'picture' => 'http://www.lokiero.cl/producto/'.$prod->URL_IMAGEN
                                     ));
                                 } catch(FacebookApiException $e) {}
-                                print_r($email);
+//                                print_r($email);
                                 $this->cp->sendEmail($email);
                             }
                         } else {
-                            $res->SUBASTA = $this->suMP->getGanador($_GET["id"]);
+//                            $res->SUBASTA = $this->suMP->getGanador($_GET["id"]);
+                            echo "0";
+                            die();
                         }
                         
                     }

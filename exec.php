@@ -1,6 +1,6 @@
 <?php
 
-$cmdline = "/home/dev/www/cgi-bin/tbk_check_mac.cgi lala.txt";
+$cmdline = "java -jar LoKieroBid.jar 46 ABCDE dev &";
 exec($cmdline, $result, $retint);
 echo "<pre>";
 print_r($result);

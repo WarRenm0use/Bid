@@ -420,7 +420,8 @@ class SubastaVipMP {
             $sAttr = implode(",", $attr);
         }
 
-        $now = date("U");
+//        $now = date("U");
+        $now = microtime(true);
         
         $sql = "SELECT S.ID_SVIP, S.COD_SUBASTA, S.MONTO_SUBASTA, U.ID_USUARIO, U.NICK_USUARIO, S.INICIO_SUBASTA, S.ESTADO_SUBASTA, S.ID_PRODUCTO,  
             ((S.DURACION_SUBASTA + S.RETRASO_SUBASTA) - ($now - S.INICIO_SUBASTA)) AS RESTO_TIEMPO_SEC,
@@ -481,7 +482,7 @@ class SubastaVipMP {
             TIMEDIFF(
                 from_unixtime(S.INICIO_SUBASTA + S.DURACION_SUBASTA + S.RETRASO_SUBASTA), 
                 from_unixtime($now)
-            ) AS RESTO_TIEMPO
+            ) AS RESTO_TIEMPO, P.DESC_PRODUCTO
             FROM SVIP AS S 
                 LEFT JOIN USUARIO AS U 
             ON 
@@ -489,7 +490,6 @@ class SubastaVipMP {
             INNER JOIN PRODUCTO AS P 
             INNER JOIN IMAGEN AS I
                 ON S.COD_SUBASTA = '$cod'
-                
                 AND S.ID_PRODUCTO = P.ID_PRODUCTO 
                 AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN";
 //        echo $sql."<br>";

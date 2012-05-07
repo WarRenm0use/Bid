@@ -334,6 +334,25 @@ a *{
     margin-left: 5px;
 }
 
+#descripcion ul.small {
+    
+}
+
+#descripcion ul.small li {
+    font-size: 14px;
+    font-shadow: 0;
+    font-weight: bold;
+}
+
+#descripcion div.resena {
+    border-top: 2px solid whiteSmoke;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+#descripcion div.resena p {
+    text-align: justify;
+}
 h1 {
     font-size:32px;
 /*    color:#666;*/
