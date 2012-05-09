@@ -148,6 +148,58 @@ class CPrincipal {
         
         $mail = new PHPMailer ();
         $mail -> From = "contacto@lokiero.cl";
+        $mail -> FromName = "Lo Kiero! - Subastas VIP";
+        $nDes = count($data->destino);
+        for($i=0; $i<$nDes; $i++) {
+            $mail -> AddAddress ($data->destino[$i]->email, $data->destino[$i]->nombre);
+        }
+        $mail -> Subject = $data->titulo;
+        $mail -> Body = "<!DOCTYPE html>
+<html style=\"margin:0;padding:0;\">
+    <head>
+        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
+    </head>
+    <body style=\"width: 100% !important; font-size: 12px; background-color: #D0EBFE;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;background-image: url('http://www.lokiero.cl/img/bg.jpg');background-repeat: repeat-x;padding:0 0 10px 0;margin:0\">
+        <div class=\"wrapper\" style=\"width: 587px; padding: 0; font-size: 14px; color: #666; margin: 0 auto;\">
+            <div class=\"header\">
+                <img src=\"http://www.lokiero.cl/img/logo.png\" />
+            </div>
+            <div class=\"content\" style=\"width: 100%; background-color: white; padding: 10px 0px 0 0;margin-bottom: 20px;-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px;\">
+                $data->cuerpo
+                <div class=\"footer\" style=\"background: #ededed;padding: 0 15px 10px; margin-top: 20px;  color: #666; font-size: 12px;border-radius: 0 0 5px 5px; height: 95px;\">
+                    <img src=\"http://www.lokiero.cl/img/logoFB.png\" style=\"float: right;margin-top: 10px;\"/>
+                    <div style=\"margin: 0 auto; float:left; width:auto;\">
+                        <p>
+                        <a href=\"https://www.facebook.com/LoKieroBid\" style=\"padding: 0;\"><img src=\"http://www.lokiero.cl/img/fb_icon.png\" width=\"25\" style=\"margin-bottom: -8px;\" class=\"tp\" data-placement=\"bottom\" data-original-title=\"Siguenos en Facebook\"></a>
+                        <a href=\"https://twitter.com/lo_kiero\" style=\"padding: 0;\"><img src=\"http://www.lokiero.cl/img/tw_icon.png\" width=\"25\" style=\"margin-bottom: -8px;\" class=\"tp\" data-placement=\"bottom\" data-original-title=\"Siguenos en Twitter\"></a><br/>
+                        <a href=\"http://www.lokiero.cl/\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">Lo Kiero! - Subastas VIP</a><br/>
+                        Av. 11 de Septiembre 1881, of 1620<br/>
+                        Providencia, Santiago, Chile<br/>
+                        </p>
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </body>
+</html>";
+        $mail -> IsHTML (true);
+        
+        $mail->IsSMTP();
+        $mail->Host = 'ssl://smtp.gmail.com';
+        $mail->Port = 465;
+        $mail->SMTPAuth = true;
+        $mail->Username = 'contacto@lokiero.cl';
+        $mail->Password = '8Tt7GRivUObe';
+        
+        return $mail->Send();
+    }
+    
+    function sendEmailOld($data) {
+        include_once 'modelo/class.phpmailer.php';
+        include_once 'modelo/class.smtp.php';
+        
+        $mail = new PHPMailer ();
+        $mail -> From = "contacto@lokiero.cl";
         $mail -> FromName = "Lo Kiero!";
         $nDes = count($data->destino);
         for($i=0; $i<$nDes; $i++) {
@@ -264,6 +316,23 @@ class CPrincipal {
             case "main":
                 include_once 'CMain.php';
                 $this->_CSec = new CMain($this);
+                break;
+            case "ema":
+                $email = new stdClass();
+                $destino = new stdClass();
+                $destino->email = "super.neeph@gmail.com";
+                $destino->nombre = "Alvaro Flores";
+                $email->destino[] = $destino;
+                $email->titulo = "final";
+                $email->cuerpo = "<div style=\"background-image: url('http://www.lokiero.cl/producto/4b23f87750886708949224f7dad5e9b6.jpg');-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
+                <div style=\"background-color: white;margin:10px;\">
+                <h1 style=\"color: #09C; font-size: 30px;margin: 5px 0 10px 0;\">Cupo reservado!</h1>
+                <p>La reserva para la subasta de un <a href=\"http://www.lokiero.cl/svip/2e344b8bf505be2fb3f2644cf91b8978\" target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">Té para 2 en Café Rende Bu</a> fue realizada correctamente, para ingresar visita esta pagina Subasta Té para 2 en Café Rende Bu</p>
+                <p>15 minutos antes de que comience la subasta se verificara que se haya logrado el minimo de usuarios requeridos, si se alcanza el minimo se activara la subasta, si no, sera anulada y reembolsaremos los bids que gastaste en la reserva.</p>
+                </div>";
+                $ema = $this->email($email);
+                if($ema) echo "ok";
+                else echo "fail";
                 break;
         }
         $this->setCarro();

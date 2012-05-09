@@ -152,8 +152,13 @@ class CSVip {
                                             $destino->email = $usu->EMA_USUARIO;
                                             $destino->nombre = $usu->NOM_USUARIO." ".$usu->APE_USUARIO;
                                             $email->destino[] = $destino;
-                                            $email->titulo = "Reserva lista! - Lo Kiero!";
-                                            $email->cuerpo = "<table border=0 cellspacing=0 cellpadding=0 style='color:#666;'><tr><td><img src='http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."' width='300'></td><td><h1>".$destino->nombre." (".$usu->NICK_USUARIO.")</h1><p>La reserva para la subasta de un ".$prod->NOM_PRODUCTO." fue realizada correctamente, para ingresar visita esta pagina <a href='http://www.lokiero.cl/svip/".$sub->COD_SUBASTA."'>Subasta ".$prod->NOM_PRODUCTO."</a></p><p>15 minutos antes de que comience la subasta se verificara que se haya logrado el minimo de usuarios requeridos, si se alcanza el minimo se activara la subasta, si no, sera anulada y reembolsaremos los bids que gastaste en la reserva.</p></td></tr></table>";
+                                            $email->titulo = "Cupo Reservado!";
+                                            $email->cuerpo = "<div style=\"background-image: url('http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."');-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
+                                                <div style=\"background-color: white;margin:10px;\">
+                                                <h1 style=\"color: #09C; font-size: 30px;margin: 5px 0 10px 0;\">Cupo reservado!</h1>
+                                                <p>La reserva para la subasta de un <a href=\"http://www.lokiero.cl/svip/".$sub->COD_SUBASTA."\" target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">".$prod->NOM_PRODUCTO."</a> fue realizada correctamente, para ingresar visita esta pagina <a href=\"http://www.lokiero.cl/svip/".$sub->COD_SUBASTA."\" target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">".$prod->NOM_PRODUCTO."</a></p>
+                                                <p>15 minutos antes de que comience la subasta se verificara que se haya logrado el minimo de usuarios requeridos, si se alcanza el minimo se activara la subasta, si no, sera anulada y reembolsaremos los bids que gastaste en la reserva.</p>
+                                                </div>";
                                             $this->cp->sendEmail($email);
                                             $this->cp->iniFacebook();
                                             try {
@@ -303,8 +308,12 @@ class CSVip {
                                 $destino->email = $usu->EMA_USUARIO;
                                 $destino->nombre = $usu->NOM_USUARIO." ".$usu->APE_USUARIO;
                                 $email->destino[] = $destino;
-                                $email->titulo = "Ganaste un ".$prod->NOM_PRODUCTO."! - Lo Kiero!";
-                                $email->cuerpo = "<table border=0 cellspacing=0 cellpadding=0 style='color:#666;'><tr><td><img src='http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."' width='300'></td><td><h1>".$destino->nombre." (".$usu->NICK_USUARIO.") GANASTE!</h1><p>Felicitaciones, acabas de ganar la subasta del ".$prod->NOM_PRODUCTO.", para reclamar tu premio debes entrar en tu <a href='http://www.lokiero.cl/micuenta'>cuenta</a> y comprar el producto al precio subastado ;).</p></td></tr></table>";
+                                $email->titulo = "Ganaste un ".$prod->NOM_PRODUCTO."!";
+                                $email->cuerpo = "<div style=\"background-image: url('http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."');-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
+                                                <div style=\"background-color: white;margin:10px;\">
+                                                <h1 style=\"color: #09C; font-size: 30px;margin: 5px 0 10px 0;\">Ganaste un ".$prod->NOM_PRODUCTO."!</h1>
+                                                <p>Felicitaciones <b>".$destino->nombre." (".$usu->NICK_USUARIO.")</b>, acabas de ganar la subasta del ".$prod->NOM_PRODUCTO.", para reclamar tu premio debes entrar en tu <a href='http://www.lokiero.cl/micuenta' target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">cuenta</a> y comprar el producto al precio subastado ;).</p>
+                                                </div>";
                                 $this->cp->iniFacebook();
                                 try {
                                     $this->cp->facebook->api('/'.$usu->FB_UID.'/feed', 'POST', array(
