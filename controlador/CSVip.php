@@ -153,7 +153,7 @@ class CSVip {
                                             $destino->nombre = $usu->NOM_USUARIO." ".$usu->APE_USUARIO;
                                             $email->destino[] = $destino;
                                             $email->titulo = "Cupo Reservado!";
-                                            $email->cuerpo = "<div style=\"background-image: url('http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."');-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
+                                            $email->cuerpo = "<div style=\"background: url('http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."') no-repeat;-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
                                                 <div style=\"background-color: white;margin:10px;\">
                                                 <h1 style=\"color: #09C; font-size: 30px;margin: 5px 0 10px 0;\">Cupo reservado!</h1>
                                                 <p>La reserva para la subasta de un <a href=\"http://www.lokiero.cl/svip/".$sub->COD_SUBASTA."\" target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">".$prod->NOM_PRODUCTO."</a> fue realizada correctamente, para ingresar visita esta pagina <a href=\"http://www.lokiero.cl/svip/".$sub->COD_SUBASTA."\" target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">".$prod->NOM_PRODUCTO."</a></p>
@@ -309,7 +309,7 @@ class CSVip {
                                 $destino->nombre = $usu->NOM_USUARIO." ".$usu->APE_USUARIO;
                                 $email->destino[] = $destino;
                                 $email->titulo = "Ganaste un ".$prod->NOM_PRODUCTO."!";
-                                $email->cuerpo = "<div style=\"background-image: url('http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."');-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
+                                $email->cuerpo = "<div style=\"background: url('http://www.lokiero.cl/producto/".$prod->URL_IMAGEN."') no-repeat;-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
                                                 <div style=\"background-color: white;margin:10px;\">
                                                 <h1 style=\"color: #09C; font-size: 30px;margin: 5px 0 10px 0;\">Ganaste un ".$prod->NOM_PRODUCTO."!</h1>
                                                 <p>Felicitaciones <b>".$destino->nombre." (".$usu->NICK_USUARIO.")</b>, acabas de ganar la subasta del ".$prod->NOM_PRODUCTO.", para reclamar tu premio debes entrar en tu <a href='http://www.lokiero.cl/micuenta' target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">cuenta</a> y comprar el producto al precio subastado ;).</p>
