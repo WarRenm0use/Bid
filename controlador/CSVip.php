@@ -297,8 +297,8 @@ class CSVip {
                     if($_SERVER["REMOTE_ADDR"] == "50.56.80.62" && $_GET["k"] == "ad2u9V4VMhNbfzaphTzAxVXXHMQN56") {
                         $res = new stdClass();
                         $res->SUBASTA = $this->suMP->refreshById($_GET["id"]);
-                        $res->ULTIMOS = $this->biMP->fetchLast($_GET["id"]);
                         if($res->SUBASTA && isset($res->SUBASTA->ID_SVIP)) {
+                            $res->ULTIMOS = $this->biMP->fetchLast($_GET["id"]);
                             if($res->SUBASTA->ESTADO_SUBASTA == 4) {
                                 $usu = $this->usMP->find($res->SUBASTA->ID_USUARIO, array("NOM_USUARIO", "APE_USUARIO", "EMA_USUARIO", "NICK_USUARIO", "FB_UID"));
                                 $this->proMP = new ProductoMP();

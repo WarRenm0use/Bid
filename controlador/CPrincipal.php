@@ -162,16 +162,16 @@ class CPrincipal {
     <body style=\"width: 100% !important; font-size: 12px; background-color: #D0EBFE;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;background-image: url('http://www.lokiero.cl/img/bg.jpg');background-repeat: repeat-x;padding:0 0 10px 0;margin:0\">
         <div class=\"wrapper\" style=\"width: 587px; padding: 0; font-size: 14px; color: #666; margin: 0 auto;\">
             <div class=\"header\">
-                <img src=\"http://www.lokiero.cl/img/logo.png\" />
+                <a href='http://www.lokiero.cl'><img src=\"http://www.lokiero.cl/img/logo.png\" border=0/></a>
             </div>
             <div class=\"content\" style=\"width: 100%; background-color: white; padding: 10px 0px 0 0;margin-bottom: 20px;-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px;\">
                 $data->cuerpo
                 <div class=\"footer\" style=\"background: #ededed;padding: 0 15px 10px; margin-top: 20px;  color: #666; font-size: 12px;border-radius: 0 0 5px 5px; height: 95px;\">
-                    <img src=\"http://www.lokiero.cl/img/logoFB.png\" style=\"float: right;margin-top: 10px;\"/>
+                    <a href='http://www.lokiero.cl' style='float: right;'><img src=\"http://www.lokiero.cl/img/logoFB.png\" style=\"margin-top: 10px;border:0;\"/></a>
                     <div style=\"margin: 0 auto; float:left; width:auto;\">
                         <p>
-                        <a href=\"https://www.facebook.com/LoKieroBid\" style=\"padding: 0;\"><img src=\"http://www.lokiero.cl/img/fb_icon.png\" width=\"25\" style=\"margin-bottom: -8px;\" class=\"tp\" data-placement=\"bottom\" data-original-title=\"Siguenos en Facebook\"></a>
-                        <a href=\"https://twitter.com/lo_kiero\" style=\"padding: 0;\"><img src=\"http://www.lokiero.cl/img/tw_icon.png\" width=\"25\" style=\"margin-bottom: -8px;\" class=\"tp\" data-placement=\"bottom\" data-original-title=\"Siguenos en Twitter\"></a><br/>
+                        <a href=\"https://www.facebook.com/LoKieroBid\" style=\"padding: 0;\"><img src=\"http://www.lokiero.cl/img/fb_icon.png\" width=\"25\" style=\"margin-bottom: -8px;border:0;\" class=\"tp\" data-placement=\"bottom\" data-original-title=\"Siguenos en Facebook\"></a>
+                        <a href=\"https://twitter.com/lo_kiero\" style=\"padding: 0;\"><img src=\"http://www.lokiero.cl/img/tw_icon.png\" width=\"25\" style=\"margin-bottom: -8px;border:0;\" class=\"tp\" data-placement=\"bottom\" data-original-title=\"Siguenos en Twitter\"></a><br/>
                         <a href=\"http://www.lokiero.cl/\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">Lo Kiero! - Subastas VIP</a><br/>
                         Av. 11 de Septiembre 1881, of 1620<br/>
                         Providencia, Santiago, Chile<br/>
@@ -323,14 +323,13 @@ class CPrincipal {
                 $destino->email = "super.neeph@gmail.com";
                 $destino->nombre = "Alvaro Flores";
                 $email->destino[] = $destino;
-                $email->titulo = "final";
+                $email->titulo = "Subasta anulada";
                 $email->cuerpo = "<div style=\"background-image: url('http://www.lokiero.cl/producto/4b23f87750886708949224f7dad5e9b6.jpg');-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
-                <div style=\"background-color: white;margin:10px;\">
-                <h1 style=\"color: #09C; font-size: 30px;margin: 5px 0 10px 0;\">Cupo reservado!</h1>
-                <p>La reserva para la subasta de un <a href=\"http://www.lokiero.cl/svip/2e344b8bf505be2fb3f2644cf91b8978\" target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">Té para 2 en Café Rende Bu</a> fue realizada correctamente, para ingresar visita esta pagina Subasta Té para 2 en Café Rende Bu</p>
-                <p>15 minutos antes de que comience la subasta se verificara que se haya logrado el minimo de usuarios requeridos, si se alcanza el minimo se activara la subasta, si no, sera anulada y reembolsaremos los bids que gastaste en la reserva.</p>
-                </div>";
-                $ema = $this->email($email);
+                                                <div style=\"background-color: white;margin:10px;\">
+                                                <h1 style=\"color: #09C; font-size: 30px;margin: 5px 0 10px 0;\">Ganaste un lala!</h1>
+                                                <p>Felicitaciones <b>".$destino->nombre." (Walala)</b>, acabas de ganar la subasta del lala, para reclamar tu premio debes entrar en tu <a href='http://www.lokiero.cl/micuenta' target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">cuenta</a> y comprar el producto al precio subastado ;).</p>
+                                                </div>";
+                $ema = $this->sendEmail($email);
                 if($ema) echo "ok";
                 else echo "fail";
                 break;

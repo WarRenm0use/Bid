@@ -125,8 +125,8 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
             type: 'get',
             success: function(todo) {
                 if(todo!=null) {
-                    console.log("refresh");
-                    console.log(todo);
+//                    console.log("refresh");
+//                    console.log(todo);
                     var sub = todo.SUBASTA;
                     var last = todo.ULTIMOS;
                     var nLast = last.length;
