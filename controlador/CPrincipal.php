@@ -31,24 +31,7 @@ class CPrincipal {
             );
             $this->loginUrl = $this->facebook->getLoginUrl($params);
         }
-//        echo "<pre>";
-//        print_r($this->usuario);
-//        echo "</pre>";
-//        echo "<pre>";
-//        print_r($_SERVER);
-//        echo "</pre>";
-//        $host = explode(".",$_SERVER["HTTP_HOST"]);
-//        echo $host[0]."<br>";
-//        if($_GET["sec"]!="svip" || $_GET["get"]!="refresh")
         if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);
-//        echo "<pre>";
-//        print_r($_SESSION);
-//        echo "</pre>";
-//        $this->getSession()->set("ID_USUARIO", 1);
-//        unset($_SESSION["ID_CARRO"]);
-//        print_r($_SESSION);
-//        $this->isLoged = $this->checkLogin();
-//        $this->checkLogin();
         $this->catchRequest();
         $this->setSec();
     }
@@ -57,20 +40,33 @@ class CPrincipal {
         if(isset($_GET["request_ids"])) {
             $this->showLayout = false;
             $res = $this->invMP->findByReq($_GET["request_ids"], 0);
-//            echo "<pre>";
-//            print_r($_GET);
-//            echo "</pre>";
-//            echo "<pre>";
-//            print_r($res);
-//            echo "</pre>";
             $nInv = count($res);
             $this->iniFacebook();
             if($nInv > 0) {
-                if($nInv == 1) { //1 usuario lo invito
-                    $this->invMP->acepta($res[0], $this->user);
+                $us = $this->usMP->findByFb($res[0]->ID_TO);
+                if(!$us) {
+                    if($nInv == 1) { //1 usuario lo invito
+                        $this->invMP->acepta($res[0]);
+                        try {
+                            $delete_success = $this->facebook->api("/".$res[0]->ID_REQUEST."_".$res[0]->ID_TO,'DELETE');
+                        } catch (FacebookApiException $e) {
+//                            echo "Error al borrar request: ".$res[$i]->ID_REQUEST."_".$res[$i]->ID_TO;
+                        }
+                        $this->getSession()->salto("/");
+                    } else { //mas de 1 usuario lo invito
+                        $this->getSession()->salto("/invitacion/".$_GET["request_ids"]);
+                    }
+                } else { //ya era usuario
+                    $this->invMP->rechazaAll($res[0]->ID_TO);
+                    $nRes = count($res);
+                    for($i=0; $i<$nRes; $i++) {
+                        try {
+                            $delete_success = $this->facebook->api("/".$res[$i]->ID_REQUEST."_".$res[$i]->ID_TO,'DELETE');
+                        } catch (FacebookApiException $e) {
+//                            echo "Error al borrar request: ".$res[$i]->ID_REQUEST."_".$res[$i]->ID_TO;
+                        }
+                    }
                     $this->getSession()->salto("/");
-                } else { //mas de 1 usuario lo invito
-                    $this->getSession()->salto("/invitacion/".$_GET["request_ids"]);
                 }
             } else {
                 $this->getSession()->salto("/");
@@ -282,6 +278,8 @@ class CPrincipal {
 
     function setSec() {
         $this->sec = (isset($_GET["sec"]))?$_GET["sec"]:"main";
+        $allow = array("log"=>true,"svip"=>true, "producto"=>false, "invitacion"=>false, "carro"=>false, "pagina"=>true, "cuenta"=>false, "main"=>true);
+        if(!$this->isLoged && !$allow[$this->sec]) $this->sec = "main";
         $this->showLayout = true;
         $this->thisLayout = true;
         switch($this->sec) {
@@ -317,24 +315,8 @@ class CPrincipal {
                 include_once 'CMain.php';
                 $this->_CSec = new CMain($this);
                 break;
-            case "ema":
-                $email = new stdClass();
-                $destino = new stdClass();
-                $destino->email = "super.neeph@gmail.com";
-                $destino->nombre = "Alvaro Flores";
-                $email->destino[] = $destino;
-                $email->titulo = "Subasta anulada";
-                $email->cuerpo = "<div style=\"background-image: url('http://www.lokiero.cl/producto/4b23f87750886708949224f7dad5e9b6.jpg');-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; height: 200px;margin: 0 10px;\"></div>
-                                                <div style=\"background-color: white;margin:10px;\">
-                                                <h1 style=\"color: #09C; font-size: 30px;margin: 5px 0 10px 0;\">Ganaste un lala!</h1>
-                                                <p>Felicitaciones <b>".$destino->nombre." (Walala)</b>, acabas de ganar la subasta del lala, para reclamar tu premio debes entrar en tu <a href='http://www.lokiero.cl/micuenta' target=\"blank\" style=\"color: #09C; font-weight: bold; text-decoration: none;\">cuenta</a> y comprar el producto al precio subastado ;).</p>
-                                                </div>";
-                $ema = $this->sendEmail($email);
-                if($ema) echo "ok";
-                else echo "fail";
-                break;
         }
-        $this->setCarro();
+        if($this->isLoged) $this->setCarro();
 //        echo "<pre>";
 //        print_r($this->carro);
 //        echo "</pre>";

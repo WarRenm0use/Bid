@@ -11,7 +11,12 @@ $smain = $cp->getCSec()->svip;
             <ul class="slides">
                 <? $nImg = count($smain->IMAGENES); ?>
                 <? for($i=0; $i<$nImg; $i++) { ?>
-                <li><a href="/svip/<?=$smain->COD_SUBASTA?>"><img src="http://www.lokiero.cl/producto/<?=$smain->IMAGENES[$i]->URL_IMAGEN?>" /></a></li>
+                <li><a href="/svip/<?=$smain->COD_SUBASTA?>">
+                        <img src="http://www.lokiero.cl/producto/<?=$smain->IMAGENES[$i]->URL_IMAGEN?>" />
+                        <? if( strlen($smain->IMAGENES[$i]->DESC_IMAGEN)>0) { ?>
+                        <p class="flex-caption"><?=$smain->IMAGENES[$i]->DESC_IMAGEN?></p>
+                        <? } ?>
+                </a></li>
                 <? } ?>
             </ul>
             </div>
@@ -46,12 +51,14 @@ $smain = $cp->getCSec()->svip;
                 <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Ya eres parte de la subasta, solo debes esperar a que comience!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_reserva_disabled}">Ya esta Reservado!</a>
                 <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
             <? } else { ?>
-                <? if($cp->like) { ?>
+                <div id="resBox" style="display: <?=($cp->like)?"":"none"?>">
                 <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Reserva tu cupo para ser parte de la subasta!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_reserva_disabled}"><b>RESERVA</b> TU CUPO!</a>
                 <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva"  style="display:none;" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
-                <? } else { ?>
-                <a class="btn btn-primary btn-gigante tp" data-placement="left" title="Antes de reservar debes darle Me Gusta a nuestro Facebook" href="https://www.facebook.com/LoKieroBid" target="_blank">Visita nuestro <strong>Facebook</strong></a>
-                <? } ?>
+                </div>
+                <div id="likeBox" style="display: <?=(!$cp->like)?"":"none"?>">
+                <p>Antes de reservar dale <b>Me Gusta</b> a nuestro <b>Facebook</b></p>
+                <div class="fb-like-box" data-href="http://www.facebook.com/LoKieroBid" data-width="420" data-height="180" data-show-faces="true" data-stream="false" data-header="false"></div>
+                </div>
             <? } ?>
         <? } else if(!$cp->isLoged) { ?>
             <a class="btn btn-primary btn-gigante tp" href="<?=$cp->loginUrl?>" id="registro2" data-placement="left" title="Usa tu cuenta de Facebook para registrarte!">Ingresa con tu <b>Facebook</b>!</a>

@@ -38,13 +38,8 @@ function checkLogin() {
 //});
 
 function setSession(res) {
-//    console.log("setSession");
-//    console.log(res);
     FB.api('/me', function(response) {
-//        console.log("setSession 1");
         response.session = (res)?res.authResponse:null;
-//        response.id_request = (id_request)?id_request:0;
-//        console.log(response);
         $.ajax({
             url: '/?do=login',
             type: 'post',
@@ -55,7 +50,7 @@ function setSession(res) {
                 usuario = data;
                 if(data.RELOAD == 1) window.location.reload();
                 if(data.IS_NEW == 1) {
-                    window.location = "/";
+//                    window.location = "/";
                     if($askNick) askNick(data.NICK_USUARIO);
                 } else if(data.NICK_USUARIO=="") {
                     if($askNick) askNick("");
@@ -121,7 +116,7 @@ function askNick(nick) {
 
 function checkReserva(id, fb_id) {
     $.ajax({
-        url: '?sec=svip&do=checkReserva&id='+id+"&fb_id="+fb_id,
+        url: '/?sec=svip&do=checkReserva&id='+id+"&fb_id="+fb_id,
         type: 'get',
         dataType: 'json',
         success: function(data) {
@@ -210,12 +205,6 @@ var enviarInvitaciones = function(response) {
 function getInvitaciones() {
     FB.api('264213770284841', function(response) {
 //        console.log(response);
-    });
-}
-
-function regFrame() {
-    $.fancybox({
-        href: "https://www.facebook.com/plugins/registration.php?client_id=264213770284841&redirect_uri=http%3A%2F%2Fdev.lokiero.cl%2F&fields=name,birthday,email&fb_only=true&width=600"
     });
 }
 

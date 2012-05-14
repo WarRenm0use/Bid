@@ -48,12 +48,14 @@ $smain = $cp->getCSec()->smain;
                 <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Ya eres parte de la subasta, solo debes esperar a que comience!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_disabled}">Ya esta Reservado!</a>
                 <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
             <? } else { ?>
-                <? if($cp->like) { ?>
+                <div id="resBox" style="display: <?=($cp->like)?"":"none"?>">
                 <a class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Reserva tu cupo para ser parte de la subasta!" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: reservar, html: res_texto, dot: res_titulo, css: {'disabled': is_disabled}"><b>RESERVA</b> TU CUPO!</a>
                 <a class="negativo tp anular" data-placement="right" rel='twipsy' title="Anula tu reserva"  style="display:none;" id_subasta="<?=$smain->ID_SVIP?>" data-bind="click: anular, visible: in_subasta">Anular reserva</a>
-                <? } else { ?>
-                <a class="btn btn-primary btn-gigante tp" data-placement="left" title="Antes de reservar debes darle Me Gusta a nuestro Facebook" href="https://www.facebook.com/LoKieroBid" target="_blank">Visita nuestro <strong>Facebook</strong></a>
-                <? } ?>
+                </div>
+                <div id="likeBox" style="display: <?=(!$cp->like)?"":"none"?>">
+                <p>Antes de reservar dale <b>Me Gusta</b> a nuestro <b>Facebook</b></p>
+                <div class="fb-like-box" data-href="http://www.facebook.com/LoKieroBid" data-width="352" data-height="180" data-show-faces="true" data-stream="false" data-header="false"></div>
+                </div>
             <? } ?>
             <? } else if($smain->ESTADO_SUBASTA == 3 || $smain->ESTADO_SUBASTA == 1) { ?>
                 <a href="/svip/<?=$smain->COD_SUBASTA?>" class="btn btn-primary btn-gigante tp" data-placement="left" rel='twipsy' title="Entra a la subasta y Gana!">Entra a la Subasta!</a>

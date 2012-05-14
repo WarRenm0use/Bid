@@ -18,7 +18,11 @@ class CLog {
 
     function logout() {
         $this->cp->getSession()->kill();
-        $this->cp->getSession()->salto("index.php");
+//        $this->cp->getSession()->salto("index.php");
+//        echo "<pre>";
+//        print_r($_SERVER);
+//        echo "</pre>";
+        $this->cp->getSession()->salto($_SERVER["HTTP_REFERER"]);
     }
 
     function getLayout() {

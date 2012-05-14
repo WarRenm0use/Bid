@@ -14,7 +14,7 @@ class CInvitacion {
         $this->layout = "vista/invitaciones.phtml";
         $this->usMP = new UsuarioMP();
         $this->invMP = new InvitacionMP();
-        $this->catchRequest();
+//        $this->catchRequest();
         $this->getJSON();
         $this->setDo();
         $this->setOp();
@@ -122,12 +122,15 @@ class CInvitacion {
                     if($this->cp->user) {
                         $res = new stdClass();
                         $res->ERROR = 0;
-                        if($this->invMP->acepta($_POST["id_request"], $this->cp->user)) {
+                        $inv = $this->invMP->find($_POST["id_request"], $this->cp->getSession()->get("ID_FB"));
+                        if($inv && $this->invMP->acepta($inv)) {
                             $res->ERROR = 0;
                             $res->MENSAJE = "Listo!, ahora seras redireccionado al inicio";
                         } else {
                             $res->ERROR = 1;
                             $res->MENSAJE = "Algo salio mal, por favor intentalo denuevo";
+                            $res->inv = $inv;
+                            $res->post = $_POST;
                         }
                     } else {
                         $res->ERROR = 1;
@@ -209,6 +212,16 @@ class CInvitacion {
     function setOp() {
         $op = $_GET["op"];
         switch($op) {
+            case 'acepta':
+                $this->layout = "vista/invitaciones_acepta.phtml";
+                $res = new stdClass();
+                if($this->cp->getSession()->existe("ID_USUARIO")) {
+                    $this->res = $this->invMP->findByReq($_GET["id"], 0);
+                    if(count($this->res) <= 0) $this->cp->getSession()->salto("/");
+                } else {
+                    $this->cp->getSession()->salto("/");
+                }
+                break;
             default:
                 $res = new stdClass();
                 if($this->cp->getSession()->existe("ID_USUARIO")) {

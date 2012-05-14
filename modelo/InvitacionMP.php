@@ -105,7 +105,7 @@ class InvitacionMP {
         } else {
             $sAttr = implode(",", $attr);
         }
-        $sql = "SELECT $sAttr FROM $this->_dbTable WHERE ID_REQUEST = $idR AND ID_TO = $idTo";
+        $sql = "SELECT $sAttr FROM $this->_dbTable WHERE ID_REQUEST = '$idR' AND ID_TO = '$idTo'";
         $res = $this->_bd->sql($sql);
         if($res) {
             $row = mysql_fetch_object($res);
@@ -146,8 +146,8 @@ class InvitacionMP {
                 WHERE FB_UID = '".$inv->ID_FROM."'";
         
         $res3 = $this->_bd->sql($sql);
-        
-        $rec = $this->fetchByTo($idTo, array("ID_FROM"));
+//        echo $sql."<br>";
+        $rec = $this->fetchByTo($inv->ID_TO, array("ID_FROM"));
         $nRec = count($rec);
         for($i=0; $i<$nRec; $i++) {
             if($rec[$i]->ID_FROM != $inv->ID_FROM) {
@@ -159,6 +159,24 @@ class InvitacionMP {
         $res4 = $this->_bd->sql($sql);
         
         return ($res1 && $res2 && $res3);
+    }
+    
+    function rechazaAll($idTo) {
+        $idTo = $this->_bd->limpia($idTo);
+        $now = date("U");
+        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 2, FECHA_UPDATE = $now WHERE ID_TO = '$idTo' AND ESTADO_INVITACION = 0";
+        $res2 = $this->_bd->sql($sql);
+        
+        $emi = $this->fetchByTo($idTo, array("ID_FROM"));
+        $nRec = count($emi);
+        for($i=0; $i<$nRec; $i++) {
+            if($i==0) $idEm = $emi[$i]->ID_FROM;
+            else $idEm .= ",".$emi[$i]->ID_FROM;
+        }
+        $sql = "UPDATE USUARIO SET INVITACION_RECHAZADA = INVITACION_RECHAZADA+1 WHERE FB_UID IN ($idEm)";
+        $res4 = $this->_bd->sql($sql);
+        
+        return ($res2 && $res4);
     }
     
     function findByReq($id, $estado, $attr = null) {
@@ -173,7 +191,7 @@ class InvitacionMP {
         
         
 
-        $sql = "SELECT I.$sAttr, U.NOM_USUARIO, U.APE_USUARIO FROM $this->_dbTable AS I INNER JOIN USUARIO AS U ON I.ID_REQUEST IN ( $id ) AND U.FB_UID = I.ID_FROM AND I.ESTADO_INVITACION = $estado GROUP BY U.FB_UID";
+        $sql = "SELECT I.$sAttr, from_unixtime(FECHA_REQUEST, '%d-%m-%Y %H:%i:%s') AS FECHA_REQUEST_H, U.NOM_USUARIO, U.APE_USUARIO FROM $this->_dbTable AS I INNER JOIN USUARIO AS U ON I.ID_REQUEST IN ( $id ) AND U.FB_UID = I.ID_FROM AND I.ESTADO_INVITACION = $estado GROUP BY U.FB_UID";
 //        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         if($res) {
@@ -226,7 +244,7 @@ class InvitacionMP {
             $i++;
         }
         
-        $sql = "UPDATE $this->_dbTable SET $val WHERE $this->_id = $data->ID_REQUEST";
+        $sql = "UPDATE $this->_dbTable SET $val WHERE $this->_id = '$data->ID_INVITACION'";
 //        echo $sql."<br>";
         return $this->_bd->sql($sql);
     }

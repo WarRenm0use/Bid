@@ -134,7 +134,7 @@ var delInvitacion = function(e) {
                 $this.tooltip('show');
             },
             success: function(data) {
-                console.log(data);
+//                console.log(data);
                 $this.removeClass("disabled");
                 showNotificacion(data.MENSAJE);
                 $this.tooltip('hide');
@@ -156,4 +156,56 @@ $(document).ready(function(){
 //        $btnEliminar = $(".delete");
 //    $btnInvitar.on("click", invitar);
 //    $btnEliminar.on("click", delInvitacion);
+    var $form = $("#formu");
+    if($form.length>0) {
+        $formVal = $form.bind("invalid-form.validate",
+            function() {
+                $(".msg").html("Debes seleccionar a alguien");
+            }).validate({
+            rules: {
+                id_request: {
+                    required: true,
+                    minlength: 1
+                }
+            },
+            errorPlacement: function(error, element) {
+            },
+            submitHandler: function(form) {
+                var btn = $("#btnGuardar", form),
+                    msg = $(".msg");
+
+                if(!btn.hasClass("disabled")) {
+                    $.ajax({
+                        url: '/?sec=invitacion&do=aceptar',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            'id_request': $("input[name='id_request']:checked", form).val()
+                        },
+                        beforeSend: function() {
+                            $(".id_request").attr("disabled", true)
+                            btn.val("Guardando...").addClass("disabled");
+                            msg.html("");
+                        },
+                        success: function(data) {
+                            console.log(data);
+                            msg.html(data.MENSAJE);
+                            if(data.ERROR == 0) {
+                                btn.val("Guardado!");
+                                setTimeout(function(){
+                                    window.location.href="/";
+                                }, 2000);
+                            } else {
+                                $(".id_request").attr("disabled", false)
+                                btn.val("Listo!").removeClass("disabled");
+                            }
+                        }
+                    });
+                }
+                return false;
+            },
+            success: function(label) {
+            }
+        });
+    }
 });

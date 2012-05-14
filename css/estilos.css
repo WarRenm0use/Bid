@@ -467,6 +467,7 @@ p.msg {
     padding: 5px;
     text-align: right;
     color: #666;
+    margin: 0;
 }
 
 .subastaVip {
