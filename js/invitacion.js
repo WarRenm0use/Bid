@@ -16,18 +16,19 @@ var InvitacionesViewModel = function(disp, usada, inv) {
     this.inv_disp = ko.observable(disp);
     this.inv_usada = ko.observable(usada);
     this.inv = ko.observableArray(inv);
+    this.inv_uiActive = ko.observable(false);
     
     this.hasInvitaciones = ko.computed(function(){
         return (this.inv_disp()>0);
     }, this);
     
-    this.noHasInvitaciones = ko.computed(function(){
-        return !(this.inv_disp()>0);
+    this.disInvitar = ko.computed(function(){
+        return !((this.inv_disp()>0) && !this.inv_uiActive());
     }, this);
     
     this.hasSentInvitaciones = ko.computed(function(){
-//        return (this.inv_usada()>0);
-        return true;
+        return (this.inv().length>0);
+//        return true;
     }, this);
     
     this.inv_texto = ko.computed(function(){
@@ -50,30 +51,34 @@ var InvitacionesViewModel = function(disp, usada, inv) {
                     self.inv_usada(data.MODELO.INVITACION_USADA);
                     self.inv(data.INVITACIONES);
 //                    console.log(self.inv());
+                    self.inv_uiActive(false);
                 }
             });
-        }
+        } else self.inv_uiActive(false);
     }
     
     this.invitar = function() {
         var ws = this;
-        $.ajax({
-            url: '/?sec=invitacion&get=invitacion',
-            dataType: 'json',
-            data: {},
-            success: function(data) {
-                if(data.INVITACION_DISP>0) {
-                    FB.ui({
-                        method: 'apprequests', 
-                        title: 'Invita a tus amigos y gana Bids!',
-                        filters: ['app_non_users'],
-                        message: 'Registrate gratis y subasta productos con hasta un 100% de descuento!', 
-                        exclude_ids: data.INVITADOS,
-                        max_recipients: data.INVITACION_DISP
-                    }, ws.enviarInvitaciones);
+        if(!this.disInvitar()) {
+            $.ajax({
+                url: '/?sec=invitacion&get=invitacion',
+                dataType: 'json',
+                data: {},
+                success: function(data) {
+                    if(data.INVITACION_DISP>0) {
+                        self.inv_uiActive(true);
+                        FB.ui({
+                            method: 'apprequests', 
+                            title: 'Invita a tus amigos y gana Bids!',
+                            filters: ['app_non_users'],
+                            message: 'Registrate gratis y subasta productos con hasta un 100% de descuento!', 
+                            exclude_ids: data.INVITADOS,
+                            max_recipients: data.INVITACION_DISP
+                        }, ws.enviarInvitaciones);
+                    }
                 }
-            }
-        });
+            });
+        }
         return false;
     }
     

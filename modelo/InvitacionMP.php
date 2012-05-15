@@ -117,9 +117,10 @@ class InvitacionMP {
         $idR = $this->_bd->limpia($idR);
         $idTo = $this->_bd->limpia($idTo);
         $idFrom = $this->_bd->limpia($idFrom);
+        $now = date("U");
         $req = $this->find($idR, $idTo, array("ID_FROM"));
         if($idFrom == $req->ID_FROM) {
-            $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 3 WHERE ID_REQUEST = $idR AND ID_TO = $idTo AND ESTADO_INVITACION = 0";
+            $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 3, FECHA_UPDATE = $now WHERE ID_REQUEST = '$idR' AND ID_TO = '$idTo' AND ESTADO_INVITACION = 0";
             $res1 = $this->_bd->sql($sql);
             if($res1) {
                 $sql = "UPDATE USUARIO 
@@ -135,9 +136,10 @@ class InvitacionMP {
 //        $idR = $this->_bd->limpia($idR);
 //        $idTo = $this->_bd->limpia($idTo);
         $bids = $this->_bd->limpia($bids);
-        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 1 WHERE ID_REQUEST = $inv->ID_REQUEST AND ID_TO = $inv->ID_TO";
+        $now = date("U");
+        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 1, FECHA_UPDATE = $now WHERE ID_REQUEST = '$inv->ID_REQUEST' AND ID_TO = '$inv->ID_TO'";
         $res1 = $this->_bd->sql($sql);
-        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 2 WHERE ID_REQUEST <> $inv->ID_REQUEST AND ID_TO = $inv->ID_TO AND ESTADO_INVITACION = 0";
+        $sql = "UPDATE $this->_dbTable SET ESTADO_INVITACION = 2, FECHA_UPDATE = $now WHERE ID_TO = '$inv->ID_TO' AND ESTADO_INVITACION = 0";
         $res2 = $this->_bd->sql($sql);
 //        $req = $this->find($idR, $idTo, array("ID_FROM"));
         $sql = "UPDATE USUARIO 

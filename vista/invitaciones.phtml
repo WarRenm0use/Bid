@@ -19,7 +19,7 @@ $inv = $cp->getCSec()->inv;
 <script src="/js/invitacion.js" type="text/javascript"></script>
 <div id="inner">
     <div class="top-nav">
-        <a class="btn btn-success <?=($inv->MODELO->INVITACION_DISP>0)?"":"disabled"?>" id="btnInvitar" data-bind="click: invitar, html: inv_texto, css: {'disabled': noHasInvitaciones}">Invita más amigos (<?=$inv->MODELO->INVITACION_DISP?>)</a>
+        <a class="btn btn-success <?=($inv->MODELO->INVITACION_DISP>0)?"":"disabled"?>" id="btnInvitar" data-bind="click: invitar, html: inv_texto, css: {'disabled': disInvitar}">Invita más amigos (<?=$inv->MODELO->INVITACION_DISP?>)</a>
     </div>
     <h1>Invitaciones</h1>
     <p>Invita a tus amigos y gana 2 bids por cada uno que se registre!</p>
@@ -35,19 +35,19 @@ $inv = $cp->getCSec()->inv;
             </tr>
         </thead>
         <tbody data-bind="foreach: inv">
-            <? for($i=0; $i<$inv->MODELO->INVITACION_USADA; $i++) { ?>
-            <? $iAux = $inv->INVITACIONES[$i]; ?>
+            <? //for($i=0; $i<$inv->MODELO->INVITACION_USADA; $i++) { ?>
+            <? //$iAux = $inv->INVITACIONES[$i]; ?>
             <tr>
-                <td data-bind="text: $data.NOM_TO"><?=$iAux->NOM_TO?></td>
-                <td data-bind="text: $data.FECHA_REQUEST_H"><?=$iAux->FECHA_REQUEST_H?></td>
-                <td  data-bind="text: $data.ESTADO_INVITACION_H"><?=$iAux->ESTADO_INVITACION_H?></td>
+                <td data-bind="text: $data.NOM_TO"><?//=$iAux->NOM_TO?></td>
+                <td data-bind="text: $data.FECHA_REQUEST_H"><?//=$iAux->FECHA_REQUEST_H?></td>
+                <td  data-bind="text: $data.ESTADO_INVITACION_H"><?//=$iAux->ESTADO_INVITACION_H?></td>
                 <td class="actionCol">
                     <? //if($iAux->ESTADO_INVITACION == 0) { ?>
                     <a class="delete" data-bind="click: $parent.del, visible: $data.ESTADO_INVITACION==0"><img src="img/delete.png" title="Eliminar invitaci&oacute;n" class="tp" width="10"/></a>
                     <? //} ?>
                 </td>
             </tr>
-            <? } ?>
+            <? //} ?>
         </tbody>
     </table>
     <? //} ?>
