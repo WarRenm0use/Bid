@@ -10,7 +10,12 @@ $smain = $cp->getCSec()->smain;
         <ul class="slides">
             <? $nImg = count($smain->IMAGENES); ?>
             <? for($i=0; $i<$nImg; $i++) { ?>
-            <li><a href="/svip/<?=$smain->COD_SUBASTA?>"><img src="http://www.lokiero.cl/producto/<?=$smain->IMAGENES[$i]->URL_IMAGEN?>" /></a></li>
+            <li><a href="/svip/<?=$smain->COD_SUBASTA?>">
+                <img src="http://www.lokiero.cl/producto/<?=$smain->IMAGENES[$i]->URL_IMAGEN?>" />
+                <? if( strlen($smain->IMAGENES[$i]->DESC_IMAGEN)>0) { ?>
+                <p class="flex-caption"><?=$smain->IMAGENES[$i]->DESC_IMAGEN?></p>
+                <? } ?>
+            </a></li>
             <? } ?>
         </ul>
         </div>

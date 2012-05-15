@@ -101,6 +101,9 @@ class CInvitacion {
                             $inv = $this->invMP->find($_POST["id_request"], $_POST["id_to"]);
                             if($inv->ESTADO_INVITACION == 0) {
                                 if($this->invMP->remove($_POST["id_request"], $_POST["id_to"], $this->cp->getSession()->get("ID_FB"))) {
+                                    try {
+                                        $delete_success = $this->cp->facebook->api("/".$inv->ID_REQUEST."_".$inv->ID_TO,'DELETE');
+                                    } catch (FacebookApiException $e) {}
                                     $res = $this->usMP->find($this->cp->getSession()->get("ID_USUARIO"), array("INVITACION_TOTAL", "INVITACION_USADA", "INVITACION_RECHAZADA"));
                                     $res->INVITACION_DISP = $res->INVITACION_TOTAL - $res->INVITACION_USADA + $res->INVITACION_RECHAZADA;
                                     $res->ERROR = 0;
@@ -124,6 +127,9 @@ class CInvitacion {
                         $res->ERROR = 0;
                         $inv = $this->invMP->find($_POST["id_request"], $this->cp->getSession()->get("ID_FB"));
                         if($inv && $this->invMP->acepta($inv)) {
+                            try {
+                                $delete_success = $this->cp->facebook->api("/".$inv->ID_REQUEST."_".$inv->ID_TO,'DELETE');
+                            } catch (FacebookApiException $e) {}
                             $res->ERROR = 0;
                             $res->MENSAJE = "Listo!, ahora seras redireccionado al inicio";
                         } else {
@@ -180,7 +186,9 @@ class CInvitacion {
                 case 'del_req':
                     $this->cp->iniFacebook();
                     try {
-                        $res = $this->cp->facebook->api("/".$_GET["req"]."_".$_GET["to"]."?access_token=".$this->cp->facebook->getAccessToken(),'DELETE');
+                        $res = $this->cp->facebook->api("/".$_GET["req"]."_".$_GET["to"],'DELETE');
+                        if($res) echo "ok";
+                        else echo "fail";
                     } catch(FacebookApiException $e) {
                         echo "<pre>";
                         print_r($this->cp->user);
