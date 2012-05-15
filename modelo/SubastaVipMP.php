@@ -50,6 +50,28 @@ class SubastaVipMP {
         return $arr;
     }
     
+    function fetchTerminadas($n = 10) {
+        $sql = "SELECT S.MONTO_SUBASTA, S.COD_SUBASTA, U.NICK_USUARIO, from_unixtime(S.TERMINO_SUBASTA, '%d-%m-%Y %H:%i:%s') AS TERMINO_SUBASTA_H, P.NOM_PRODUCTO, I.URL_IMAGEN
+            FROM SVIP AS S 
+                INNER JOIN USUARIO AS U 
+                INNER JOIN PRODUCTO AS P
+                INNER JOIN IMAGEN AS I
+            ON 
+                S.ESTADO_SUBASTA = 4
+                AND S.ID_USUARIO = U.ID_USUARIO 
+                AND S.ID_PRODUCTO = P.ID_PRODUCTO
+                AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN
+            ORDER BY S.INICIO_SUBASTA DESC
+            LIMIT 0,$n";
+        $res = $this->_bd->sql($sql);
+        $arr = array();
+        while($row = mysql_fetch_object($res)) {
+            $row->MONTO_SUBASTA_H = number_format($row->MONTO_SUBASTA, 0, ",", ".");
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+    
     function nextSubasta() {
         $now = date("U");
         $sql = "SELECT *, from_unixtime(INICIO_SUBASTA, '%d-%m-%Y %H:%i') INI_SUBASTA

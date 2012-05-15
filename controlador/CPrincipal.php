@@ -3,6 +3,7 @@ include_once 'modelo/facebook.php';
 include_once 'modelo/UsuarioMP.php';
 include_once 'modelo/CarroMP.php';
 include_once 'modelo/InvitacionMP.php';
+include_once 'modelo/SubastaVipMP.php';
 include_once 'util/session.php';
 
 class CPrincipal {
@@ -22,7 +23,11 @@ class CPrincipal {
         $this->invMP = new InvitacionMP();
         $this->ss = new session();
         $this->secret = "6dfc87d94a03dbe7d4512d31f3fc16d2";
-        $this->iniFacebook();
+        if($_SERVER["REMOTE_ADDR"] != "50.56.80.62") {
+            $this->iniFacebook();
+            $this->suMP = new SubastaVipMP();
+            $this->pas = $this->suMP->fetchTerminadas();
+        }
         $this->isLoged = $this->checkLogin();
         if(!$this->isLoged && $_SERVER["REMOTE_ADDR"] != "50.56.80.62") {
             $params = array(

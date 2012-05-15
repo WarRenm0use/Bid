@@ -164,6 +164,18 @@ a *{
     padding-top: 60px;
 }
 
+.bloque {
+    width:960px;
+    background-color: #f7f7f7;
+    -moz-box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    padding: 20px;
+}
+
 #contenido #inner {
     padding: 10px 40px 10px 40px;
 }
@@ -789,4 +801,49 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: -20px;
     margin-bottom: -25px;
     margin-right: 20px;
+}
+
+.ganadores {
+    width: 510px;
+    padding: 15px;
+    height: 270px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border: 1px solid #EDEDED;
+    float: left;
+}
+
+.ganadores div.flexslider {
+    background: none;
+    border: none;
+}
+
+.ganadores li img{
+    float: left;
+}
+
+.ganadores li ul.info {
+    margin-left: 270px;
+}
+
+.ganadores li ul.info li{
+    font-size: 18px;
+    line-height: 28px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    color: #666;
+}
+
+.ganadores li ul.info li b{
+    color: #333;
+}
+
+.azul {
+    color: #09C;
+}
+
+.verde {
+    color: #CF0;
 }

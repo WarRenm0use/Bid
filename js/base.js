@@ -63,4 +63,12 @@ $(document).ready(function(){
         'live':true,
         'offset': 5
     });
+    $('.flexslider').flexslider({
+        animation: "fade", 
+        directionNav: false,
+        controlNav: false,
+        keyboardNav: true,
+        prevText: "Previous", 
+        nextText: "Next"
+    });
 });
