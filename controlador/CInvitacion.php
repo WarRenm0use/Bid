@@ -226,6 +226,7 @@ class CInvitacion {
                 if($this->cp->getSession()->existe("ID_USUARIO")) {
                     $this->res = $this->invMP->findByReq($_GET["id"], 0);
                     if(count($this->res) <= 0) $this->cp->getSession()->salto("/");
+                    $this->titulo = "Invitaciones";
                 } else {
                     $this->cp->getSession()->salto("/");
                 }
@@ -239,6 +240,7 @@ class CInvitacion {
                     $res->MODELO->INVITACION_USADA = $usAux->INVITACION_USADA;
                     $res->INVITACIONES = $this->invMP->fetchByFb($this->cp->getSession()->get("ID_FB"));
                     $this->inv = $res;
+                    $this->titulo = "Invita y Gana";
                 } else {
                     $this->cp->getSession()->salto("/");
                 }

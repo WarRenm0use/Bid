@@ -35,6 +35,10 @@ var InvitacionesViewModel = function(disp, usada, inv) {
         return "Invita más amigos ("+this.inv_disp()+")";
     }, this);
     
+    this.ESTADO_INVITACION_TEXT = ko.computed(function(){
+//        console.log(this);
+    });
+    
     this.enviarInvitaciones = function(response) {
 //        var ws = this;
 //        console.log(ws);

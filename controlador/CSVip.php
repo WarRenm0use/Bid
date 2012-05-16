@@ -118,6 +118,7 @@ class CSVip {
                     }
                     break;
                 case 'reservar':
+                    if(isset($_POST["ID_SVIP"])) {
                     $sub = $this->suMP->find($_POST["ID_SVIP"]);
                     $data = new stdClass();
                     $data->ID_SVIP = $sub->ID_SVIP;
@@ -197,6 +198,7 @@ class CSVip {
                         $data->ERROR = 1;
                         $data->MENSAJE = "Debes iniciar sesi&oacuten";
                     }
+                    } else $data = null;
                     echo json_encode($data);
                     break;
                 case 'bid':
@@ -291,9 +293,6 @@ class CSVip {
                     } else $res = null;
                     break;
                 case 'generate':
-//                    echo "<pre>";
-//                    print_r($_SERVER);
-//                    echo "</pre>";
                     if($_SERVER["REMOTE_ADDR"] == "50.56.80.62" && $_GET["k"] == "ad2u9V4VMhNbfzaphTzAxVXXHMQN56") {
                         $res = new stdClass();
                         $res->SUBASTA = $this->suMP->refreshById($_GET["id"]);
@@ -323,11 +322,9 @@ class CSVip {
                                         'picture' => 'http://www.lokiero.cl/producto/'.$prod->URL_IMAGEN
                                     ));
                                 } catch(FacebookApiException $e) {}
-//                                print_r($email);
                                 $this->cp->sendEmail($email);
                             }
                         } else {
-//                            $res->SUBASTA = $this->suMP->getGanador($_GET["id"]);
                             echo "0";
                             die();
                         }
@@ -335,11 +332,47 @@ class CSVip {
                     }
                     break;
                 case 'ganador':
-                    $idSub = $this->suMP->getId($_GET["cod"]);
+                    $idSub = $this->suMP->getId($_POST["cod"]);
                     if($idSub) {
                         $res = $this->suMP->getGanador($idSub->ID_SVIP);
                         $res->ID_SVIP = $idSub->ID_SVIP;
                         $res->IS_GANADOR = ($res->ID_USUARIO == $this->cp->getSession()->get("ID_USUARIO"))?1:0;
+                        $ses = $this->cp->getSession()->get($res->COD_SUBASTA."_allow");
+                        if($res->RESTO_TIEMPO_SEC > -10) {
+                            $prox = $this->suMP->fetchByEstado(0,1);
+                            $prox = $prox[0];
+                            if($ses) {
+                                if($res->IS_GANADOR == 1) { //ganador
+                                    $pop = "<div class='boxPop'>
+                                            <h1>Felicitaciones, GANASTE!!</h1>
+                                            <p>Para obtener tu premio revisa tu <a href='http://www.lokiero.cl/micuenta' target='blank'>cuenta</a>.</p>
+                                            <p>Aprovecha y <b>reserva ahora tu cupo</b> para la próxima subasta ;).</p>";
+                                } else { //perdedor
+                                    $pop = "<div class='boxPop'>
+                                            <h1>Lo sentimos :(</h1>
+                                            <p>Pero siempre hay una nueva oportunidad. Aprovecha y <b>reserva ahora tu cupo</b> para la próxima subasta ;).</p>";
+                                }
+                            } else {
+                                $pop = "<div class='boxPop'>
+                                        <h1>Felicitaciones a ".$res->NICK_USUARIO."!!</h1>
+                                        <p>Tu tambien puedes GANAR!, <b>reserva ahora tu cupo</b> para la próxima subasta ;).</p>";
+                            }
+                            $ent = ($prox->BID_ENTRADA == 0)?"GRATIS!!":"$ $prox->BID_ENTRADA Bids";
+                            $pop .= "<div class='sub'>
+                                            <a href='http://www.lokiero.cl/svip/".$prox->COD_SUBASTA."' target='blank'><img src='http://www.lokiero.cl/producto/".$prox->URL_IMAGEN."' width='300' border='0'/></a>
+                                            <div class='info'>
+                                                <h2><a href='http://www.lokiero.cl/svip/".$prox->COD_SUBASTA."' target='blank'>".$prox->NOM_PRODUCTO."</a></h2>
+                                                <ul>
+                                                    <li>Fecha: <b>".$prox->INICIO_SUBASTA_H."</b></li>
+                                                    <li>Entrada: <b>".$ent."</b></li>
+                                                </ul>
+                                                <a href='http://www.lokiero.cl/svip/".$prox->COD_SUBASTA."' class='btn btn-primary btn-gigante' target='blank'>Vamos a la subasta!</a>
+                                            </div>
+                                            <div class='clear'></div>
+                                        </div>
+                                    </div>";
+                        } else $pop = 0;
+                        $res->POP = $pop;
                     } else $res->IS_GANADOR = 0;
                     break;
                 case 'lala':

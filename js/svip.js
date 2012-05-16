@@ -36,12 +36,15 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
         var ws = this,
             ts = new Date();
         $.ajax({
-            url: '/?sec=svip&get=ganador&cod='+ws.cod_subasta+"&"+ts.getTime(),
+            url: '/?sec=svip&get=ganador',
             dataType: 'json',
-            type: 'get',
+            type: 'post',
+            data: {
+                cod: ws.cod_subasta
+            },
             success: function(data) {
-                console.log("ganador");
-                console.log(data);
+//                console.log("ganador");
+//                console.log(data);
                 if(data.IS_GANADOR == 1) ws.ganador(true);
                 else ws.ganador(false);
                 if(data!=null) {
@@ -53,14 +56,17 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
                         ws.nick_usuario(data.NICK_USUARIO);
                     ws.resto_tiempo(data.RESTO_TIEMPO);
                     ws.resto_tiempo_sec(data.RESTO_TIEMPO_SEC);
+                    if(data.POP!="0") {
+                        $.fancybox({
+                            'content':data.POP
+                        });
+                    }
                 } else {
 
                 }
             }
         });
     }
-    
-    
     
     this.hasRecarga = ko.computed(function(){
         return (this.recarga_resto()>0);
@@ -245,6 +251,7 @@ var SVipViewModel = function(id, cod, rb, rr, est, bidder, rt, rts, ms, in_sub) 
                     vm.cargando(true);
                 },
                 success: function(data) {
+//                    console.log(data);
                     vm.cargando(false);
                     if(data.ERROR == 0) {
                         $btn_login.html("<a href='/micuenta'><span>"+data.BID_DISPONIBLE+" Bids</span><img src='https://graph.facebook.com/"+data.ID_FB+"/picture' height=32 border=0/></a>").attr("data-original-title",data.NICK_USUARIO+" tienes "+data.BID_DISPONIBLE+" Bids para usar en las subastas");

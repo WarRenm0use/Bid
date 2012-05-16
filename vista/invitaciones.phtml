@@ -38,9 +38,9 @@ $inv = $cp->getCSec()->inv;
             <? //for($i=0; $i<$inv->MODELO->INVITACION_USADA; $i++) { ?>
             <? //$iAux = $inv->INVITACIONES[$i]; ?>
             <tr>
-                <td data-bind="text: $data.NOM_TO"><?//=$iAux->NOM_TO?></td>
-                <td data-bind="text: $data.FECHA_REQUEST_H"><?//=$iAux->FECHA_REQUEST_H?></td>
-                <td  data-bind="text: $data.ESTADO_INVITACION_H"><?//=$iAux->ESTADO_INVITACION_H?></td>
+                <td data-bind="text: $data.NOM_TO"></td>
+                <td data-bind="text: $data.FECHA_REQUEST_H"></td>
+                <td data-bind="text: $data.ESTADO_INVITACION_H"></td>
                 <td class="actionCol">
                     <? //if($iAux->ESTADO_INVITACION == 0) { ?>
                     <a class="delete" data-bind="click: $parent.del, visible: $data.ESTADO_INVITACION==0"><img src="img/delete.png" title="Eliminar invitaci&oacute;n" class="tp" width="10"/></a>

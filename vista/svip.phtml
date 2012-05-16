@@ -21,7 +21,7 @@ $smain = $cp->getCSec()->svip;
             </ul>
             </div>
         </div>
-        <? if($smain->ESTADO_SUBASTA == 0) { ?>
+        <? if($smain->ESTADO_SUBASTA == 0 || $smain->ESTADO_SUBASTA == 4) { ?>
         <div class="fb-comments" data-href="http://www.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-num-posts="10" data-width="500"></div>
         <? } else { ?>
         <div class="fb-live-stream" data-event-app-id="264213770284841" data-width="500" data-height="400" data-xid="<?=$smain->COD_SUBASTA?>" data-via-url="http://www.lokiero.cl/svip/<?=$smain->COD_SUBASTA?>" data-always-post-to-friends="true"></div>

@@ -51,7 +51,7 @@ class SubastaVipMP {
     }
     
     function fetchTerminadas($n = 10) {
-        $sql = "SELECT S.MONTO_SUBASTA, S.COD_SUBASTA, U.NICK_USUARIO, from_unixtime(S.TERMINO_SUBASTA, '%d-%m-%Y %H:%i:%s') AS TERMINO_SUBASTA_H, P.NOM_PRODUCTO, I.URL_IMAGEN
+        $sql = "SELECT S.MONTO_SUBASTA, S.COD_SUBASTA, U.NICK_USUARIO, from_unixtime(S.TERMINO_SUBASTA, '%d.%m.%Y %H:%i:%s') AS TERMINO_SUBASTA_H, P.NOM_PRODUCTO, I.URL_IMAGEN
             FROM SVIP AS S 
                 INNER JOIN USUARIO AS U 
                 INNER JOIN PRODUCTO AS P
@@ -72,9 +72,29 @@ class SubastaVipMP {
         return $arr;
     }
     
+    function fetchByEstado($est=0, $n=1) {
+        $sql = "SELECT *, from_unixtime(INICIO_SUBASTA, '%d.%m.%Y %H:%i') INICIO_SUBASTA_H
+                FROM $this->_dbTable AS S 
+                    INNER JOIN PRODUCTO AS P 
+                    INNER JOIN IMAGEN AS I 
+                ON S.ID_PRODUCTO = P.ID_PRODUCTO
+                    AND P.ID_MAIN_IMAGEN = I.ID_IMAGEN
+                    AND S.ESTADO_SUBASTA IN ($est)
+                ORDER BY INICIO_SUBASTA ASC
+                LIMIT 0,$n";
+        
+//        echo $sql."<br>";
+        $res = $this->_bd->sql($sql);
+        $arr = array();
+        while($row = mysql_fetch_object($res)) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+    
     function nextSubasta() {
         $now = date("U");
-        $sql = "SELECT *, from_unixtime(INICIO_SUBASTA, '%d-%m-%Y %H:%i') INI_SUBASTA
+        $sql = "SELECT *, from_unixtime(INICIO_SUBASTA, '%d.%m.%Y %H:%i') INI_SUBASTA
                 FROM $this->_dbTable AS S 
                     INNER JOIN PRODUCTO AS P 
                     INNER JOIN IMAGEN AS I 

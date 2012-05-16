@@ -847,3 +847,44 @@ h1, h2, h3, h4, h5, h6 {
 .verde {
     color: #CF0;
 }
+
+.boxPop {
+    width: 600px;
+    padding: 5px;
+}
+
+.boxPop h1 {
+    margin-bottom: 10px;
+}
+
+.boxPop div.sub h2 {
+    margin: 0;
+}
+
+.boxPop div.sub img{
+    float: left;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.boxPop div.sub div.info{
+    float: left;
+    margin-left: 15px;
+    width: 285px;
+}
+
+.boxPop div.sub div.info ul{
+    margin: 0;
+}
+
+.boxPop div.sub div.info li{
+    font-size: 18px;
+    line-height: 28px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    color: #666;
+}
+
+.boxPop div.sub div.info li b{
+    color: #333;
+}
