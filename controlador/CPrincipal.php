@@ -43,40 +43,40 @@ class CPrincipal {
     
     function catchRequest() {
         if(isset($_GET["request_ids"])) {
-            $this->showLayout = false;
-            $res = $this->invMP->findByReq($_GET["request_ids"], 0);
-            $nInv = count($res);
-            $this->iniFacebook();
-            if($nInv > 0) {
-                $us = $this->usMP->findByFb($res[0]->ID_TO);
-                if(!$us) {
-                    if($nInv == 1) { //1 usuario lo invito
-                        $this->invMP->acepta($res[0]);
-                        try {
-                            $delete_success = $this->facebook->api("/".$res[0]->ID_REQUEST."_".$res[0]->ID_TO,'DELETE');
-                        } catch (FacebookApiException $e) {
-//                            echo "Error al borrar request: ".$res[$i]->ID_REQUEST."_".$res[$i]->ID_TO;
+            if($this->ss->existe("ID_USUARIO")) {
+                $this->showLayout = false;
+                $res = $this->invMP->findByReq($_GET["request_ids"], $this->user, 0);
+                $nInv = count($res);
+                if($nInv > 0) {
+                    $us = $this->usMP->findByFb($res[0]->ID_TO);
+                    if(!$us) {
+                        if($nInv == 1) { //1 usuario lo invito
+                            $this->invMP->acepta($res[0]);
+                            try {
+                                $delete_success = $this->facebook->api("/".$res[0]->ID_REQUEST."_".$res[0]->ID_TO,'DELETE');
+                            } catch (FacebookApiException $e) {}
+                            $this->getSession()->salto("/");
+                        } else { //mas de 1 usuario lo invito
+                            $this->getSession()->salto("/invitacion/".$_GET["request_ids"]);
+                        }
+                    } else { //ya era usuario
+                        $this->invMP->rechazaAll($res[0]->ID_TO);
+                        $nRes = count($res);
+                        for($i=0; $i<$nRes; $i++) {
+                            try {
+                                $delete_success = $this->facebook->api("/".$res[$i]->ID_REQUEST."_".$res[$i]->ID_TO,'DELETE');
+                            } catch (FacebookApiException $e) {}
                         }
                         $this->getSession()->salto("/");
-                    } else { //mas de 1 usuario lo invito
-                        $this->getSession()->salto("/invitacion/".$_GET["request_ids"]);
                     }
-                } else { //ya era usuario
-                    $this->invMP->rechazaAll($res[0]->ID_TO);
-                    $nRes = count($res);
-                    for($i=0; $i<$nRes; $i++) {
-                        try {
-                            $delete_success = $this->facebook->api("/".$res[$i]->ID_REQUEST."_".$res[$i]->ID_TO,'DELETE');
-                        } catch (FacebookApiException $e) {
-//                            echo "Error al borrar request: ".$res[$i]->ID_REQUEST."_".$res[$i]->ID_TO;
-                        }
-                    }
+                } else {
                     $this->getSession()->salto("/");
                 }
             } else {
-                $this->getSession()->salto("/");
+                $this->getSession()->salto($_SERVER["REQUEST_URI"]);
             }
-        }
+        die();
+        } 
     }
     
     function getSecret() {

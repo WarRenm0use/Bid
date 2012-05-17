@@ -181,8 +181,9 @@ class InvitacionMP {
         return ($res2 && $res4);
     }
     
-    function findByReq($id, $estado, $attr = null) {
+    function findByReq($id, $idTo, $estado, $attr = null) {
         $id = $this->_bd->limpia($id);
+        $idTo = $this->_bd->limpia($idTo);
         $estado = $this->_bd->limpia($estado);
 
         if($attr == null) {
@@ -193,7 +194,7 @@ class InvitacionMP {
         
         
 
-        $sql = "SELECT I.$sAttr, from_unixtime(FECHA_REQUEST, '%d-%m-%Y %H:%i:%s') AS FECHA_REQUEST_H, U.NOM_USUARIO, U.APE_USUARIO FROM $this->_dbTable AS I INNER JOIN USUARIO AS U ON I.ID_REQUEST IN ( $id ) AND U.FB_UID = I.ID_FROM AND I.ESTADO_INVITACION = $estado GROUP BY U.FB_UID";
+        $sql = "SELECT I.$sAttr, from_unixtime(FECHA_REQUEST, '%d-%m-%Y %H:%i:%s') AS FECHA_REQUEST_H, U.NOM_USUARIO, U.APE_USUARIO FROM $this->_dbTable AS I INNER JOIN USUARIO AS U ON I.ID_REQUEST IN ( $id ) AND U.FB_UID = I.ID_FROM AND I.ID_TO = '$idTo' AND I.ESTADO_INVITACION = $estado GROUP BY U.FB_UID";
 //        echo $sql."<br>";
         $res = $this->_bd->sql($sql);
         if($res) {
