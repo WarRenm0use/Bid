@@ -43,7 +43,7 @@ class CPrincipal {
     }
     
     function registra() {
-        if(isset($_GET["do"]) && $_GET["do"]="sign") {
+        if(isset($_GET["do"]) && $_GET["do"]=="sign") {
             if ($this->user) {
                 try {
                     $user = new stdClass();
