@@ -140,7 +140,7 @@ class CInvitacion {
                         }
                     } else {
                         $res->ERROR = 1;
-                        $res->MENSAJE = "Debes iniciar tu sesion";
+                        $res->MENSAJE = "Debes iniciar sesion";
                     }
                     echo json_encode($res);
                     break;
@@ -224,7 +224,7 @@ class CInvitacion {
                 $this->layout = "vista/invitaciones_acepta.phtml";
                 $res = new stdClass();
                 if($this->cp->getSession()->existe("ID_USUARIO")) {
-                    $this->res = $this->invMP->findByReq($_GET["id"], 0);
+                    $this->res = $this->invMP->findByReq($_GET["id"], $this->user, 0);
                     if(count($this->res) <= 0) $this->cp->getSession()->salto("/");
                     $this->titulo = "Invitaciones";
                 } else {
