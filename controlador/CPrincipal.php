@@ -37,19 +37,87 @@ class CPrincipal {
             $this->loginUrl = $this->facebook->getLoginUrl($params);
         }
         if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);
+        $this->registra();
         $this->catchRequest();
         $this->setSec();
     }
     
+    function registra() {
+        if(isset($_GET["do"]) && $_GET["do"]="sign") {
+            if ($this->user) {
+                try {
+                    $user = new stdClass();
+                    $this->user_profile = $this->facebook->api('/me');
+                    $user = new stdClass();
+                    $user->NOM_USUARIO = $this->user_profile["first_name"];
+                    $user->APE_USUARIO = $this->user_profile["last_name"];
+                    $user->EMA_USUARIO = $this->user_profile["email"];
+                    $user->SEXO_USUARIO = ($this->user_profile["gender"]=="male")?1:2;
+                    $user->FB_UID = $this->user;
+                    $user->FB_ACCESS_TOKEN = $this->facebook->getAccessToken();
+                    if($user->FB_UID > 0) {
+                        $res = $this->usMP->save($user);
+                        if($res->ID_USUARIO > 0) {
+                            $this->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
+                            $this->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);
+                            $this->getSession()->set("EMA_USUARIO", $res->EMA_USUARIO);
+                            $this->getSession()->set("NOM_USUARIO", $res->NOM_USUARIO." ".$res->APE_USUARIO);
+                            $this->getSession()->set("ID_FB", $res->FB_UID);
+                            $carro = $this->caMP->lastByUser($res->ID_USUARIO, array("ID_CARRO"));
+                            $res->SQL = $carro->SQL;
+                            if(isset($carro->ID_CARRO)) {
+                                $this->caMP->updateCarro($carro->ID_CARRO);
+                                $carro = $this->caMP->find($carro->ID_CARRO, array("ID_CARRO","MONTO_CARRO"));
+                                $this->getSession()->set("ID_CARRO", $carro->ID_CARRO);
+                                $res->ID_CARRO = $carro->ID_CARRO;
+                                $res->MONTO_CARRO = $carro->MONTO_CARRO;
+                                $res->MONTO_CARRO_H = $carro->MONTO_CARRO_H;
+                                $res->N_PRODUCTOS = $this->caMP->cuentaProductos($carro->ID_CARRO);
+                            } else {
+                                $caAux = new stdClass();
+                                $caAux->ID_USUARIO = $this->getSession()->get("ID_USUARIO");
+                                $caAux->MONTO_CARRO = 0;
+                                $caAux->FECHA_INICIO = date("U");
+                                $caAux->ESTADO_CARRO = 0;
+                                $caAux->ID_CARRO = $this->caMP->save($caAux);
+                                $this->getSession()->set("ID_CARRO", $caAux->ID_CARRO);
+                                $res->ID_CARRO = $caAux->ID_CARRO;
+                                $res->MONTO_CARRO = 0;
+                                $res->MONTO_CARRO_H = 0;
+                                $res->N_PRODUCTOS = 0;
+                            }
+                            if($res->IS_NEW == 1) {
+                                $this->iniFacebook();
+                                try {
+                                    $this->facebook->api('/me/feed', 'POST', array(
+                                        'link' => 'www.lokiero.cl',
+                                        'message' => 'Estoy usando Lo Kiero!, la nueva forma de comprar los mejores productos con descuentos increibles, tu tambien puedes registrarte, es gratis!',
+                                        'icon' => 'http://www.lokiero.cl/img/icono.png',
+                                        'picture' => 'http://www.lokiero.cl/img/logoFB.png'
+                                    ));
+                                } catch(FacebookApiException $e) {}
+                            }
+                        }
+                    }
+                } catch (FacebookApiException $e) {
+                    error_log($e);
+                    $this->user = null;
+                }
+            }
+            if(!isset($_GET["request_ids"])) $this->getSession()->salto("/");
+        }
+    }
+    
     function catchRequest() {
         if(isset($_GET["request_ids"])) {
-            if($this->ss->existe("ID_USUARIO")) {
+            if($this->user) {
                 $this->showLayout = false;
                 $res = $this->invMP->findByReq($_GET["request_ids"], $this->user, 0);
                 $nInv = count($res);
                 if($nInv > 0) {
                     $us = $this->usMP->findByFb($res[0]->ID_TO);
-                    if(!$us) {
+                    $fec = strtotime($us->FECHA_SIGN);
+                    if($fec>$res[0]->FECHA_REQUEST) {
                         if($nInv == 1) { //1 usuario lo invito
                             $this->invMP->acepta($res[0]);
                             try {
@@ -73,9 +141,14 @@ class CPrincipal {
                     $this->getSession()->salto("/");
                 }
             } else {
-                $this->getSession()->salto($_SERVER["REQUEST_URI"]);
+                $params = array(
+                    scope => 'email,publish_stream,user_birthday,publish_actions',
+                    redirect_uri => 'http://www.lokiero.cl/?do=sign&'.$_SERVER["QUERY_STRING"]
+                );
+                $this->loginUrl = $this->facebook->getLoginUrl($params);
+                $this->getSession()->salto($this->loginUrl);
             }
-        die();
+            die();
         } 
     }
     
@@ -140,7 +213,10 @@ class CPrincipal {
               'secret' => '6dfc87d94a03dbe7d4512d31f3fc16d2',
             ));
             $this->user = $this->facebook->getUser();
-        }
+        } else $this->user = $this->facebook->getUser();
+//        echo "<pre>";
+//        print_r($this->facebook);
+//        echo "</pre>";
     }
     
     function sendEmail($data) {
