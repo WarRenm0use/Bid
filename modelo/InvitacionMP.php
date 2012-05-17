@@ -179,7 +179,7 @@ class InvitacionMP {
         return ($res2 && $res4);
     }
     
-    function findByReq($id, $idTo, $estado, $attr = null) {
+    function findByReq($id, $idTo, $estado=0, $attr = null) {
         $id = $this->_bd->limpia($id);
         $idTo = $this->_bd->limpia($idTo);
         $estado = $this->_bd->limpia($estado);
