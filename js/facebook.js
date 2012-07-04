@@ -41,7 +41,7 @@ function setSession(res) {
     FB.api('/me', function(response) {
         response.session = (res)?res.authResponse:null;
         $.ajax({
-            url: '/?do=login',
+            url: '/?sec=log&do=in',
             type: 'post',
             data: response,
             dataType: 'json',

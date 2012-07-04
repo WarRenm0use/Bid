@@ -1,0 +1,23 @@
+<?
+
+?>
+<div class="pronto">
+<!--    <h1>Muy Pronto...</h1>-->
+    <p>En <span class="grande">Lo Kiero!</span> algo <br/><strong>Grande</strong> esta pasando. <br/>
+    <? if(!$cp->isLoged) { ?>
+    <strong>Reg&iacute;strate</strong> y se parte <br/>de la <strong>Revoluci&oacute;n</strong>!</p>
+    <a href="<?=$cp->loginUrl?>" class="btn btn-primary btn-huge">Reg&iacute;strate Ahora!</a>
+    <? } else if(!$cp->like){ ?>
+        <div id="likeBox">
+        <p>Dale <strong>Me Gusta</strong> a <br/>nuestro <strong>Facebook</strong></p>
+        <div class="fb-like-box" data-href="http://www.facebook.com/LoKieroBid" data-width="352" data-height="180" data-show-faces="true" data-stream="false" data-header="false" data-border-color="#ffffff"></div>
+        </div>
+        <div id="afterLike" style="display:none;">
+            <strong>Perfecto!</strong>, te mantendremos <br/>informado de las <strong>novedades!</strong>
+        </div>
+    <? } else { ?>
+<!--        <strong>Invita</strong> a tus amigos <br/>y acumula <strong>puntos</strong>!</p>
+        <a href="/invitaciones" class="btn btn-primary btn-huge">Invitalos Ahora!</a>-->
+        <strong>Perfecto!</strong>, te mantendremos <br/>informado de las <strong>novedades!</strong>
+    <? } ?>
+</div>

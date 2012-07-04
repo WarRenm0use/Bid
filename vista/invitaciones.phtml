@@ -17,11 +17,11 @@ $inv = $cp->getCSec()->inv;
 <link rel="stylesheet" href="css/chosen.css" type="text/css" />
 <script type="text/javascript" src="js/chosen.jquery.min.js"></script>
 <script src="/js/invitacion.js?15052012" type="text/javascript"></script>
-<div id="inner">
-    <div class="top-nav">
-        <a class="btn btn-success <?=($inv->MODELO->INVITACION_DISP>0)?"":"disabled"?>" id="btnInvitar" data-bind="click: invitar, html: inv_texto, css: {'disabled': disInvitar}">Invita más amigos (<?=$inv->MODELO->INVITACION_DISP?>)</a>
-    </div>
-    <h1>Invitaciones</h1>
+<div class="top-nav">
+    <a class="btn btn-success <?=($inv->MODELO->INVITACION_DISP>0)?"":"disabled"?>" id="btnInvitar" data-bind="click: invitar, html: inv_texto, css: {'disabled': disInvitar}">Invita más amigos (<?=$inv->MODELO->INVITACION_DISP?>)</a>
+</div>
+<h1>Invitaciones</h1>
+<div class="inner">
     <p>Invita a tus amigos y gana 2 bids por cada uno que se registre!</p>
 <!--    <pre><?print_r($inv)?></pre>-->
     <? //if($inv->MODELO->INVITACION_USADA>0) { ?>

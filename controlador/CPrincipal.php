@@ -1,9 +1,9 @@
 <?php
 include_once 'modelo/facebook.php';
 include_once 'modelo/UsuarioMP.php';
-include_once 'modelo/CarroMP.php';
+//include_once 'modelo/CarroMP.php';
 include_once 'modelo/InvitacionMP.php';
-include_once 'modelo/SubastaVipMP.php';
+//include_once 'modelo/SubastaVipMP.php';
 include_once 'util/session.php';
 
 class CPrincipal {
@@ -19,14 +19,14 @@ class CPrincipal {
 
     function __construct() {
         $this->usMP = new UsuarioMP();
-        $this->caMP = new CarroMP();
+//        $this->caMP = new CarroMP();
         $this->invMP = new InvitacionMP();
         $this->ss = new session();
         $this->secret = "6dfc87d94a03dbe7d4512d31f3fc16d2";
         if($_SERVER["REMOTE_ADDR"] != "50.56.80.62") {
             $this->iniFacebook();
-            $this->suMP = new SubastaVipMP();
-            $this->pas = $this->suMP->fetchTerminadas();
+//            $this->suMP = new SubastaVipMP();
+//            $this->pas = $this->suMP->fetchTerminadas();
         }
         $this->isLoged = $this->checkLogin();
         if(!$this->isLoged && $_SERVER["REMOTE_ADDR"] != "50.56.80.62") {
@@ -35,8 +35,21 @@ class CPrincipal {
                 redirect_uri => 'http://www.lokiero.cl/?do=sign'
             );
             $this->loginUrl = $this->facebook->getLoginUrl($params);
+            
         }
-        if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);
+        if($this->isLoged) {
+            $params = array( 'next' => 'http://www.lokiero.cl/?sec=log&do=out' );
+            $this->logoutUrl = $this->facebook->getLogoutUrl($params);
+            try {
+                $like = $this->facebook->api('/me/likes/347983325244042', 'GET');
+//                echo "<pre>";
+//                print_r($like);
+//                echo "</pre>";
+                if($like["data"][0]["id"] == "347983325244042") $this->like = true;
+                else $this->like = false;
+            } catch(FacebookApiException $e) {}
+        }
+//        if($host[0] == "dev" && (!isset($this->usuario) || $this->usuario->ID_USUARIO!=43)) $this->ss->salto("http://www.lokiero.cl".$_SERVER["REQUEST_URI"]);
         $this->registra();
         $this->catchRequest();
         $this->setSec();
@@ -63,29 +76,29 @@ class CPrincipal {
                             $this->getSession()->set("EMA_USUARIO", $res->EMA_USUARIO);
                             $this->getSession()->set("NOM_USUARIO", $res->NOM_USUARIO." ".$res->APE_USUARIO);
                             $this->getSession()->set("ID_FB", $res->FB_UID);
-                            $carro = $this->caMP->lastByUser($res->ID_USUARIO, array("ID_CARRO"));
-                            $res->SQL = $carro->SQL;
-                            if(isset($carro->ID_CARRO)) {
-                                $this->caMP->updateCarro($carro->ID_CARRO);
-                                $carro = $this->caMP->find($carro->ID_CARRO, array("ID_CARRO","MONTO_CARRO"));
-                                $this->getSession()->set("ID_CARRO", $carro->ID_CARRO);
-                                $res->ID_CARRO = $carro->ID_CARRO;
-                                $res->MONTO_CARRO = $carro->MONTO_CARRO;
-                                $res->MONTO_CARRO_H = $carro->MONTO_CARRO_H;
-                                $res->N_PRODUCTOS = $this->caMP->cuentaProductos($carro->ID_CARRO);
-                            } else {
-                                $caAux = new stdClass();
-                                $caAux->ID_USUARIO = $this->getSession()->get("ID_USUARIO");
-                                $caAux->MONTO_CARRO = 0;
-                                $caAux->FECHA_INICIO = date("U");
-                                $caAux->ESTADO_CARRO = 0;
-                                $caAux->ID_CARRO = $this->caMP->save($caAux);
-                                $this->getSession()->set("ID_CARRO", $caAux->ID_CARRO);
-                                $res->ID_CARRO = $caAux->ID_CARRO;
-                                $res->MONTO_CARRO = 0;
-                                $res->MONTO_CARRO_H = 0;
-                                $res->N_PRODUCTOS = 0;
-                            }
+//                            $carro = $this->caMP->lastByUser($res->ID_USUARIO, array("ID_CARRO"));
+//                            $res->SQL = $carro->SQL;
+//                            if(isset($carro->ID_CARRO)) {
+//                                $this->caMP->updateCarro($carro->ID_CARRO);
+//                                $carro = $this->caMP->find($carro->ID_CARRO, array("ID_CARRO","MONTO_CARRO"));
+//                                $this->getSession()->set("ID_CARRO", $carro->ID_CARRO);
+//                                $res->ID_CARRO = $carro->ID_CARRO;
+//                                $res->MONTO_CARRO = $carro->MONTO_CARRO;
+//                                $res->MONTO_CARRO_H = $carro->MONTO_CARRO_H;
+//                                $res->N_PRODUCTOS = $this->caMP->cuentaProductos($carro->ID_CARRO);
+//                            } else {
+//                                $caAux = new stdClass();
+//                                $caAux->ID_USUARIO = $this->getSession()->get("ID_USUARIO");
+//                                $caAux->MONTO_CARRO = 0;
+//                                $caAux->FECHA_INICIO = date("U");
+//                                $caAux->ESTADO_CARRO = 0;
+//                                $caAux->ID_CARRO = $this->caMP->save($caAux);
+//                                $this->getSession()->set("ID_CARRO", $caAux->ID_CARRO);
+//                                $res->ID_CARRO = $caAux->ID_CARRO;
+//                                $res->MONTO_CARRO = 0;
+//                                $res->MONTO_CARRO_H = 0;
+//                                $res->N_PRODUCTOS = 0;
+//                            }
                             if($res->IS_NEW == 1) {
                                 $this->iniFacebook();
                                 try {
@@ -358,9 +371,9 @@ class CPrincipal {
     }
 
     function setSec() {
-        $this->sec = (isset($_GET["sec"]))?$_GET["sec"]:"main";
-        $allow = array("log"=>true,"svip"=>true, "producto"=>false, "invitacion"=>false, "carro"=>false, "pagina"=>true, "cuenta"=>false, "main"=>true);
-        if(!$this->isLoged && !$allow[$this->sec]) $this->sec = "main";
+        $this->sec = (isset($_GET["sec"]))?$_GET["sec"]:"pronto";
+        $allow = array("log"=>true,"svip"=>true, "producto"=>false, "invitacion"=>false, "carro"=>false, "pagina"=>true, "cuenta"=>false, "main"=>true, "pronto"=>true);
+        if(!$this->isLoged && !$allow[$this->sec]) $this->sec = "pronto";
         $this->showLayout = true;
         $this->thisLayout = true;
         switch($this->sec) {
@@ -368,22 +381,26 @@ class CPrincipal {
                 include_once 'CLog.php';
                 $this->_CSec = new CLog($this);
                 break;
-            case "svip":
-                include_once 'CSVip.php';
-                $this->_CSec = new CSVip($this);
-                break;
-            case "producto":
-                include_once 'CProducto.php';
-                $this->_CSec = new CProducto($this);
+//            case "svip":
+//                include_once 'CSVip.php';
+//                $this->_CSec = new CSVip($this);
+//                break;
+//            case "producto":
+//                include_once 'CProducto.php';
+//                $this->_CSec = new CProducto($this);
+//                break;
+            case "pronto":
+                include_once 'CPronto.php';
+                $this->_CSec = new CPronto($this);
                 break;
             case "invitacion":
                 include_once 'CInvitacion.php';
                 $this->_CSec = new CInvitacion($this);
                 break;
-            case "carro":
-                include_once 'CCarro.php';
-                $this->_CSec = new CCarro($this);
-                break;
+//            case "carro":
+//                include_once 'CCarro.php';
+//                $this->_CSec = new CCarro($this);
+//                break;
             case "pagina":
                 include_once 'CPagina.php';
                 $this->_CSec = new CPagina($this);
@@ -397,7 +414,7 @@ class CPrincipal {
                 $this->_CSec = new CMain($this);
                 break;
         }
-        if($this->isLoged) $this->setCarro();
+//        if($this->isLoged) $this->setCarro();
 //        echo "<pre>";
 //        print_r($this->carro);
 //        echo "</pre>";

@@ -30,13 +30,26 @@ class CLog {
     }
 
     function checkLogin() {
-        $this->login = $this->usuMP->validaCuenta($_POST["emp"], $_POST["user"], $_POST["pass"]);
-        if($this->login != null) {
-            $this->cp->getSession()->set("account", $this->login->accountName);
-            $this->cp->getSession()->set("roleID", $this->login->roleID);
-            $this->cp->getSession()->salto("?sec=monitoreo");
-        } else {
-            $this->cp->getSession()->salto("?&e=1");
+        $user = new stdClass();
+        $user->NOM_USUARIO = $_POST["first_name"];
+        $user->APE_USUARIO = $_POST["last_name"];
+        $user->EMA_USUARIO = $_POST["email"];
+        $user->SEXO_USUARIO = ($_POST["gender"]=="male")?1:2;
+        $user->FB_UID = $_POST["session"]["userID"];
+
+        if($user->FB_UID > 0) {
+            $res = $this->usuMP->save($user);
+            if($res->ID_USUARIO > 0) {
+                if(!$this->cp->isLoged || $user->FB_UID != $this->cp->getSession()->get("ID_FB")) {
+                    $this->cp->getSession()->set("ID_USUARIO", $res->ID_USUARIO);
+                    $this->cp->getSession()->set("NICK_USUARIO", $res->NICK_USUARIO);
+                    $this->cp->getSession()->set("EMA_USUARIO", $res->EMA_USUARIO);
+                    $this->cp->getSession()->set("NOM_USUARIO", $res->NOM_USUARIO." ".$res->APE_USUARIO);
+                    $this->cp->getSession()->set("ID_FB", $_POST["session"]["userID"]);
+                    $res->RELOAD = 1;
+                } else $res->RELOAD = 0;
+            }
+            return $res;
         }
     }
     
@@ -72,7 +85,8 @@ class CLog {
             $do = $_GET["do"];
             switch($do) {
                 case 'in':
-                    $this->checkLogin();
+                    $res = $this->checkLogin();
+                    echo json_encode($res);
                     break;
                 case 'out':
                     $this->logout();
